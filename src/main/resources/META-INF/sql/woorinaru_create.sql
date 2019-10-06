@@ -1,6 +1,6 @@
 -- Database script to initialise woorinaru schema
-CREATE DATABASE IF NOT EXISTS `woorinaru`;
-USE `woorinaru`;
+-- CREATE DATABASE IF NOT EXISTS `woorinaru`;
+-- USE `woorinaru`;
 
 -- Create User Table
 CREATE TABLE IF NOT EXISTS `USER` (

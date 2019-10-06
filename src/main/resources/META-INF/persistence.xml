@@ -1,0 +1,24 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.2"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <!-- Define persistence unit -->
+    <persistence-unit name="woorinaru-repository" transaction-type="RESOURCE_LOCAL">
+        <description>Persistence xml file for woorinaru project</description>
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <properties>
+            <!-- database connection -->
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver " />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1:3306/woorinaru" />
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.password" value="changkon" />
+
+            <!-- Schema generation -->
+            <property name="javax.persistence.schema-generation.database.action" value="create" />
+            <property name="javax.persistence.schema-generation.create-source" value="script" />
+            <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/sql/woorinaru_create.sql"/>
+
+            <!-- Dialect -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+        </properties>
+    </persistence-unit>
+</persistence>

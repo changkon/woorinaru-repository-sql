@@ -23,7 +23,6 @@ public class StudentDaoImplTest extends AbstractContainerDatabaseTest {
         .withInitScript("META-INF/sql/woorinaru_create.sql");
 
     @Test
-    @Disabled
     @DisplayName("Simple init test for MySQL")
     public void simpleQueryTest() throws SQLException {
         Optional<ResultSet> resultSet = performQuery(mysql, "SELECT * FROM USER");

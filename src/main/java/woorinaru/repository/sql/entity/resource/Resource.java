@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Resource {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ID", updatable=false, nullable=false)
     private int id;
 

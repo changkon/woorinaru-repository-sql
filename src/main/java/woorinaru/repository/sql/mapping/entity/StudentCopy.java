@@ -7,7 +7,11 @@ public class StudentCopy implements Copy<Student> {
     private UserCopy userCopy;
 
     public StudentCopy() {
-        userCopy = new UserCopy();
+        this(new UserCopy());
+    }
+
+    public StudentCopy(UserCopy userCopy) {
+        this.userCopy = userCopy;
     }
 
     @Override

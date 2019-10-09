@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Template copied from testcontainers-java project to help with database container testing
  */
-public abstract class AbstractContainerDatabaseTest {
+public abstract class AbstractContainerDatabaseIT {
 
     private final Set<HikariDataSource> datasourcesForCleanup = new HashSet<>();
 

@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ID", updatable=false, nullable=false)
     protected int id;
 

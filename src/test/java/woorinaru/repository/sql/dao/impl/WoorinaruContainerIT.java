@@ -1,7 +1,5 @@
 package woorinaru.repository.sql.dao.impl;
 
-import org.junit.Rule;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.MySQLContainer;
@@ -16,7 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
-public class StudentDaoImplTest extends AbstractContainerDatabaseTest {
+public class WoorinaruContainerIT extends AbstractContainerDatabaseIT {
 
     @Container
     public MySQLContainer mysql = (MySQLContainer) new MySQLContainer()

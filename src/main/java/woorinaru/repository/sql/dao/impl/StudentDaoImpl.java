@@ -60,11 +60,8 @@ public class StudentDaoImpl implements StudentDao {
         LOGGER.debug("Deleting student with id: %d", student.getId());
 
         // Map file
-        StudentMapper mapper = new StudentMapper();
-        woorinaru.repository.sql.entity.user.Student studentEntity = mapper.mapToEntity(student);
-
         EntityManager em = getEntityManager();
-        woorinaru.repository.sql.entity.user.Student deleteStudentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, studentEntity.getId());
+        woorinaru.repository.sql.entity.user.Student deleteStudentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
 
         if (deleteStudentEntity != null) {
             em.getTransaction().begin();

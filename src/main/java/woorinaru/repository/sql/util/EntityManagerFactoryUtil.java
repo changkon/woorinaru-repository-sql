@@ -6,14 +6,22 @@ import javax.persistence.Persistence;
 
 public class EntityManagerFactoryUtil {
 
-    private static final EntityManagerFactory emFactory;
+    private static EntityManagerFactory emFactory;
 
-    static {
-        // NOTE: This must be the same value as the one referenced in persistence.xml
-        emFactory = Persistence.createEntityManagerFactory("woorinaru-repository");
+    private EntityManagerFactoryUtil() {}
+
+    public static void setEntityManagerFactory(EntityManagerFactory theEmFactory) {
+        if (emFactory != null) {
+            emFactory.close();
+        }
+        emFactory = theEmFactory;
     }
 
     public static EntityManager getEntityManager() {
+        if (emFactory == null) {
+            // NOTE: This must be the same value as the one referenced in persistence.xml
+            emFactory = Persistence.createEntityManagerFactory("woorinaru-repository");
+        }
         return emFactory.createEntityManager();
     }
 

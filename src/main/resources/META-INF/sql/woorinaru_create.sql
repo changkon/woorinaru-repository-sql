@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS `USER` (
 -- Create Resource Table
 CREATE TABLE IF NOT EXISTS `RESOURCE` (
 	`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `RESOURCE` BLOB
+    `RESOURCE` BLOB,
+    `DESCRIPTION` NVARCHAR(75)
 );
 
 -- Create User Resource Table (Many to Many relationship)

@@ -1,9 +1,6 @@
 package woorinaru.repository.sql.mapping.model;
 
 import woorinaru.repository.sql.entity.user.Student;
-import woorinaru.repository.sql.entity.user.User;
-
-import java.util.stream.Stream;
 
 public class StudentMapper implements ModelMapper<woorinaru.core.model.user.Student, Student> {
 
@@ -15,9 +12,9 @@ public class StudentMapper implements ModelMapper<woorinaru.core.model.user.Stud
 
     @Override
     public Student mapToEntity(woorinaru.core.model.user.Student model) {
-        Student student = new Student();
-        userMapper.mapUserModelToEntity().apply(model, student);
-        return student;
+        Student studentEntity = new Student();
+        userMapper.mapUserModelToEntity().apply(model, studentEntity);
+        return studentEntity;
     }
 
     @Override

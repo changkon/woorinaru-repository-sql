@@ -9,6 +9,7 @@ public class ResourceMapper implements ModelMapper<woorinaru.core.model.manageme
         Resource resourceEntity = new Resource();
         resourceEntity.setId(model.getId());
         resourceEntity.setResource(model.getResource());
+        resourceEntity.setDescription(model.getDescription());
         return resourceEntity;
     }
 
@@ -17,6 +18,7 @@ public class ResourceMapper implements ModelMapper<woorinaru.core.model.manageme
         woorinaru.core.model.management.administration.Resource resourceModel = new woorinaru.core.model.management.administration.Resource();
         resourceModel.setId(entity.getId());
         resourceModel.setResource(entity.getResource());
+        resourceModel.setDescription(entity.getDescription());
         return resourceModel;
     }
 }

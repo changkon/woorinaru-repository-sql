@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+          http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+    <persistence-unit name="woorinaru-repository-test" transaction-type="RESOURCE_LOCAL">
+        <description>Persistence xml file for woorinaru test project</description>
+        <class>woorinaru.repository.sql.entity.resource.Resource</class>
+        <class>woorinaru.repository.sql.entity.user.User</class>
+        <class>woorinaru.repository.sql.entity.user.Admin</class>
+        <class>woorinaru.repository.sql.entity.user.Student</class>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.testcontainers.jdbc.ContainerDatabaseDriver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:tc:mysql:5.7://doesntmatter/test?TC_INITSCRIPT=META-INF/sql/woorinaru_create.sql" />
+
+            <!-- Schema generation -->
+<!--            <property name="javax.persistence.schema-generation.database.action" value="create" />-->
+<!--            <property name="javax.persistence.schema-generation.create-source" value="script" />-->
+<!--            <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/sql/woorinaru_create.sql"/>-->
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
+        </properties>
+    </persistence-unit>
+</persistence>

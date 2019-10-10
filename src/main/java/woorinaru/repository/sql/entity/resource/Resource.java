@@ -12,7 +12,11 @@ public class Resource {
     private int id;
 
     @Column(name="RESOURCE")
+    @Lob
     private byte[] resource;
+
+    @Column(name="DESCRIPTION")
+    private String description;
 
     public Resource() {}
 
@@ -30,5 +34,13 @@ public class Resource {
 
     public void setResource(byte[] resource) {
         this.resource = resource;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

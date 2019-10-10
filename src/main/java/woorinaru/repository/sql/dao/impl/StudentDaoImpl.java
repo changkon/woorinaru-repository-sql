@@ -12,6 +12,7 @@ import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
@@ -40,14 +41,18 @@ public class StudentDaoImpl implements StudentDao {
         LOGGER.debug("Retrieving a student resource with id: %d", id);
         EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.user.Student studentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, id);
-        em.close();
+
+        LOGGER.debug("Student with id: %d. Found: %s", id, studentEntity == null ? "True" : "False");
 
         StudentMapper mapper = new StudentMapper();
-        Student studentModel = mapper.mapToModel(studentEntity);
 
-        LOGGER.debug("Student with id: %d. Found: %s", id, studentModel == null ? "True" : "False");
+        Optional<Student> studentModel = Stream.ofNullable(studentEntity)
+            .map(mapper::mapToModel)
+            .findFirst();
 
-        return Optional.ofNullable(studentModel);
+        em.close();
+
+        return studentModel;
     }
 
     @Override
@@ -60,12 +65,17 @@ public class StudentDaoImpl implements StudentDao {
 
         EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.user.Student deleteStudentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, studentEntity.getId());
-        em.getTransaction().begin();
-        em.remove(deleteStudentEntity);
-        em.getTransaction().commit();
-        em.close();
 
-        LOGGER.debug("Student deleted");
+        if (deleteStudentEntity != null) {
+            em.getTransaction().begin();
+            em.remove(deleteStudentEntity);
+            em.getTransaction().commit();
+            LOGGER.debug("Student deleted");
+        } else {
+            LOGGER.debug("Student with id: '%d' not found. Could not be deleted", student.getId());
+        }
+
+        em.close();
     }
 
     @Override
@@ -78,10 +88,15 @@ public class StudentDaoImpl implements StudentDao {
         em.getTransaction().begin();
         woorinaru.repository.sql.entity.user.Student existingStudentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
 
-        StudentCopy copyUtil = new StudentCopy();
-        copyUtil.copy(modifiedStudentEntity, existingStudentEntity);
+        if (existingStudentEntity != null) {
+            StudentCopy copyUtil = new StudentCopy();
+            copyUtil.copy(modifiedStudentEntity, existingStudentEntity);
+            em.getTransaction().commit();
+            LOGGER.debug("Modified student");
+        } else {
+            LOGGER.debug("Student with id: '%d' not found. Could not be modified", student.getId());
+        }
 
-        em.getTransaction().commit();
         em.close();
     }
 
@@ -91,16 +106,15 @@ public class StudentDaoImpl implements StudentDao {
         StudentMapper mapper = new StudentMapper();
 
         EntityManager em = getEntityManager();
-        TypedQuery<woorinaru.repository.sql.entity.user.Student> query = em.createQuery("SELECT u FROM USER u", woorinaru.repository.sql.entity.user.Student.class);
+        TypedQuery<woorinaru.repository.sql.entity.user.Student> query = em.createQuery("SELECT s FROM Student s", woorinaru.repository.sql.entity.user.Student.class);
         List<woorinaru.repository.sql.entity.user.Student> entityStudents = query.getResultList();
-        em.close();
 
         List<Student> students = entityStudents.stream()
             .map(mapper::mapToModel)
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d students", students.size());
-
+        em.close();
         return students;
     }
 }

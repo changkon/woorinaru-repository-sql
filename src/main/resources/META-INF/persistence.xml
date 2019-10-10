@@ -5,6 +5,11 @@
     <persistence-unit name="woorinaru-repository" transaction-type="RESOURCE_LOCAL">
         <description>Persistence xml file for woorinaru project</description>
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <class>woorinaru.repository.sql.entity.resource.Resource</class>
+        <class>woorinaru.repository.sql.entity.user.User</class>
+        <class>woorinaru.repository.sql.entity.user.Admin</class>
+        <class>woorinaru.repository.sql.entity.user.Student</class>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <!-- database connection -->
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver " />

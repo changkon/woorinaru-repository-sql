@@ -1,6 +1,5 @@
 package woorinaru.repository.sql.dao.impl;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -179,9 +178,12 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         em.getTransaction().begin();
 
         String resource = new String("resource");
+
         Resource resourceContainer = new Resource();
         resourceContainer.setResource(resource.getBytes());
         resourceContainer.setDescription("test resource");
+        em.persist(resourceContainer);
+        em.refresh(resourceContainer);
 
         woorinaru.repository.sql.entity.user.Student studentEntity = createStudentEntity("Alan Foster", "UK", "alan@test.com");
         studentEntity.setFavouriteResources(List.of(resourceContainer));

@@ -27,7 +27,7 @@ public abstract class User {
     protected String email;
 
     // TODO ensure cascade works as intended. Needs tests
-    @ManyToMany(fetch = FetchType.LAZY,  cascade=CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="USER_RESOURCE", joinColumns = @JoinColumn(name = "USER_ID"),
         inverseJoinColumns = @JoinColumn(name = "RESOURCE_ID"))
     protected List<Resource> favouriteResources;

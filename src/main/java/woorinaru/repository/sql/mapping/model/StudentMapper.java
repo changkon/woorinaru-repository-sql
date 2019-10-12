@@ -7,7 +7,11 @@ public class StudentMapper implements ModelMapper<woorinaru.core.model.user.Stud
     private UserMapper userMapper;
 
     public StudentMapper() {
-        userMapper = new UserMapper();
+        this(new UserMapper());
+    }
+
+    public StudentMapper(UserMapper userMapper) {
+        this.userMapper = userMapper;
     }
 
     @Override

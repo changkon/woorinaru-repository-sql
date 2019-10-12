@@ -87,3 +87,6 @@ gradle-app.setting
 
 # Maven build files
 target/
+
+# Temp main file
+**/src/main/java/woorinaru/repository/sql/main/*

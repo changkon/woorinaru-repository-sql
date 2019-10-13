@@ -34,7 +34,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         student.setName("Changkon Han");
         student.setNationality("New Zealand");
         student.setEmail("random@domain.com");
-        student.setSignupDateTime(signupDateTime);
+        student.setSignUpDateTime(signupDateTime);
 
         // WHEN
         studentDao.create(student);
@@ -79,7 +79,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(retrievedStudentModel.getNationality()).isEqualTo("Australia");
         assertThat(retrievedStudentModel.getEmail()).isEqualTo("test@domain.com");
         assertThat(retrievedStudentModel.getFavouriteResources()).isEmpty();
-        assertThat(retrievedStudentModel.getSignupDateTime()).isEqualTo(signupDateTime);
+        assertThat(retrievedStudentModel.getSignUpDateTime()).isEqualTo(signupDateTime);
     }
 
     @Test
@@ -153,7 +153,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(retrievedStudent1.getNationality()).isEqualTo("USA");
         assertThat(retrievedStudent1.getEmail()).isEqualTo("josh@test.com");
         assertThat(retrievedStudent1.getFavouriteResources()).isEmpty();
-        assertThat(retrievedStudent1.getSignupDateTime()).isEqualTo(signupDateTime);
+        assertThat(retrievedStudent1.getSignUpDateTime()).isEqualTo(signupDateTime);
 
         Student retrievedStudent2 = retrievedStudents.get(1);
         assertThat(retrievedStudent2.getId()).isEqualTo(2);
@@ -161,7 +161,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(retrievedStudent2.getNationality()).isEqualTo("Canada");
         assertThat(retrievedStudent2.getEmail()).isEqualTo("hayley@test.com");
         assertThat(retrievedStudent2.getFavouriteResources()).isEmpty();
-        assertThat(retrievedStudent2.getSignupDateTime()).isEqualTo(signupDateTime);
+        assertThat(retrievedStudent2.getSignUpDateTime()).isEqualTo(signupDateTime);
 
         em.close();
     }
@@ -211,7 +211,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(studentModel.getEmail()).isEqualTo("alan@test.com");
         assertThat(studentModel.getFavouriteResources()).isNotEmpty();
         assertThat(studentModel.getFavouriteResources()).hasSize(1);
-        assertThat(studentModel.getSignupDateTime()).isEqualTo(signupDateTime);
+        assertThat(studentModel.getSignUpDateTime()).isEqualTo(signupDateTime);
 
         woorinaru.core.model.management.administration.Resource resourceModel = studentModel.getFavouriteResources().iterator().next();
         assertThat(resourceModel.getId()).isEqualTo(1);

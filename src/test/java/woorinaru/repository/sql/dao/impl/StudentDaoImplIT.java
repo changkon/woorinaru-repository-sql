@@ -12,6 +12,9 @@ import woorinaru.repository.sql.util.EntityManagerFactoryUtil;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(DatabaseContainerRule.class)
 public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
+
+    private static final LocalDateTime signupDateTime = LocalDateTime.of(LocalDate.of(2018, 5, 10), LocalTime.of(23, 40, 10));
 
     @Test
     @DisplayName("Test student create")
@@ -29,6 +34,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         student.setName("Changkon Han");
         student.setNationality("New Zealand");
         student.setEmail("random@domain.com");
+        student.setSignupDateTime(signupDateTime);
 
         // WHEN
         studentDao.create(student);
@@ -44,6 +50,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(studentEntity.getNationality()).isEqualTo("New Zealand");
         assertThat(studentEntity.getEmail()).isEqualTo("random@domain.com");
         assertThat(studentEntity.getFavouriteResources()).isEmpty();
+        assertThat(studentEntity.getSignUpDateTime()).isEqualTo(signupDateTime);
 
         em.close();
     }
@@ -72,6 +79,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(retrievedStudentModel.getNationality()).isEqualTo("Australia");
         assertThat(retrievedStudentModel.getEmail()).isEqualTo("test@domain.com");
         assertThat(retrievedStudentModel.getFavouriteResources()).isEmpty();
+        assertThat(retrievedStudentModel.getSignupDateTime()).isEqualTo(signupDateTime);
     }
 
     @Test
@@ -145,6 +153,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(retrievedStudent1.getNationality()).isEqualTo("USA");
         assertThat(retrievedStudent1.getEmail()).isEqualTo("josh@test.com");
         assertThat(retrievedStudent1.getFavouriteResources()).isEmpty();
+        assertThat(retrievedStudent1.getSignupDateTime()).isEqualTo(signupDateTime);
 
         Student retrievedStudent2 = retrievedStudents.get(1);
         assertThat(retrievedStudent2.getId()).isEqualTo(2);
@@ -152,6 +161,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(retrievedStudent2.getNationality()).isEqualTo("Canada");
         assertThat(retrievedStudent2.getEmail()).isEqualTo("hayley@test.com");
         assertThat(retrievedStudent2.getFavouriteResources()).isEmpty();
+        assertThat(retrievedStudent2.getSignupDateTime()).isEqualTo(signupDateTime);
 
         em.close();
     }
@@ -201,8 +211,9 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(studentModel.getEmail()).isEqualTo("alan@test.com");
         assertThat(studentModel.getFavouriteResources()).isNotEmpty();
         assertThat(studentModel.getFavouriteResources()).hasSize(1);
+        assertThat(studentModel.getSignupDateTime()).isEqualTo(signupDateTime);
 
-        woorinaru.core.model.management.administration.Resource resourceModel = studentModel.getFavouriteResources().get(0);
+        woorinaru.core.model.management.administration.Resource resourceModel = studentModel.getFavouriteResources().iterator().next();
         assertThat(resourceModel.getId()).isEqualTo(1);
         assertThat(resourceModel.getResource()).isEqualTo(resource.getBytes());
         assertThat(resourceModel.getDescription()).isEqualTo("test resource");
@@ -215,6 +226,7 @@ public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
         studentEntity.setName(name);
         studentEntity.setNationality(nationality);
         studentEntity.setEmail(email);
+        studentEntity.setSignUpDateTime(signupDateTime);
         return studentEntity;
     }
 }

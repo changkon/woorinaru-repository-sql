@@ -4,7 +4,8 @@ package woorinaru.repository.sql.entity.user;
 import woorinaru.repository.sql.entity.resource.Resource;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Collection;
 
 @Entity
 @Table(name="USER")
@@ -26,11 +27,13 @@ public abstract class User {
     @Column(name="EMAIL")
     protected String email;
 
-    // TODO ensure cascade works as intended. Needs tests
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="USER_RESOURCE", joinColumns = @JoinColumn(name = "USER_ID"),
         inverseJoinColumns = @JoinColumn(name = "RESOURCE_ID"))
-    protected List<Resource> favouriteResources;
+    protected Collection<Resource> favouriteResources;
+
+    @Column(name="SIGNUPDATE", columnDefinition="TIMESTAMP")
+    protected LocalDateTime signUpDateTime;
 
     public User() {}
 
@@ -66,12 +69,20 @@ public abstract class User {
         this.email = email;
     }
 
-    public List<Resource> getFavouriteResources() {
+    public Collection<Resource> getFavouriteResources() {
         return favouriteResources;
     }
 
-    public void setFavouriteResources(List<Resource> favouriteResources) {
+    public void setFavouriteResources(Collection<Resource> favouriteResources) {
         this.favouriteResources = favouriteResources;
+    }
+
+    public LocalDateTime getSignUpDateTime() {
+        return signUpDateTime;
+    }
+
+    public void setSignUpDateTime(LocalDateTime signUpDateTime) {
+        this.signUpDateTime = signUpDateTime;
     }
 
     @Transient

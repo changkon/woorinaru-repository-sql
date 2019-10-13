@@ -30,6 +30,7 @@ public class UserMapper {
             entity.setFavouriteResources(resourceEntities);
             entity.setId(model.getId());
             entity.setEmail(model.getEmail());
+            entity.setSignUpDateTime(model.getSignupDateTime());
             return entity;
         };
     }
@@ -46,6 +47,7 @@ public class UserMapper {
                 .map(resourceMapper::mapToModel)
                 .collect(Collectors.toList());
             model.setFavouriteResources(resourceModels);
+            model.setSignupDateTime(entity.getSignUpDateTime());
             return model;
         };
     }

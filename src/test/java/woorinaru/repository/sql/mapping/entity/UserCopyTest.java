@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.User;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +24,7 @@ public class UserCopyTest {
         copyUser.setNationality("South Korea");
         copyUser.setEmail("test@random.com");
         copyUser.setName("No Name");
+        copyUser.setSignUpDateTime(LocalDateTime.of(LocalDate.of(2019, 7, 8), LocalTime.of(10, 10, 10)));
 
         Resource resourceContainer = new Resource();
         resourceContainer.setId(1);
@@ -37,10 +41,11 @@ public class UserCopyTest {
         assertThat(destUser.getNationality()).isEqualTo("South Korea");
         assertThat(destUser.getEmail()).isEqualTo("test@random.com");
         assertThat(destUser.getName()).isEqualTo("No Name");
+        assertThat(destUser.getSignUpDateTime()).isEqualTo(LocalDateTime.of(LocalDate.of(2019, 7, 8), LocalTime.of(10, 10, 10)));
 
         assertThat(destUser.getFavouriteResources()).isNotNull();
         assertThat(destUser.getFavouriteResources()).hasSize(1);
-        Resource destResourceContainer = destUser.getFavouriteResources().get(0);
+        Resource destResourceContainer = destUser.getFavouriteResources().iterator().next();
         assertThat(destResourceContainer.getId()).isEqualTo(1);
         assertThat(destResourceContainer.getResource()).isEqualTo(resourceContent.getBytes());
     }

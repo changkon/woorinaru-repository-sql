@@ -10,5 +10,6 @@ public class UserCopy implements Copy<User> {
         dest.setFavouriteResources(src.getFavouriteResources());
         dest.setName(src.getName());
         dest.setNationality(src.getNationality());
+        dest.setSignUpDateTime(src.getSignUpDateTime());
     }
 }

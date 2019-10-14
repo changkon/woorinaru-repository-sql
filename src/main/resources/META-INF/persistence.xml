@@ -9,6 +9,8 @@
         <class>woorinaru.repository.sql.entity.user.User</class>
         <class>woorinaru.repository.sql.entity.user.Admin</class>
         <class>woorinaru.repository.sql.entity.user.Student</class>
+        <class>woorinaru.repository.sql.entity.management.administration.WooriClass</class>
+        <class>woorinaru.repository.sql.entity.management.administration.BeginnerClass</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <!-- database connection -->

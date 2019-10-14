@@ -15,4 +15,5 @@ module woorinaru.repository.sql {
 
     opens woorinaru.repository.sql.entity.resource to org.hibernate.orm.core;
     opens woorinaru.repository.sql.entity.user to org.hibernate.orm.core;
+    opens woorinaru.repository.sql.entity.management.administration to org.hibernate.orm.core;
 }

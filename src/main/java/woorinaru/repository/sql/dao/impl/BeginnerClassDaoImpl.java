@@ -4,11 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.BeginnerClassDao;
 import woorinaru.core.model.management.administration.BeginnerClass;
-import woorinaru.core.model.user.Student;
 import woorinaru.repository.sql.mapping.entity.BeginnerClassCopy;
-import woorinaru.repository.sql.mapping.entity.StudentCopy;
 import woorinaru.repository.sql.mapping.model.BeginnerClassMapper;
-import woorinaru.repository.sql.mapping.model.StudentMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -72,7 +69,7 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
             em.getTransaction().commit();
             LOGGER.debug("Beginner class deleted");
         } else {
-            LOGGER.debug("Beginnger class with id: '%d' not found. Could not be deleted", beginnerClass.getId());
+            LOGGER.debug("Beginner class with id: '%d' not found. Could not be deleted", beginnerClass.getId());
         }
 
         em.close();

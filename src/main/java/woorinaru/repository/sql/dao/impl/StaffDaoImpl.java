@@ -4,11 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.StaffDao;
 import woorinaru.core.model.user.Staff;
-import woorinaru.core.model.user.Student;
 import woorinaru.repository.sql.mapping.entity.StaffCopy;
-import woorinaru.repository.sql.mapping.entity.StudentCopy;
 import woorinaru.repository.sql.mapping.model.StaffMapper;
-import woorinaru.repository.sql.mapping.model.StudentMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

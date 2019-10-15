@@ -52,6 +52,9 @@ public class WooriClassMapper {
             entity.setStudents(studentEntities);
             entity.setStaff(staffEntities);
 
+            // TODO add event mapping
+//            entity.setEvent(model.getEvent());
+
             return entity;
         };
     }

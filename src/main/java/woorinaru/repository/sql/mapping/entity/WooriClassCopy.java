@@ -10,5 +10,6 @@ public class WooriClassCopy implements Copy<WooriClass> {
         dest.setResources(src.getResources());
         dest.setStaff(src.getStaff());
         dest.setStudents(src.getStudents());
+        dest.setEvent(src.getEvent());
     }
 }

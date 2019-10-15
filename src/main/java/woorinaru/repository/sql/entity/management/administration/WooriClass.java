@@ -30,6 +30,10 @@ public abstract class WooriClass {
     @JoinTable(name="WOORICLASS_STUDENT", joinColumns=@JoinColumn(name="WOORICLASS_ID"), inverseJoinColumns = @JoinColumn(name="STUDENT_ID"))
     protected Collection<Student> students;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="EVENT_ID")
+    protected Event event;
+
     public WooriClass() {}
 
     public int getId() {
@@ -62,6 +66,14 @@ public abstract class WooriClass {
 
     public void setStudents(Collection<Student> students) {
         this.students = students;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     @Transient

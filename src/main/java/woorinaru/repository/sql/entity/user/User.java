@@ -32,7 +32,7 @@ public abstract class User {
         inverseJoinColumns = @JoinColumn(name = "RESOURCE_ID"))
     protected Collection<Resource> favouriteResources;
 
-    @Column(name="SIGNUPDATE", columnDefinition="TIMESTAMP")
+    @Column(name="SIGNUPDATETIME", columnDefinition="TIMESTAMP")
     protected LocalDateTime signUpDateTime;
 
     public User() {}

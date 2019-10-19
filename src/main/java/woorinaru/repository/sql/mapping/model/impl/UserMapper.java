@@ -1,10 +1,9 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapping.model.impl;
 
 
 import woorinaru.core.model.user.User;
 import woorinaru.repository.sql.entity.resource.Resource;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;

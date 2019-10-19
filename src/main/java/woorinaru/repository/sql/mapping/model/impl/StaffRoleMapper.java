@@ -1,6 +1,8 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapping.model.impl;
 
 import woorinaru.repository.sql.entity.user.StaffRole;
+import woorinaru.repository.sql.mapping.contract.ModelContract;
+import woorinaru.repository.sql.mapping.model.ModelMapper;
 
 public class StaffRoleMapper implements ModelMapper<woorinaru.core.model.user.StaffRole, StaffRole> {
 
@@ -33,5 +35,21 @@ public class StaffRoleMapper implements ModelMapper<woorinaru.core.model.user.St
                 return woorinaru.core.model.user.StaffRole.TEACHER;
         }
         return null;
+    }
+
+    @Override
+    public Class<StaffRole> getEntityClass() {
+        return StaffRole.class;
+    }
+
+    @Override
+    public Class<woorinaru.core.model.user.StaffRole> getModelClass() {
+        return woorinaru.core.model.user.StaffRole.class;
+    }
+
+
+    @Override
+    public boolean isSatisfiedBy(ModelContract contract) {
+        return true;
     }
 }

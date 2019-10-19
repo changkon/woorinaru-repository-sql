@@ -1,6 +1,9 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapping.model.impl;
 
 import woorinaru.repository.sql.entity.management.administration.BeginnerClass;
+import woorinaru.repository.sql.mapping.contract.ModelContract;
+import woorinaru.repository.sql.mapping.contract.ModelContractBuilder;
+import woorinaru.repository.sql.mapping.model.ModelMapper;
 
 public class BeginnerClassMapper implements ModelMapper<woorinaru.core.model.management.administration.BeginnerClass, BeginnerClass> {
 
@@ -26,5 +29,25 @@ public class BeginnerClassMapper implements ModelMapper<woorinaru.core.model.man
         woorinaru.core.model.management.administration.BeginnerClass beginnerClassModel = new woorinaru.core.model.management.administration.BeginnerClass();
         mapper.mapEntityToWooriClassModel().apply(beginnerClassModel, entity);
         return beginnerClassModel;
+    }
+
+    @Override
+    public Class<BeginnerClass> getEntityClass() {
+        return BeginnerClass.class;
+    }
+
+    @Override
+    public Class<woorinaru.core.model.management.administration.BeginnerClass> getModelClass() {
+        return woorinaru.core.model.management.administration.BeginnerClass.class;
+    }
+
+
+    @Override
+    public boolean isSatisfiedBy(ModelContract contract) {
+        ModelContract mapperContract = new ModelContractBuilder(woorinaru.core.model.management.administration.BeginnerClass.class)
+            .all()
+            .includePartialFieldNames("event")
+            .build();
+        return mapperContract.equals(contract);
     }
 }

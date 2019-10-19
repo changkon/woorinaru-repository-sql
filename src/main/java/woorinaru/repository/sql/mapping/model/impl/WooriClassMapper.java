@@ -1,7 +1,7 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapping.model.impl;
 
 import woorinaru.core.model.management.administration.WooriClass;
-import woorinaru.core.model.user.User;
+import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
 import woorinaru.repository.sql.entity.user.Student;
@@ -52,8 +52,16 @@ public class WooriClassMapper {
             entity.setStudents(studentEntities);
             entity.setStaff(staffEntities);
 
-            // TODO add event mapping
-//            entity.setEvent(model.getEvent());
+            // Do not eager fetch collections
+            woorinaru.core.model.management.administration.Event eventModel = model.getEvent();
+            Event eventEntity = new Event();
+            eventEntity.setId(eventModel.getId());
+            eventEntity.setAddress(eventModel.getAddress());
+            eventEntity.setStartDateTime(eventModel.getStartDateTime());
+            eventEntity.setEndDateTime(eventModel.getEndDateTime());
+            eventEntity.setDescription(eventModel.getDescription());
+
+            entity.setEvent(eventEntity);
 
             return entity;
         };
@@ -82,6 +90,17 @@ public class WooriClassMapper {
             model.setResources(resourceModels);
             model.setStudents(studentModels);
             model.setStaff(staffModels);
+
+            // Do not eager fetch collections
+            Event eventEntity = entity.getEvent();
+            woorinaru.core.model.management.administration.Event eventModel = new woorinaru.core.model.management.administration.Event();
+            eventEntity.setId(eventModel.getId());
+            eventEntity.setAddress(eventModel.getAddress());
+            eventEntity.setStartDateTime(eventModel.getStartDateTime());
+            eventEntity.setEndDateTime(eventModel.getEndDateTime());
+            eventEntity.setDescription(eventModel.getDescription());
+
+            model.setEvent(eventModel);
 
             return model;
         };

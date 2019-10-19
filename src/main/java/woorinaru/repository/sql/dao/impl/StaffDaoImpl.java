@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.StaffDao;
 import woorinaru.core.model.user.Staff;
 import woorinaru.repository.sql.mapping.entity.StaffCopy;
-import woorinaru.repository.sql.mapping.model.StaffMapper;
+import woorinaru.repository.sql.mapping.model.impl.StaffMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

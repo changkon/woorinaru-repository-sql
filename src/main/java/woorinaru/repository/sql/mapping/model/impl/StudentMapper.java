@@ -1,6 +1,9 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapping.model.impl;
 
 import woorinaru.repository.sql.entity.user.Student;
+import woorinaru.repository.sql.mapping.contract.ModelContract;
+import woorinaru.repository.sql.mapping.contract.ModelContractBuilder;
+import woorinaru.repository.sql.mapping.model.ModelMapper;
 
 public class StudentMapper implements ModelMapper<woorinaru.core.model.user.Student, Student> {
 
@@ -26,5 +29,24 @@ public class StudentMapper implements ModelMapper<woorinaru.core.model.user.Stud
         woorinaru.core.model.user.Student studentModel = new woorinaru.core.model.user.Student();
         userMapper.mapEntityToUserModel().apply(studentModel, entity);
         return studentModel;
+    }
+
+    @Override
+    public Class<Student> getEntityClass() {
+        return Student.class;
+    }
+
+    @Override
+    public Class<woorinaru.core.model.user.Student> getModelClass() {
+        return woorinaru.core.model.user.Student.class;
+    }
+
+
+    @Override
+    public boolean isSatisfiedBy(ModelContract contract) {
+        ModelContract mapperContract = new ModelContractBuilder(woorinaru.core.model.user.Student.class)
+            .all()
+            .build();
+        return mapperContract.equals(contract);
     }
 }

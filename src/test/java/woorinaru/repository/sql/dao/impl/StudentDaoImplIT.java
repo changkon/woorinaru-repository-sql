@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import woorinaru.core.dao.spi.StudentDao;
 import woorinaru.core.model.user.Student;
 import woorinaru.repository.sql.entity.resource.Resource;
-import woorinaru.repository.sql.mapping.model.StudentMapper;
+import woorinaru.repository.sql.mapping.model.impl.StudentMapper;
 import woorinaru.repository.sql.util.EntityManagerFactoryUtil;
 
 import javax.persistence.EntityManager;

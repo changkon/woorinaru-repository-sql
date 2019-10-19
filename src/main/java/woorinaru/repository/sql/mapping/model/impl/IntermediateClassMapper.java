@@ -1,6 +1,9 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapping.model.impl;
 
 import woorinaru.repository.sql.entity.management.administration.IntermediateClass;
+import woorinaru.repository.sql.mapping.contract.ModelContract;
+import woorinaru.repository.sql.mapping.contract.ModelContractBuilder;
+import woorinaru.repository.sql.mapping.model.ModelMapper;
 
 public class IntermediateClassMapper implements ModelMapper<woorinaru.core.model.management.administration.IntermediateClass, IntermediateClass> {
 
@@ -26,5 +29,25 @@ public class IntermediateClassMapper implements ModelMapper<woorinaru.core.model
         woorinaru.core.model.management.administration.IntermediateClass intermediateClassModel = new woorinaru.core.model.management.administration.IntermediateClass();
         wooriClassMapper.mapEntityToWooriClassModel().apply(intermediateClassModel, entity);
         return intermediateClassModel;
+    }
+
+    @Override
+    public Class<IntermediateClass> getEntityClass() {
+        return IntermediateClass.class;
+    }
+
+    @Override
+    public Class<woorinaru.core.model.management.administration.IntermediateClass> getModelClass() {
+        return woorinaru.core.model.management.administration.IntermediateClass.class;
+    }
+
+
+    @Override
+    public boolean isSatisfiedBy(ModelContract contract) {
+        ModelContract mapperContract = new ModelContractBuilder(woorinaru.core.model.management.administration.IntermediateClass.class)
+            .all()
+            .includePartialFieldNames("event")
+            .build();
+        return mapperContract.equals(contract);
     }
 }

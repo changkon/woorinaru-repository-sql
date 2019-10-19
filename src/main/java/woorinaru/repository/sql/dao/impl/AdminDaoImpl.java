@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.AdminDao;
 import woorinaru.core.model.user.Admin;
 import woorinaru.repository.sql.mapping.entity.AdminCopy;
-import woorinaru.repository.sql.mapping.model.AdminMapper;
+import woorinaru.repository.sql.mapping.model.impl.AdminMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

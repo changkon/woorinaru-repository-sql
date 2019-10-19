@@ -2,6 +2,7 @@ package woorinaru.repository.sql.mapping.model;
 
 import org.junit.jupiter.api.Test;
 import woorinaru.core.model.user.User;
+import woorinaru.repository.sql.mapping.model.impl.UserMapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

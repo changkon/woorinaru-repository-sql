@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.StudentDao;
 import woorinaru.core.model.user.Student;
 import woorinaru.repository.sql.mapping.entity.StudentCopy;
-import woorinaru.repository.sql.mapping.model.StudentMapper;
+import woorinaru.repository.sql.mapping.model.impl.StudentMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

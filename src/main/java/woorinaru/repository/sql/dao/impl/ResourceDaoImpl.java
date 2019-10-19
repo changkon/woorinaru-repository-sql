@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.ResourceDao;
 import woorinaru.core.model.management.administration.Resource;
 import woorinaru.repository.sql.mapping.entity.ResourceCopy;
-import woorinaru.repository.sql.mapping.model.ResourceMapper;
+import woorinaru.repository.sql.mapping.model.impl.ResourceMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

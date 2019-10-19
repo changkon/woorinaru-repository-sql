@@ -6,6 +6,8 @@ module woorinaru.repository.sql {
     requires java.sql;
     // Logger
     requires org.apache.logging.log4j;
+    // Commons
+    requires org.apache.commons.lang3;
 
     // byte buddy
     requires net.bytebuddy;

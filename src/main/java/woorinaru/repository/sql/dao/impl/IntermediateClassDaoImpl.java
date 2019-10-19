@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.IntermediateClassDao;
 import woorinaru.core.model.management.administration.IntermediateClass;
 import woorinaru.repository.sql.mapping.entity.IntermediateClassCopy;
-import woorinaru.repository.sql.mapping.model.IntermediateClassMapper;
+import woorinaru.repository.sql.mapping.model.impl.IntermediateClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

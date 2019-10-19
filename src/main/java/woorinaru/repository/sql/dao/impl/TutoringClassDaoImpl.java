@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.TutoringClassDao;
 import woorinaru.core.model.management.administration.TutoringClass;
 import woorinaru.repository.sql.mapping.entity.TutoringClassCopy;
-import woorinaru.repository.sql.mapping.model.TutoringClassMapper;
+import woorinaru.repository.sql.mapping.model.impl.TutoringClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

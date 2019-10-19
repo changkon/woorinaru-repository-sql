@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.OutingClassDao;
 import woorinaru.core.model.management.administration.OutingClass;
 import woorinaru.repository.sql.mapping.entity.OutingClassCopy;
-import woorinaru.repository.sql.mapping.model.OutingClassMapper;
+import woorinaru.repository.sql.mapping.model.impl.OutingClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

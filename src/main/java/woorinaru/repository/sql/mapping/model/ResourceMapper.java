@@ -7,7 +7,7 @@ import woorinaru.repository.sql.entity.resource.Resource;
 @Mapper
 public interface ResourceMapper {
 
-    ResourceMapper INSTANCE = Mappers.getMapper(ResourceMapper.class);
+    ResourceMapper MAPPER = Mappers.getMapper(ResourceMapper.class);
 
     Resource mapToEntity(woorinaru.core.model.management.administration.Resource resourceModel);
 

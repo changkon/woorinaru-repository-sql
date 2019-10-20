@@ -16,7 +16,7 @@ public class ResourceMapperTest {
         resourceModel.setResource("test resource".getBytes());
 
         // WHEN
-        Resource resourceEntity = ResourceMapper.INSTANCE.mapToEntity(resourceModel);
+        Resource resourceEntity = ResourceMapper.MAPPER.mapToEntity(resourceModel);
 
         // THEN
         assertThat(resourceEntity.getId()).isEqualTo(1);
@@ -33,7 +33,7 @@ public class ResourceMapperTest {
         resourceEntity.setResource("test resource".getBytes());
 
         // WHEN
-        woorinaru.core.model.management.administration.Resource resourceModel = ResourceMapper.INSTANCE.mapToModel(resourceEntity);
+        woorinaru.core.model.management.administration.Resource resourceModel = ResourceMapper.MAPPER.mapToModel(resourceEntity);
 
         // THEN
         assertThat(resourceModel.getId()).isEqualTo(1);

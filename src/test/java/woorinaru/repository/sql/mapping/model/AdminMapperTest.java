@@ -27,7 +27,7 @@ public class AdminMapperTest {
         adminModel.setFavouriteResources(Collections.emptyList());
 
         // WHEN
-        AdminMapper mapper = AdminMapper.INSTANCE;
+        AdminMapper mapper = AdminMapper.MAPPER;
         Admin adminEntity = mapper.mapToEntity(adminModel);
 
         // THEN
@@ -51,7 +51,7 @@ public class AdminMapperTest {
         adminEntity.setFavouriteResources(Collections.emptyList());
 
         // WHEN
-        AdminMapper mapper = AdminMapper.INSTANCE;
+        AdminMapper mapper = AdminMapper.MAPPER;
         woorinaru.core.model.user.Admin adminModel = mapper.mapToModel(adminEntity);
 
         // THEN
@@ -86,7 +86,7 @@ public class AdminMapperTest {
         adminModel.setFavouriteResources(List.of(resourceModel1, resourceModel2));
 
         // WHEN
-        AdminMapper mapper = AdminMapper.INSTANCE;
+        AdminMapper mapper = AdminMapper.MAPPER;
         Admin adminEntity = mapper.mapToEntity(adminModel);
 
         // THEN
@@ -133,7 +133,7 @@ public class AdminMapperTest {
         adminEntity.setFavouriteResources(List.of(resourceEntity1, resourceEntity2));
 
         // WHEN
-        AdminMapper mapper = AdminMapper.INSTANCE;
+        AdminMapper mapper = AdminMapper.MAPPER;
         woorinaru.core.model.user.Admin adminModel = mapper.mapToModel(adminEntity);
 
         // THEN

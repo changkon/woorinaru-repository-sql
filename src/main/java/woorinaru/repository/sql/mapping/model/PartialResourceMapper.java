@@ -8,7 +8,7 @@ import woorinaru.repository.sql.entity.resource.Resource;
 @Mapper
 public interface PartialResourceMapper {
 
-    PartialResourceMapper INSTANCE = Mappers.getMapper(PartialResourceMapper.class);
+    PartialResourceMapper MAPPER = Mappers.getMapper(PartialResourceMapper.class);
 
     @Mapping(source="id", target="id")
     @Mapping(target="resource", ignore=true)

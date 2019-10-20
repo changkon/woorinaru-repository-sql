@@ -1,23 +1,21 @@
 package woorinaru.repository.sql.mapping.model;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
 import org.mapstruct.factory.Mappers;
 import woorinaru.repository.sql.entity.management.administration.Team;
-import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
 import woorinaru.repository.sql.entity.user.StaffRole;
 
 @Mapper(uses=PartialResourceMapper.class)
 public interface StaffMapper {
 
-    StaffMapper INSTANCE = Mappers.getMapper(StaffMapper.class);
+    StaffMapper MAPPER = Mappers.getMapper(StaffMapper.class);
 
     Staff mapToEntity(woorinaru.core.model.user.Staff staffModel);
 
-    woorinaru.core.model.user.Staff mapToEntity(Staff staffEntity);
+    woorinaru.core.model.user.Staff mapToModel(Staff staffEntity);
 
     @ValueMappings({
         @ValueMapping(source="LEADER", target="LEADER"),

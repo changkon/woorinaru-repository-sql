@@ -7,7 +7,7 @@ import woorinaru.repository.sql.entity.user.Admin;
 @Mapper(uses=PartialResourceMapper.class)
 public interface AdminMapper {
 
-    AdminMapper INSTANCE = Mappers.getMapper(AdminMapper.class);
+    AdminMapper MAPPER = Mappers.getMapper(AdminMapper.class);
 
     Admin mapToEntity(woorinaru.core.model.user.Admin adminModel);
 

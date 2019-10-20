@@ -28,7 +28,7 @@ public class StaffMapperTest {
         staffModel.setTeam(Team.PLANNING);
 
         // WHEN
-        StaffMapper mapper = StaffMapper.INSTANCE;
+        StaffMapper mapper = StaffMapper.MAPPER;
         Staff staffEntity = mapper.mapToEntity(staffModel);
 
         // THEN

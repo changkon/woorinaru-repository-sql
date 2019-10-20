@@ -7,7 +7,7 @@ import woorinaru.repository.sql.entity.user.Student;
 @Mapper(uses=PartialResourceMapper.class)
 public interface StudentMapper {
 
-    StudentMapper INSTANCE = Mappers.getMapper(StudentMapper.class);
+    StudentMapper MAPPER = Mappers.getMapper(StudentMapper.class);
 
     Student mapToEntity(woorinaru.core.model.user.Student studentModel);
 

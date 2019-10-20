@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 @DiscriminatorValue("I")
 public class IntermediateClass extends WooriClass {
     @Override
-    public String getDiscriminatorValue() {
-        return "I";
+    public Grade getGrade() {
+        return Grade.INTERMEDIATE;
     }
 }

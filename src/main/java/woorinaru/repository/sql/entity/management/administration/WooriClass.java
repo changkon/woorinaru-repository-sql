@@ -77,5 +77,5 @@ public abstract class WooriClass {
     }
 
     @Transient
-    abstract public String getDiscriminatorValue();
+    abstract public Grade getGrade();
 }

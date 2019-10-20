@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 @DiscriminatorValue("T")
 public class TutoringClass extends WooriClass {
     @Override
-    public String getDiscriminatorValue() {
-        return "T";
+    public Grade getGrade() {
+        return Grade.TUTORING;
     }
 }

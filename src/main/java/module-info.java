@@ -15,7 +15,13 @@ module woorinaru.repository.sql {
     // jaxb
     requires java.xml.bind;
 
+    // mapstruct
+    requires org.mapstruct;
+
     opens woorinaru.repository.sql.entity.resource to org.hibernate.orm.core;
     opens woorinaru.repository.sql.entity.user to org.hibernate.orm.core;
     opens woorinaru.repository.sql.entity.management.administration to org.hibernate.orm.core;
+
+    // exports for mapping
+    exports woorinaru.repository.sql.mapping.model to org.mapstruct;
 }

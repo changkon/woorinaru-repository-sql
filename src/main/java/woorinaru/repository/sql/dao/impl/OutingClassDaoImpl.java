@@ -6,6 +6,7 @@ import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.OutingClassDao;
 import woorinaru.core.model.management.administration.OutingClass;
 import woorinaru.repository.sql.adapter.OutingClassAdapter;
+import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.mapping.model.OutingClassMapper;
 
 import javax.persistence.EntityManager;
@@ -30,6 +31,10 @@ public class OutingClassDaoImpl implements OutingClassDao {
 
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
+
+        Event eventEntity = em.find(Event.class, outingClass.getEvent().getId());
+        outingClassEntity.setEvent(eventEntity);
+
         em.persist(outingClassEntity);
         em.getTransaction().commit();
         em.close();
@@ -84,7 +89,7 @@ public class OutingClassDaoImpl implements OutingClassDao {
         woorinaru.repository.sql.entity.management.administration.OutingClass existingOutingClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.OutingClass.class, outingClassModel.getId());
 
         if (existingOutingClassEntity != null) {
-            OutingClass outingClassAdapter = new OutingClassAdapter(existingOutingClassEntity);
+            OutingClass outingClassAdapter = new OutingClassAdapter(existingOutingClassEntity, em);
             updateCommand.setReceiver(outingClassAdapter);
             updateCommand.execute();
         } else {

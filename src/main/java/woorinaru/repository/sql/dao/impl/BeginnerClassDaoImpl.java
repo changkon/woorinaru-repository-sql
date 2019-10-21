@@ -6,6 +6,7 @@ import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.BeginnerClassDao;
 import woorinaru.core.model.management.administration.BeginnerClass;
 import woorinaru.repository.sql.adapter.BeginnerClassAdapter;
+import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.mapping.model.BeginnerClassMapper;
 
 import javax.persistence.EntityManager;
@@ -30,6 +31,10 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
 
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
+
+        Event eventEntity = em.find(Event.class, beginnerClass.getEvent().getId());
+        beginnerClassEntity.setEvent(eventEntity);
+
         em.persist(beginnerClassEntity);
         em.getTransaction().commit();
         em.close();
@@ -84,7 +89,7 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         woorinaru.repository.sql.entity.management.administration.BeginnerClass existingBeginnerClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.BeginnerClass.class, beginnerClassModel.getId());
 
         if (existingBeginnerClassEntity != null) {
-            BeginnerClass beginnerClassAdapter = new BeginnerClassAdapter(existingBeginnerClassEntity);
+            BeginnerClass beginnerClassAdapter = new BeginnerClassAdapter(existingBeginnerClassEntity, em);
             updateCommand.setReceiver(beginnerClassAdapter);
             updateCommand.execute();
         } else {

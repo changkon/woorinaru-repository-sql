@@ -7,14 +7,18 @@ import woorinaru.core.model.management.administration.Resource;
 import woorinaru.core.model.user.Staff;
 import woorinaru.core.model.user.Student;
 
+import javax.persistence.EntityManager;
 import java.util.Collection;
+import java.util.Collections;
 
 public class OutingClassAdapter extends OutingClass {
 
     private woorinaru.repository.sql.entity.management.administration.OutingClass outingClassEntity;
+    private EntityManager em;
 
-    public OutingClassAdapter(woorinaru.repository.sql.entity.management.administration.OutingClass outingClassEntity) {
+    public OutingClassAdapter(woorinaru.repository.sql.entity.management.administration.OutingClass outingClassEntity, EntityManager em) {
         this.outingClassEntity = outingClassEntity;
+        this.em = em;
     }
 
     @Override
@@ -24,51 +28,103 @@ public class OutingClassAdapter extends OutingClass {
 
     @Override
     public Collection<Resource> getResources() {
-        return super.getResources();
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public Collection<Staff> getStaff() {
-        return super.getStaff();
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public Collection<Student> getStudents() {
-        return super.getStudents();
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public void setResources(Collection<Resource> resources) {
-        super.setResources(resources);
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public void setStaff(Collection<Staff> staff) {
-        super.setStaff(staff);
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public void setStudents(Collection<Student> students) {
-        super.setStudents(students);
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public Event getEvent() {
-        return super.getEvent();
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public void setEvent(Event event) {
-        super.setEvent(event);
+        woorinaru.repository.sql.entity.management.administration.Event eventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, event.getId());
+        this.outingClassEntity.setEvent(eventEntity);
     }
 
     @Override
     public int getId() {
-        return super.getId();
+        return this.outingClassEntity.getId();
     }
 
     @Override
     public void setId(int id) {
-        super.setId(id);
+        this.outingClassEntity.setId(id);
+    }
+
+    @Override
+    public boolean addResource(Resource resource) {
+        if (this.outingClassEntity.getResources() == null) {
+            this.outingClassEntity.setResources(Collections.emptyList());
+        }
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
+        return this.outingClassEntity.addResource(resourceEntity);
+    }
+
+    @Override
+    public boolean addStaff(Staff staff) {
+        if (this.outingClassEntity.getStaff() == null) {
+            this.outingClassEntity.setStaff(Collections.emptyList());
+        }
+        woorinaru.repository.sql.entity.user.Staff staffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
+        return this.outingClassEntity.addStaff(staffEntity);
+    }
+
+    @Override
+    public boolean addStudent(Student student) {
+        if (this.outingClassEntity.getStudents() == null) {
+            this.outingClassEntity.setStudents(Collections.emptyList());
+        }
+        woorinaru.repository.sql.entity.user.Student studentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
+        return this.outingClassEntity.addStudent(studentEntity);
+    }
+
+    @Override
+    public boolean removeResource(int id) {
+        if (this.outingClassEntity.getResources() == null) {
+            return false;
+        }
+        return this.outingClassEntity.getResources().removeIf(resource -> resource.getId() == id);
+    }
+
+    @Override
+    public boolean removeStaff(int id) {
+        if (this.outingClassEntity.getStaff() == null) {
+            return false;
+        }
+        return this.outingClassEntity.getStaff().removeIf(staff -> staff.getId() == id);
+    }
+
+    @Override
+    public boolean removeStudent(int id) {
+        if (this.outingClassEntity.getStudents() == null) {
+            return false;
+        }
+        return this.outingClassEntity.getStudents().removeIf(student -> student.getId() == id);
     }
 }

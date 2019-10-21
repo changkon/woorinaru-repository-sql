@@ -6,6 +6,7 @@ import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.IntermediateClassDao;
 import woorinaru.core.model.management.administration.IntermediateClass;
 import woorinaru.repository.sql.adapter.IntermediateClassAdapter;
+import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.mapping.model.IntermediateClassMapper;
 
 import javax.persistence.EntityManager;
@@ -30,6 +31,10 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
 
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
+
+        Event eventEntity = em.find(Event.class, intermediateClass.getEvent().getId());
+        intermediateClassEntity.setEvent(eventEntity);
+
         em.persist(intermediateClassEntity);
         em.getTransaction().commit();
         em.close();
@@ -84,7 +89,7 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         woorinaru.repository.sql.entity.management.administration.IntermediateClass existingIntermediateClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.IntermediateClass.class, intermediateClassModel.getId());
 
         if (existingIntermediateClassEntity != null) {
-            IntermediateClass intermediateClassAdapter = new IntermediateClassAdapter(existingIntermediateClassEntity);
+            IntermediateClass intermediateClassAdapter = new IntermediateClassAdapter(existingIntermediateClassEntity, em);
             updateCommand.setReceiver(intermediateClassAdapter);
             updateCommand.execute();
         } else {

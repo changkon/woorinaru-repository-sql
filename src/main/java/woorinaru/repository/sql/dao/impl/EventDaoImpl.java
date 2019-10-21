@@ -86,7 +86,7 @@ public class EventDaoImpl implements EventDao {
         woorinaru.repository.sql.entity.management.administration.Event existingEventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, eventModel.getId());
 
         if (existingEventEntity != null) {
-            Event eventAdapter = new EventAdapter(existingEventEntity);
+            Event eventAdapter = new EventAdapter(existingEventEntity, em);
             updateCommand.setReceiver(eventAdapter);
             updateCommand.execute();
         } else {

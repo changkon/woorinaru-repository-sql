@@ -84,7 +84,7 @@ public class TermDaoImpl implements TermDao {
         woorinaru.repository.sql.entity.management.administration.Term existingTermEntity = em.find(woorinaru.repository.sql.entity.management.administration.Term.class, termModel.getId());
 
         if (existingTermEntity != null) {
-            Term termAdapter = new TermAdapter(existingTermEntity);
+            Term termAdapter = new TermAdapter(existingTermEntity, em);
             updateCommand.setReceiver(termAdapter);
             updateCommand.execute();
         } else {

@@ -1,21 +1,21 @@
 package woorinaru.repository.sql.adapter;
 
-import org.mapstruct.factory.Mappers;
 import woorinaru.core.model.management.administration.Resource;
 import woorinaru.core.model.user.Admin;
-import woorinaru.repository.sql.mapping.model.PartialResourceMapper;
-import woorinaru.repository.sql.mapping.model.ResourceMapper;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 public class AdminAdapter extends Admin {
 
     private woorinaru.repository.sql.entity.user.Admin adminEntity;
+    private EntityManager em;
 
-    public AdminAdapter(woorinaru.repository.sql.entity.user.Admin adminEntity) {
+    public AdminAdapter(woorinaru.repository.sql.entity.user.Admin adminEntity, EntityManager em) {
         this.adminEntity = adminEntity;
+        this.em = em;
     }
 
     @Override
@@ -45,11 +45,7 @@ public class AdminAdapter extends Admin {
 
     @Override
     public Collection<Resource> getFavouriteResources() {
-        PartialResourceMapper mapper = Mappers.getMapper(PartialResourceMapper.class);
-        return this.adminEntity.getFavouriteResources()
-            .stream()
-            .map(mapper::mapToModel)
-            .collect(Collectors.toList());
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
@@ -69,11 +65,7 @@ public class AdminAdapter extends Admin {
 
     @Override
     public void setFavouriteResources(Collection<Resource> favouriteResources) {
-        ResourceMapper mapper = Mappers.getMapper(ResourceMapper.class);
-        Collection<woorinaru.repository.sql.entity.resource.Resource> resourceEntities = favouriteResources.stream()
-            .map(mapper::mapToEntity)
-            .collect(Collectors.toList());
-        this.adminEntity.setFavouriteResources(resourceEntities);
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
@@ -84,5 +76,22 @@ public class AdminAdapter extends Admin {
     @Override
     public void setSignUpDateTime(LocalDateTime signupDateTime) {
         this.adminEntity.setSignUpDateTime(signUpDateTime);
+    }
+
+    @Override
+    public boolean addFavouriteResource(Resource resource) {
+        if (this.adminEntity.getFavouriteResources() == null) {
+            this.adminEntity.setFavouriteResources(Collections.emptyList());
+        }
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
+        return this.adminEntity.getFavouriteResources().add(resourceEntity);
+    }
+
+    @Override
+    public boolean removeFavouriteResource(int resourceId) {
+        if (this.adminEntity.getFavouriteResources() == null) {
+            return false;
+        }
+        return this.adminEntity.getFavouriteResources().removeIf(resource -> resource.getId() == resourceId);
     }
 }

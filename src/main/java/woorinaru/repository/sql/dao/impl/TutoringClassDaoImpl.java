@@ -6,6 +6,7 @@ import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.TutoringClassDao;
 import woorinaru.core.model.management.administration.TutoringClass;
 import woorinaru.repository.sql.adapter.TutoringClassAdapter;
+import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.mapping.model.TutoringClassMapper;
 
 import javax.persistence.EntityManager;
@@ -30,6 +31,10 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
 
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
+
+        Event eventEntity = em.find(Event.class, tutoringClass.getEvent().getId());
+        tutoringClassEntity.setEvent(eventEntity);
+
         em.persist(tutoringClassEntity);
         em.getTransaction().commit();
         em.close();
@@ -84,7 +89,7 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         woorinaru.repository.sql.entity.management.administration.TutoringClass existingTutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, tutoringClassModel.getId());
 
         if (existingTutoringClassEntity != null) {
-            TutoringClass beginnerClassAdapter = new TutoringClassAdapter(existingTutoringClassEntity);
+            TutoringClass beginnerClassAdapter = new TutoringClassAdapter(existingTutoringClassEntity, em);
             updateCommand.setReceiver(beginnerClassAdapter);
             updateCommand.execute();
         } else {

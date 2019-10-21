@@ -4,9 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.StudentDao;
-import woorinaru.core.model.user.Staff;
 import woorinaru.core.model.user.Student;
-import woorinaru.repository.sql.adapter.StaffAdapter;
 import woorinaru.repository.sql.adapter.StudentAdapter;
 import woorinaru.repository.sql.mapping.model.StudentMapper;
 
@@ -86,7 +84,7 @@ public class StudentDaoImpl implements StudentDao {
         woorinaru.repository.sql.entity.user.Student existingStudentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, studentModel.getId());
 
         if (existingStudentEntity != null) {
-            Student staffAdapter = new StudentAdapter(existingStudentEntity);
+            Student staffAdapter = new StudentAdapter(existingStudentEntity, em);
             updateCommand.setReceiver(staffAdapter);
             updateCommand.execute();
         } else {

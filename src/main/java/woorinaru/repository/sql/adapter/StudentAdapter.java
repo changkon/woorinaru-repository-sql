@@ -3,74 +3,95 @@ package woorinaru.repository.sql.adapter;
 import woorinaru.core.model.management.administration.Resource;
 import woorinaru.core.model.user.Student;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 
 public class StudentAdapter extends Student {
 
     private woorinaru.repository.sql.entity.user.Student studentEntity;
+    private EntityManager em;
 
-    public StudentAdapter(woorinaru.repository.sql.entity.user.Student studentEntity) {
+    public StudentAdapter(woorinaru.repository.sql.entity.user.Student studentEntity, EntityManager em) {
         this.studentEntity = studentEntity;
+        this.em = em;
     }
 
     @Override
     public int getId() {
-        return super.getId();
+        return this.studentEntity.getId();
     }
 
     @Override
     public void setId(int id) {
-        super.setId(id);
+        this.studentEntity.setId(id);
     }
 
     @Override
     public String getName() {
-        return super.getName();
+        return this.studentEntity.getName();
     }
 
     @Override
     public String getNationality() {
-        return super.getNationality();
+        return this.studentEntity.getNationality();
     }
 
     @Override
     public String getEmail() {
-        return super.getEmail();
+        return this.studentEntity.getEmail();
     }
 
     @Override
     public Collection<Resource> getFavouriteResources() {
-        return super.getFavouriteResources();
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public void setName(String name) {
-        super.setName(name);
+        this.studentEntity.setName(name);
     }
 
     @Override
     public void setNationality(String nationality) {
-        super.setNationality(nationality);
+        this.studentEntity.setNationality(nationality);
     }
 
     @Override
     public void setEmail(String email) {
-        super.setEmail(email);
+        this.studentEntity.setEmail(email);
     }
 
     @Override
     public void setFavouriteResources(Collection<Resource> favouriteResources) {
-        super.setFavouriteResources(favouriteResources);
+        throw new AdapterUnsupportedOperationException();
     }
 
     @Override
     public LocalDateTime getSignUpDateTime() {
-        return super.getSignUpDateTime();
+        return this.studentEntity.getSignUpDateTime();
     }
 
     @Override
     public void setSignUpDateTime(LocalDateTime signupDateTime) {
-        super.setSignUpDateTime(signupDateTime);
+        this.studentEntity.setSignUpDateTime(signupDateTime);
+    }
+
+    @Override
+    public boolean addFavouriteResource(Resource resource) {
+        if (this.studentEntity.getFavouriteResources() == null) {
+            this.studentEntity.setFavouriteResources(Collections.emptyList());
+        }
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
+        return this.studentEntity.getFavouriteResources().add(resourceEntity);
+    }
+
+    @Override
+    public boolean removeFavouriteResource(int resourceId) {
+        if (this.studentEntity.getFavouriteResources() == null) {
+            return false;
+        }
+        return this.studentEntity.getFavouriteResources().removeIf(resource -> resource.getId() == resourceId);
     }
 }

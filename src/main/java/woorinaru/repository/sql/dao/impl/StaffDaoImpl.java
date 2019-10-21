@@ -84,7 +84,7 @@ public class StaffDaoImpl implements StaffDao {
         woorinaru.repository.sql.entity.user.Staff existingStaffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staffModel.getId());
 
         if (existingStaffEntity != null) {
-            Staff staffAdapter = new StaffAdapter(existingStaffEntity);
+            Staff staffAdapter = new StaffAdapter(existingStaffEntity, em);
             updateCommand.setReceiver(staffAdapter);
             updateCommand.execute();
         } else {

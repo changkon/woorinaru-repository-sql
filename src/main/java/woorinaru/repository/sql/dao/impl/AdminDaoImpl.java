@@ -85,7 +85,7 @@ public class AdminDaoImpl implements AdminDao {
         woorinaru.repository.sql.entity.user.Admin existingAdminEntity = em.find(woorinaru.repository.sql.entity.user.Admin.class, adminModel.getId());
 
         if (existingAdminEntity != null) {
-            Admin adminAdapter = new AdminAdapter(existingAdminEntity);
+            Admin adminAdapter = new AdminAdapter(existingAdminEntity, em);
             updateCommand.setReceiver(adminAdapter);
             updateCommand.execute();
         } else {

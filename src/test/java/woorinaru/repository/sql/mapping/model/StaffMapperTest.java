@@ -42,4 +42,32 @@ public class StaffMapperTest {
         assertThat(staffEntity.getTeam()).isEqualTo(woorinaru.repository.sql.entity.management.administration.Team.PLANNING);
     }
 
+    @Test
+    public void testStaffEntityToModel() {
+        // GIVEN
+        Staff staffEntity = new Staff();
+        staffEntity.setId(1);
+        staffEntity.setName("Test Staff Name");
+        staffEntity.setEmail("test email");
+        staffEntity.setNationality("New Zealand");
+        staffEntity.setSignUpDateTime(LocalDateTime.of(LocalDate.of(2019, 1, 10), LocalTime.of(10, 1, 1)));
+        staffEntity.setFavouriteResources(Collections.emptyList());
+        staffEntity.setStaffRole(woorinaru.repository.sql.entity.user.StaffRole.LEADER);
+        staffEntity.setTeam(woorinaru.repository.sql.entity.management.administration.Team.PLANNING);
+
+        // WHEN
+        StaffMapper mapper = StaffMapper.MAPPER;
+        woorinaru.core.model.user.Staff staffModel = mapper.mapToModel(staffEntity);
+
+        // THEN
+        assertThat(staffModel.getId()).isEqualTo(1);
+        assertThat(staffModel.getName()).isEqualTo("Test Staff Name");
+        assertThat(staffModel.getEmail()).isEqualTo("test email");
+        assertThat(staffModel.getNationality()).isEqualTo("New Zealand");
+        assertThat(staffModel.getSignUpDateTime()).isEqualTo(LocalDateTime.of(LocalDate.of(2019, 1, 10), LocalTime.of(10, 1, 1)));
+        assertThat(staffModel.getFavouriteResources()).isEmpty();
+        assertThat(staffModel.getStaffRole()).isEqualTo(StaffRole.LEADER);
+        assertThat(staffModel.getTeam()).isEqualTo(Team.PLANNING);
+    }
+
 }

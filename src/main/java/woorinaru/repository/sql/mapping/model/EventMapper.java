@@ -16,21 +16,19 @@ public interface EventMapper {
     woorinaru.core.model.management.administration.Event mapToModel(Event eventEntity);
 
     @Mapping(source="id", target="id")
-    @Mapping(target="startDateTime", ignore=true)
-    @Mapping(target="endDateTime", ignore=true)
-    @Mapping(target="address", ignore=true)
-    @Mapping(target="description", ignore=true)
-    @Mapping(target="wooriClasses", ignore=true)
-    @Mapping(target="studentReservations", ignore=true)
+    @Mapping(target="name", ignore=true)
+    @Mapping(target="nationality", ignore=true)
+    @Mapping(target="email", ignore=true)
+    @Mapping(target="favouriteResources", ignore=true)
+    @Mapping(target="signUpDateTime", ignore=true)
     Student mapToEntity(woorinaru.core.model.user.Student studentModel);
 
     @Mapping(source="id", target="id")
-    @Mapping(target="startDateTime", ignore=true)
-    @Mapping(target="endDateTime", ignore=true)
-    @Mapping(target="address", ignore=true)
-    @Mapping(target="description", ignore=true)
-    @Mapping(target="wooriClasses", ignore=true)
-    @Mapping(target="studentReservations", ignore=true)
+    @Mapping(target="name", ignore=true)
+    @Mapping(target="nationality", ignore=true)
+    @Mapping(target="email", ignore=true)
+    @Mapping(target="favouriteResources", ignore=true)
+    @Mapping(target="signUpDateTime", ignore=true)
     woorinaru.core.model.user.Student mapToEntity(Student studentEntity);
 
     default WooriClass mapToEntity(woorinaru.core.model.management.administration.WooriClass wooriClassModel) {

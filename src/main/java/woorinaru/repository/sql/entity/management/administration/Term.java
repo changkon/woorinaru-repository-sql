@@ -98,4 +98,18 @@ public class Term {
         }
         return events.removeIf(event -> event.getId() == id);
     }
+
+    public boolean addStaff(Staff staff) {
+        if (staffMembers == null) {
+            staffMembers = Collections.emptyList();
+        }
+        return staffMembers.add(staff);
+    }
+
+    public boolean removeStaff(int id) {
+        if (staffMembers == null) {
+            return false;
+        }
+        return staffMembers.removeIf(staff -> staff.getId() == id);
+    }
 }

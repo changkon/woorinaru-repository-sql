@@ -96,4 +96,21 @@ public class TermAdapter extends Term {
         }
         return this.termEntity.getEvents().removeIf(event -> event.getId() == id);
     }
+
+    @Override
+    public boolean addStaff(Staff staff) {
+        if (this.termEntity.getStaffMembers() == null) {
+            this.termEntity.setStaffMembers(Collections.emptyList());
+        }
+        woorinaru.repository.sql.entity.user.Staff staffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
+        return this.termEntity.addStaff(staffEntity);
+    }
+
+    @Override
+    public boolean removeStaff(int id) {
+        if (this.termEntity.getStaffMembers() == null) {
+            return false;
+        }
+        return this.termEntity.getStaffMembers().removeIf(staff -> staff.getId() == id);
+    }
 }

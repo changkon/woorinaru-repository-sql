@@ -7,11 +7,13 @@ import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.AdminDao;
 import woorinaru.core.model.user.Admin;
 import woorinaru.repository.sql.adapter.AdminAdapter;
+import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.mapping.model.AdminMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,6 +33,17 @@ public class AdminDaoImpl implements AdminDao {
 
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
+
+        // Set resources if present
+        if (Objects.nonNull(admin.getFavouriteResources())) {
+            for (woorinaru.core.model.management.administration.Resource resourceModel : admin.getFavouriteResources()) {
+                Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
+                if (Objects.nonNull(resourceEntity)) {
+                    adminEntity.addFavouriteResource(resourceEntity);
+                }
+            }
+        }
+
         em.persist(adminEntity);
         em.getTransaction().commit();
         em.close();

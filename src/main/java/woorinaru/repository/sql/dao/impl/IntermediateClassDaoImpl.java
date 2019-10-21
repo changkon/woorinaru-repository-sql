@@ -7,11 +7,15 @@ import woorinaru.core.dao.spi.IntermediateClassDao;
 import woorinaru.core.model.management.administration.IntermediateClass;
 import woorinaru.repository.sql.adapter.IntermediateClassAdapter;
 import woorinaru.repository.sql.entity.management.administration.Event;
+import woorinaru.repository.sql.entity.resource.Resource;
+import woorinaru.repository.sql.entity.user.Staff;
+import woorinaru.repository.sql.entity.user.Student;
 import woorinaru.repository.sql.mapping.model.IntermediateClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,8 +36,34 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
+        if (Objects.nonNull(intermediateClass.getResources())) {
+            for (woorinaru.core.model.management.administration.Resource resourceModel : intermediateClass.getResources()) {
+                Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
+                if (Objects.nonNull(resourceEntity)) {
+                    intermediateClassEntity.addResource(resourceEntity);
+                }
+            }
+        }
+
+        if (Objects.nonNull(intermediateClass.getStaff())) {
+            for (woorinaru.core.model.user.Staff staffModel : intermediateClass.getStaff()) {
+                Staff staffEntity = em.find(Staff.class, staffModel.getId());
+                intermediateClassEntity.addStaff(staffEntity);
+            }
+        }
+
+        if (Objects.nonNull(intermediateClass.getStudents())) {
+            for (woorinaru.core.model.user.Student studentModel : intermediateClass.getStudents()) {
+                Student studentEntity = em.find(Student.class, studentModel.getId());
+                intermediateClassEntity.addStudent(studentEntity);
+            }
+        }
+
         Event eventEntity = em.find(Event.class, intermediateClass.getEvent().getId());
-        intermediateClassEntity.setEvent(eventEntity);
+
+        if (Objects.nonNull(eventEntity)) {
+            intermediateClassEntity.setEvent(eventEntity);
+        }
 
         em.persist(intermediateClassEntity);
         em.getTransaction().commit();

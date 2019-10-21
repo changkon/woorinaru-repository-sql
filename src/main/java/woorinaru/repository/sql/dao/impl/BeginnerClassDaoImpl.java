@@ -7,11 +7,15 @@ import woorinaru.core.dao.spi.BeginnerClassDao;
 import woorinaru.core.model.management.administration.BeginnerClass;
 import woorinaru.repository.sql.adapter.BeginnerClassAdapter;
 import woorinaru.repository.sql.entity.management.administration.Event;
+import woorinaru.repository.sql.entity.resource.Resource;
+import woorinaru.repository.sql.entity.user.Staff;
+import woorinaru.repository.sql.entity.user.Student;
 import woorinaru.repository.sql.mapping.model.BeginnerClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,8 +36,34 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
+        if (Objects.nonNull(beginnerClass.getResources())) {
+            for (woorinaru.core.model.management.administration.Resource resourceModel : beginnerClass.getResources()) {
+                Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
+                if (Objects.nonNull(resourceEntity)) {
+                    beginnerClassEntity.addResource(resourceEntity);
+                }
+            }
+        }
+
+        if (Objects.nonNull(beginnerClass.getStaff())) {
+            for (woorinaru.core.model.user.Staff staffModel : beginnerClass.getStaff()) {
+                Staff staffEntity = em.find(Staff.class, staffModel.getId());
+                beginnerClassEntity.addStaff(staffEntity);
+            }
+        }
+
+        if (Objects.nonNull(beginnerClass.getStudents())) {
+            for (woorinaru.core.model.user.Student studentModel : beginnerClass.getStudents()) {
+                Student studentEntity = em.find(Student.class, studentModel.getId());
+                beginnerClassEntity.addStudent(studentEntity);
+            }
+        }
+
         Event eventEntity = em.find(Event.class, beginnerClass.getEvent().getId());
-        beginnerClassEntity.setEvent(eventEntity);
+
+        if (Objects.nonNull(eventEntity)) {
+            beginnerClassEntity.setEvent(eventEntity);
+        }
 
         em.persist(beginnerClassEntity);
         em.getTransaction().commit();

@@ -6,11 +6,13 @@ import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.StudentDao;
 import woorinaru.core.model.user.Student;
 import woorinaru.repository.sql.adapter.StudentAdapter;
+import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.mapping.model.StudentMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +32,17 @@ public class StudentDaoImpl implements StudentDao {
 
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
+
+        // Set resources if present
+        if (Objects.nonNull(student.getFavouriteResources())) {
+            for (woorinaru.core.model.management.administration.Resource resourceModel : student.getFavouriteResources()) {
+                Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
+                if (Objects.nonNull(resourceEntity)) {
+                    studentEntity.addFavouriteResource(resourceEntity);
+                }
+            }
+        }
+
         em.persist(studentEntity);
         em.getTransaction().commit();
         em.close();

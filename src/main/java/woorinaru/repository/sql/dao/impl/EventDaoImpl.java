@@ -7,11 +7,14 @@ import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.EventDao;
 import woorinaru.core.model.management.administration.Event;
 import woorinaru.repository.sql.adapter.EventAdapter;
+import woorinaru.repository.sql.entity.management.administration.WooriClass;
+import woorinaru.repository.sql.entity.user.Student;
 import woorinaru.repository.sql.mapping.model.EventMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,6 +34,21 @@ public class EventDaoImpl implements EventDao {
 
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
+
+        if (Objects.nonNull(event.getWooriClasses())) {
+            for (woorinaru.core.model.management.administration.WooriClass wooriClassModel : event.getWooriClasses()) {
+                WooriClass wooriClassEntity = em.find(WooriClass.class, wooriClassModel.getId());
+                eventEntity.addWooriClass(wooriClassEntity);
+            }
+        }
+
+        if (Objects.nonNull(event.getStudentReservations())) {
+            for (woorinaru.core.model.user.Student studentModel : event.getStudentReservations()) {
+                Student studentEntity = em.find(Student.class, studentModel.getId());
+                eventEntity.addStudentReservation(studentEntity);
+            }
+        }
+
         em.persist(eventEntity);
         em.getTransaction().commit();
         em.close();

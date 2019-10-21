@@ -7,11 +7,15 @@ import woorinaru.core.dao.spi.OutingClassDao;
 import woorinaru.core.model.management.administration.OutingClass;
 import woorinaru.repository.sql.adapter.OutingClassAdapter;
 import woorinaru.repository.sql.entity.management.administration.Event;
+import woorinaru.repository.sql.entity.resource.Resource;
+import woorinaru.repository.sql.entity.user.Staff;
+import woorinaru.repository.sql.entity.user.Student;
 import woorinaru.repository.sql.mapping.model.OutingClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,8 +36,34 @@ public class OutingClassDaoImpl implements OutingClassDao {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
+        if (Objects.nonNull(outingClass.getResources())) {
+            for (woorinaru.core.model.management.administration.Resource resourceModel : outingClass.getResources()) {
+                Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
+                if (Objects.nonNull(resourceEntity)) {
+                    outingClassEntity.addResource(resourceEntity);
+                }
+            }
+        }
+
+        if (Objects.nonNull(outingClass.getStaff())) {
+            for (woorinaru.core.model.user.Staff staffModel : outingClass.getStaff()) {
+                Staff staffEntity = em.find(Staff.class, staffModel.getId());
+                outingClassEntity.addStaff(staffEntity);
+            }
+        }
+
+        if (Objects.nonNull(outingClass.getStudents())) {
+            for (woorinaru.core.model.user.Student studentModel : outingClass.getStudents()) {
+                Student studentEntity = em.find(Student.class, studentModel.getId());
+                outingClassEntity.addStudent(studentEntity);
+            }
+        }
+
         Event eventEntity = em.find(Event.class, outingClass.getEvent().getId());
-        outingClassEntity.setEvent(eventEntity);
+
+        if (Objects.nonNull(eventEntity)) {
+            outingClassEntity.setEvent(eventEntity);
+        }
 
         em.persist(outingClassEntity);
         em.getTransaction().commit();

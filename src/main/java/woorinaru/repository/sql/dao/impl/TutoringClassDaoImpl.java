@@ -7,11 +7,15 @@ import woorinaru.core.dao.spi.TutoringClassDao;
 import woorinaru.core.model.management.administration.TutoringClass;
 import woorinaru.repository.sql.adapter.TutoringClassAdapter;
 import woorinaru.repository.sql.entity.management.administration.Event;
+import woorinaru.repository.sql.entity.resource.Resource;
+import woorinaru.repository.sql.entity.user.Staff;
+import woorinaru.repository.sql.entity.user.Student;
 import woorinaru.repository.sql.mapping.model.TutoringClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,8 +36,34 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
+        if (Objects.nonNull(tutoringClass.getResources())) {
+            for (woorinaru.core.model.management.administration.Resource resourceModel : tutoringClass.getResources()) {
+                Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
+                if (Objects.nonNull(resourceEntity)) {
+                    tutoringClassEntity.addResource(resourceEntity);
+                }
+            }
+        }
+
+        if (Objects.nonNull(tutoringClass.getStaff())) {
+            for (woorinaru.core.model.user.Staff staffModel : tutoringClass.getStaff()) {
+                Staff staffEntity = em.find(Staff.class, staffModel.getId());
+                tutoringClassEntity.addStaff(staffEntity);
+            }
+        }
+
+        if (Objects.nonNull(tutoringClass.getStudents())) {
+            for (woorinaru.core.model.user.Student studentModel : tutoringClass.getStudents()) {
+                Student studentEntity = em.find(Student.class, studentModel.getId());
+                tutoringClassEntity.addStudent(studentEntity);
+            }
+        }
+
         Event eventEntity = em.find(Event.class, tutoringClass.getEvent().getId());
-        tutoringClassEntity.setEvent(eventEntity);
+
+        if (Objects.nonNull(eventEntity)) {
+            tutoringClassEntity.setEvent(eventEntity);
+        }
 
         em.persist(tutoringClassEntity);
         em.getTransaction().commit();
@@ -89,8 +119,8 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         woorinaru.repository.sql.entity.management.administration.TutoringClass existingTutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, tutoringClassModel.getId());
 
         if (existingTutoringClassEntity != null) {
-            TutoringClass beginnerClassAdapter = new TutoringClassAdapter(existingTutoringClassEntity, em);
-            updateCommand.setReceiver(beginnerClassAdapter);
+            TutoringClass tutoringClassAdapter = new TutoringClassAdapter(existingTutoringClassEntity, em);
+            updateCommand.setReceiver(tutoringClassAdapter);
             updateCommand.execute();
         } else {
             LOGGER.debug("Tutoring class with id: '%d' not found. Could not be modified", tutoringClassModel.getId());

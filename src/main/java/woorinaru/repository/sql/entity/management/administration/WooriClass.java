@@ -6,6 +6,7 @@ import woorinaru.repository.sql.entity.user.Student;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Table(name="WOORICLASS")
@@ -74,6 +75,48 @@ public abstract class WooriClass {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public boolean addResource(Resource resource) {
+        if (resources == null) {
+            resources = Collections.emptyList();
+        }
+        return resources.add(resource);
+    }
+
+    public boolean addStaff(Staff staff) {
+        if (this.staff == null) {
+            this.staff = Collections.emptyList();
+        }
+        return this.staff.add(staff);
+    }
+
+    public boolean addStudent(Student student) {
+        if (students == null) {
+            this.students = Collections.emptyList();
+        }
+        return this.students.add(student);
+    }
+
+    public boolean removeResource(int id) {
+        if (resources == null) {
+            return false;
+        }
+        return resources.removeIf(resource -> resource.getId() == id);
+    }
+
+    public boolean removeStaff(int id) {
+        if (staff == null) {
+            return false;
+        }
+        return this.staff.removeIf(staff -> staff.getId() == id);
+    }
+
+    public boolean removeStudent(int id) {
+        if (students == null) {
+            return false;
+        }
+        return this.students.removeIf(student -> student.getId() == id);
     }
 
     @Transient

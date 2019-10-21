@@ -5,6 +5,7 @@ import woorinaru.repository.sql.entity.user.Student;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 
 @Entity(name="Event")
 @Table(name="EVENT")
@@ -90,5 +91,34 @@ public class Event {
 
     public void setStudentReservations(Collection<Student> studentReservations) {
         this.studentReservations = studentReservations;
+    }
+
+    public boolean addWooriClass(WooriClass wooriClass) {
+        if (wooriClasses == null) {
+            this.wooriClasses = Collections.emptyList();
+        }
+        return this.wooriClasses.add(wooriClass);
+    }
+
+    public boolean addStudentReservation(Student student) {
+        if (studentReservations == null) {
+            this.studentReservations = Collections.emptyList();
+        }
+
+        return this.studentReservations.add(student);
+    }
+
+    public boolean removeWooriClass(int id) {
+        if (wooriClasses == null) {
+            return false;
+        }
+        return this.wooriClasses.removeIf(wClass -> wClass.getId() == id);
+    }
+
+    public boolean removeStudentReservation(int id) {
+        if (studentReservations == null) {
+            return false;
+        }
+        return this.studentReservations.removeIf(student -> student.getId() == id);
     }
 }

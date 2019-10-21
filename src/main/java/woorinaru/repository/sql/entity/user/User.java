@@ -6,6 +6,7 @@ import woorinaru.repository.sql.entity.resource.Resource;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Table(name="USER")
@@ -83,6 +84,20 @@ public abstract class User {
 
     public void setSignUpDateTime(LocalDateTime signUpDateTime) {
         this.signUpDateTime = signUpDateTime;
+    }
+
+    public boolean addFavouriteResource(Resource resource) {
+        if (favouriteResources == null) {
+            this.favouriteResources = Collections.emptyList();
+        }
+        return this.favouriteResources.add(resource);
+    }
+
+    public boolean removeFavouriteResource(int resourceId) {
+        if (favouriteResources == null) {
+            return false;
+        }
+        return this.favouriteResources.removeIf(resource -> resource.getId() == resourceId);
     }
 
     @Transient

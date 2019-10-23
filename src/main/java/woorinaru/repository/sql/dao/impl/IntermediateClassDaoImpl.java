@@ -59,10 +59,12 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
             }
         }
 
-        Event eventEntity = em.find(Event.class, intermediateClass.getEvent().getId());
+        if (Objects.nonNull(intermediateClass.getEvent())) {
+            Event eventEntity = em.find(Event.class, intermediateClass.getEvent().getId());
 
-        if (Objects.nonNull(eventEntity)) {
-            intermediateClassEntity.setEvent(eventEntity);
+            if (Objects.nonNull(eventEntity)) {
+                intermediateClassEntity.setEvent(eventEntity);
+            }
         }
 
         em.persist(intermediateClassEntity);

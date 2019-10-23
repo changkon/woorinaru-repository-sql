@@ -17,6 +17,9 @@ public interface IntermediateClassMapper {
     @Mapping(target="event.description", ignore=true)
     @Mapping(target="event.wooriClasses", ignore=true)
     @Mapping(target="event.studentReservations", ignore=true)
+    @Mapping(target="resources", ignore=true)
+    @Mapping(target="staff", ignore=true)
+    @Mapping(target="students", ignore=true)
     IntermediateClass mapToEntity(woorinaru.core.model.management.administration.IntermediateClass intermediateClassModel);
 
     @Mapping(source="event.id", target="event.id")

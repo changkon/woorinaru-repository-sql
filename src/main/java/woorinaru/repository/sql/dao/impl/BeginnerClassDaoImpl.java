@@ -59,10 +59,12 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
             }
         }
 
-        Event eventEntity = em.find(Event.class, beginnerClass.getEvent().getId());
+        if (Objects.nonNull(beginnerClass.getEvent())) {
+            Event eventEntity = em.find(Event.class, beginnerClass.getEvent().getId());
 
-        if (Objects.nonNull(eventEntity)) {
-            beginnerClassEntity.setEvent(eventEntity);
+            if (Objects.nonNull(eventEntity)) {
+                beginnerClassEntity.setEvent(eventEntity);
+            }
         }
 
         em.persist(beginnerClassEntity);

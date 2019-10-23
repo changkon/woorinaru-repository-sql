@@ -59,10 +59,12 @@ public class OutingClassDaoImpl implements OutingClassDao {
             }
         }
 
-        Event eventEntity = em.find(Event.class, outingClass.getEvent().getId());
+        if (Objects.nonNull(outingClass.getEvent())) {
+            Event eventEntity = em.find(Event.class, outingClass.getEvent().getId());
 
-        if (Objects.nonNull(eventEntity)) {
-            outingClassEntity.setEvent(eventEntity);
+            if (Objects.nonNull(eventEntity)) {
+                outingClassEntity.setEvent(eventEntity);
+            }
         }
 
         em.persist(outingClassEntity);

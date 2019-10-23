@@ -59,10 +59,12 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
             }
         }
 
-        Event eventEntity = em.find(Event.class, tutoringClass.getEvent().getId());
+        if (Objects.nonNull(tutoringClass.getEvent())) {
+            Event eventEntity = em.find(Event.class, tutoringClass.getEvent().getId());
 
-        if (Objects.nonNull(eventEntity)) {
-            tutoringClassEntity.setEvent(eventEntity);
+            if (Objects.nonNull(eventEntity)) {
+                tutoringClassEntity.setEvent(eventEntity);
+            }
         }
 
         em.persist(tutoringClassEntity);

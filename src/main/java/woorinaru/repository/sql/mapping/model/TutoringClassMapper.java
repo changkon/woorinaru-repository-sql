@@ -17,6 +17,9 @@ public interface TutoringClassMapper {
     @Mapping(target="event.description", ignore=true)
     @Mapping(target="event.wooriClasses", ignore=true)
     @Mapping(target="event.studentReservations", ignore=true)
+    @Mapping(target="resources", ignore=true)
+    @Mapping(target="staff", ignore=true)
+    @Mapping(target="students", ignore=true)
     TutoringClass mapToEntity(woorinaru.core.model.management.administration.TutoringClass tutoringClassModel);
 
     @Mapping(source="event.id", target="event.id")

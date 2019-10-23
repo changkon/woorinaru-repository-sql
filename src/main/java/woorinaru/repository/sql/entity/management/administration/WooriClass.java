@@ -7,7 +7,6 @@ import woorinaru.repository.sql.entity.user.Student;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 @Entity
 @Table(name="WOORICLASS")

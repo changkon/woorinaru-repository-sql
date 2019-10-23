@@ -55,17 +55,17 @@ public class BeginnerClassMapperTest {
 
         // THEN
         assertThat(beginnerClassEntity.getId()).isEqualTo(1);
-        assertThat(beginnerClassEntity.getResources()).hasSize(1);
+        assertThat(beginnerClassEntity.getResources()).isNullOrEmpty();
 
-        Resource resourceEntity = beginnerClassEntity.getResources().iterator().next();
+//        Resource resourceEntity = beginnerClassEntity.getResources().iterator().next();
+//
+//        assertThat(resourceEntity.getId()).isEqualTo(1);
+//        assertThat(resourceEntity.getDescription()).isEqualTo("test resource description");
+//        assertThat(resourceEntity.getResource()).isNull();
 
-        assertThat(resourceEntity.getId()).isEqualTo(1);
-        assertThat(resourceEntity.getDescription()).isEqualTo("test resource description");
-        assertThat(resourceEntity.getResource()).isNull();
+        assertThat(beginnerClassEntity.getStaff()).isNullOrEmpty();
 
-        assertThat(beginnerClassEntity.getStaff()).hasSize(1);
-
-        assertThat(beginnerClassEntity.getStudents()).isEmpty();
+        assertThat(beginnerClassEntity.getStudents()).isNullOrEmpty();
 
         assertThat(beginnerClassEntity.getEvent().getId()).isEqualTo(1);
         assertThat(beginnerClassEntity.getEvent().getDescription()).isNull();

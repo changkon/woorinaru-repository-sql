@@ -1,60 +1,121 @@
-//package woorinaru.repository.sql.dao.impl;
-//
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import woorinaru.core.dao.spi.StudentDao;
-//import woorinaru.core.model.user.Student;
-//import woorinaru.repository.sql.entity.resource.Resource;
-//import woorinaru.repository.sql.mapping.model.impl.StudentMapper;
-//import woorinaru.repository.sql.util.EntityManagerFactoryUtil;
-//
-//import javax.persistence.EntityManager;
-//import javax.persistence.TypedQuery;
-//import java.sql.SQLException;
-//import java.time.LocalDate;
-//import java.time.LocalDateTime;
-//import java.time.LocalTime;
-//import java.util.List;
-//import java.util.Optional;
-//
-//import static org.assertj.core.api.Assertions.assertThat;
-//
-//@ExtendWith(DatabaseContainerRule.class)
-//public class StudentDaoImplIT extends AbstractContainerDatabaseIT {
-//
-//    private static final LocalDateTime signupDateTime = LocalDateTime.of(LocalDate.of(2018, 5, 10), LocalTime.of(23, 40, 10));
-//
-//    @Test
-//    @DisplayName("Test student create")
-//    public void testStudentCreate() throws SQLException {
-//        // GIVEN
-//        StudentDao studentDao = new StudentDaoImpl();
-//        Student student = new Student();
-//        student.setName("Changkon Han");
-//        student.setNationality("New Zealand");
-//        student.setEmail("random@domain.com");
-//        student.setSignUpDateTime(signupDateTime);
-//
-//        // WHEN
-//        studentDao.create(student);
-//
-//        // THEN
-//        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
-//        TypedQuery<woorinaru.repository.sql.entity.user.Student> query = em.createQuery("SELECT s FROM Student s", woorinaru.repository.sql.entity.user.Student.class);
-//        List<woorinaru.repository.sql.entity.user.Student> studentEntities = query.getResultList();
-//
-//        assertThat(studentEntities).hasSize(1);
-//        woorinaru.repository.sql.entity.user.Student studentEntity = studentEntities.get(0);
-//        assertThat(studentEntity.getName()).isEqualTo("Changkon Han");
-//        assertThat(studentEntity.getNationality()).isEqualTo("New Zealand");
-//        assertThat(studentEntity.getEmail()).isEqualTo("random@domain.com");
-//        assertThat(studentEntity.getFavouriteResources()).isEmpty();
-//        assertThat(studentEntity.getSignUpDateTime()).isEqualTo(signupDateTime);
-//
-//        em.close();
-//    }
-//
+package woorinaru.repository.sql.dao.impl;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import woorinaru.core.dao.spi.StaffDao;
+import woorinaru.core.model.management.administration.Resource;
+import woorinaru.core.model.management.administration.Team;
+import woorinaru.core.model.user.Staff;
+import woorinaru.core.model.user.StaffRole;
+import woorinaru.repository.sql.dao.helper.DatabaseContainerRule;
+import woorinaru.repository.sql.mapping.model.ResourceMapper;
+import woorinaru.repository.sql.util.EntityManagerFactoryUtil;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(DatabaseContainerRule.class)
+public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
+
+    private static final LocalDateTime signupDateTime = LocalDateTime.of(LocalDate.of(2018, 5, 10), LocalTime.of(23, 40, 10));
+
+    @Test
+    @DisplayName("Test staff create")
+    public void testStaffCreate() throws SQLException {
+        // GIVEN
+        StaffDao staffDao = new StaffDaoImpl();
+        Staff staffModel = new Staff();
+        staffModel.setName("Changkon Han");
+        staffModel.setNationality("New Zealand");
+        staffModel.setEmail("random@domain.com");
+        staffModel.setSignUpDateTime(signupDateTime);
+        staffModel.setTeam(Team.DESIGN);
+        staffModel.setStaffRole(StaffRole.TEACHER);
+
+        // WHEN
+        staffDao.create(staffModel);
+
+        // THEN
+        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
+        TypedQuery<woorinaru.repository.sql.entity.user.Staff> query = em.createQuery("SELECT s FROM Staff s", woorinaru.repository.sql.entity.user.Staff.class);
+        List<woorinaru.repository.sql.entity.user.Staff> staffEntities = query.getResultList();
+
+        assertThat(staffEntities).hasSize(1);
+        woorinaru.repository.sql.entity.user.Staff staffEntity = staffEntities.get(0);
+        assertThat(staffEntity.getName()).isEqualTo("Changkon Han");
+        assertThat(staffEntity.getNationality()).isEqualTo("New Zealand");
+        assertThat(staffEntity.getEmail()).isEqualTo("random@domain.com");
+        assertThat(staffEntity.getFavouriteResources()).isEmpty();
+        assertThat(staffEntity.getSignUpDateTime()).isEqualTo(signupDateTime);
+        assertThat(staffEntity.getTeam()).isEqualTo(woorinaru.repository.sql.entity.management.administration.Team.DESIGN);
+        assertThat(staffEntity.getStaffRole()).isEqualTo(woorinaru.repository.sql.entity.user.StaffRole.TEACHER);
+
+        em.close();
+    }
+
+    @Test
+    @DisplayName("Test staff create with resource")
+    public void testStaffCreateWithResource() {
+        // GIVEN
+        StaffDao staffDao = new StaffDaoImpl();
+        Staff staffModel = new Staff();
+        staffModel.setName("Changkon Han");
+        staffModel.setNationality("New Zealand");
+        staffModel.setEmail("random@domain.com");
+        staffModel.setSignUpDateTime(signupDateTime);
+        staffModel.setTeam(Team.DESIGN);
+        staffModel.setStaffRole(StaffRole.TEACHER);
+
+        // Create resource
+        EntityManager em1 = EntityManagerFactoryUtil.getEntityManager();
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity = new woorinaru.repository.sql.entity.resource.Resource();
+        resourceEntity.setDescription("Test resource description");
+        resourceEntity.setResource("Test resource".getBytes());
+        // Send resource to db
+        em1.getTransaction().begin();
+        em1.persist(resourceEntity);
+        em1.getTransaction().commit();
+        em1.close();
+
+        Resource resourceModel = ResourceMapper.MAPPER.mapToModel(resourceEntity);
+        resourceModel.setId(1);
+
+        staffModel.setFavouriteResources(List.of(resourceModel));
+
+        // WHEN
+        staffDao.create(staffModel);
+
+        // THEN
+        EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
+        TypedQuery<woorinaru.repository.sql.entity.user.Staff> query = em2.createQuery("SELECT s FROM Staff s", woorinaru.repository.sql.entity.user.Staff.class);
+        List<woorinaru.repository.sql.entity.user.Staff> staffEntities = query.getResultList();
+
+        assertThat(staffEntities).hasSize(1);
+        woorinaru.repository.sql.entity.user.Staff staffEntity = staffEntities.get(0);
+        assertThat(staffEntity.getName()).isEqualTo("Changkon Han");
+        assertThat(staffEntity.getNationality()).isEqualTo("New Zealand");
+        assertThat(staffEntity.getEmail()).isEqualTo("random@domain.com");
+        assertThat(staffEntity.getFavouriteResources()).hasSize(1);
+        woorinaru.repository.sql.entity.resource.Resource retrievedResourceEntity = staffEntity.getFavouriteResources().iterator().next();
+        assertThat(retrievedResourceEntity.getId()).isEqualTo(1);
+        assertThat(retrievedResourceEntity.getResource()).isNull();
+        assertThat(retrievedResourceEntity.getDescription()).isEqualTo("Test resource description");
+
+        assertThat(staffEntity.getSignUpDateTime()).isEqualTo(signupDateTime);
+        assertThat(staffEntity.getTeam()).isEqualTo(woorinaru.repository.sql.entity.management.administration.Team.DESIGN);
+        assertThat(staffEntity.getStaffRole()).isEqualTo(woorinaru.repository.sql.entity.user.StaffRole.TEACHER);
+
+        em2.close();
+    }
+
 //    @Test
 //    @DisplayName("Test retrieve student by id")
 //    public void testStudentGet() throws SQLException {
@@ -220,13 +281,13 @@
 //
 //        em.close();
 //    }
-//
-//    private woorinaru.repository.sql.entity.user.Student createStudentEntity(String name, String nationality, String email) {
-//        woorinaru.repository.sql.entity.user.Student studentEntity = new woorinaru.repository.sql.entity.user.Student();
-//        studentEntity.setName(name);
-//        studentEntity.setNationality(nationality);
-//        studentEntity.setEmail(email);
-//        studentEntity.setSignUpDateTime(signupDateTime);
-//        return studentEntity;
-//    }
-//}
+
+    private woorinaru.repository.sql.entity.user.Student createStudentEntity(String name, String nationality, String email) {
+        woorinaru.repository.sql.entity.user.Student studentEntity = new woorinaru.repository.sql.entity.user.Student();
+        studentEntity.setName(name);
+        studentEntity.setNationality(nationality);
+        studentEntity.setEmail(email);
+        studentEntity.setSignUpDateTime(signupDateTime);
+        return studentEntity;
+    }
+}

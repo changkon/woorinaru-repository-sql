@@ -37,7 +37,7 @@ public class StaffMapperTest {
         assertThat(staffEntity.getEmail()).isEqualTo("test email");
         assertThat(staffEntity.getNationality()).isEqualTo("New Zealand");
         assertThat(staffEntity.getSignUpDateTime()).isEqualTo(LocalDateTime.of(LocalDate.of(2019, 1, 10), LocalTime.of(10, 1, 1)));
-        assertThat(staffEntity.getFavouriteResources()).isEmpty();
+        assertThat(staffEntity.getFavouriteResources()).isNullOrEmpty();
         assertThat(staffEntity.getStaffRole()).isEqualTo(woorinaru.repository.sql.entity.user.StaffRole.LEADER);
         assertThat(staffEntity.getTeam()).isEqualTo(woorinaru.repository.sql.entity.management.administration.Team.PLANNING);
     }

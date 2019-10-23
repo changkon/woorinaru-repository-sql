@@ -1,6 +1,7 @@
 package woorinaru.repository.sql.mapping.model;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
 import org.mapstruct.factory.Mappers;
@@ -13,6 +14,7 @@ public interface StaffMapper {
 
     StaffMapper MAPPER = Mappers.getMapper(StaffMapper.class);
 
+    @Mapping(target="favouriteResources", ignore=true)
     Staff mapToEntity(woorinaru.core.model.user.Staff staffModel);
 
     woorinaru.core.model.user.Staff mapToModel(Staff staffEntity);

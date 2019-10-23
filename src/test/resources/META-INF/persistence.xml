@@ -9,6 +9,14 @@
         <class>woorinaru.repository.sql.entity.user.User</class>
         <class>woorinaru.repository.sql.entity.user.Admin</class>
         <class>woorinaru.repository.sql.entity.user.Student</class>
+        <class>woorinaru.repository.sql.entity.user.Staff</class>
+        <class>woorinaru.repository.sql.entity.management.administration.WooriClass</class>
+        <class>woorinaru.repository.sql.entity.management.administration.BeginnerClass</class>
+        <class>woorinaru.repository.sql.entity.management.administration.IntermediateClass</class>
+        <class>woorinaru.repository.sql.entity.management.administration.OutingClass</class>
+        <class>woorinaru.repository.sql.entity.management.administration.TutoringClass</class>
+        <class>woorinaru.repository.sql.entity.management.administration.Event</class>
+        <class>woorinaru.repository.sql.entity.management.administration.Term</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.testcontainers.jdbc.ContainerDatabaseDriver" />
@@ -19,7 +27,8 @@
 <!--            <property name="javax.persistence.schema-generation.create-source" value="script" />-->
 <!--            <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/sql/woorinaru_create.sql"/>-->
 
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
+<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />-->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect" />
         </properties>
     </persistence-unit>
 </persistence>

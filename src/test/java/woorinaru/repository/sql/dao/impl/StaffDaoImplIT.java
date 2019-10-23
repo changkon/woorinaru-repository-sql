@@ -1,6 +1,5 @@
 package woorinaru.repository.sql.dao.impl;
 
-import org.hibernate.boot.model.source.internal.hbm.RootEntitySourceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -358,6 +357,8 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         // THEN
         assertThat(staff).isEmpty();
     }
+
+    // TODO modify staff resource
 
     private woorinaru.repository.sql.entity.user.Staff createStaffEntity(String name, String nationality, String email) {
         woorinaru.repository.sql.entity.user.Staff staffEntity = new woorinaru.repository.sql.entity.user.Staff();

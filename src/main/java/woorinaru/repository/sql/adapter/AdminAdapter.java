@@ -5,6 +5,7 @@ import woorinaru.core.model.user.Admin;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -81,7 +82,7 @@ public class AdminAdapter extends Admin {
     @Override
     public boolean addFavouriteResource(Resource resource) {
         if (this.adminEntity.getFavouriteResources() == null) {
-            this.adminEntity.setFavouriteResources(Collections.emptyList());
+            this.adminEntity.setFavouriteResources(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
         return this.adminEntity.getFavouriteResources().add(resourceEntity);

@@ -7,6 +7,7 @@ import woorinaru.core.model.user.StaffRole;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -143,7 +144,7 @@ public class StaffAdapter extends Staff {
     @Override
     public boolean addFavouriteResource(Resource resource) {
         if (this.staffEntity.getFavouriteResources() == null) {
-            this.staffEntity.setFavouriteResources(Collections.emptyList());
+            this.staffEntity.setFavouriteResources(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
         return this.staffEntity.getFavouriteResources().add(resourceEntity);

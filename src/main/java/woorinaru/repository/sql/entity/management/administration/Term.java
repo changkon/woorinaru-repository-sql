@@ -5,6 +5,7 @@ import woorinaru.repository.sql.entity.user.Staff;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -87,7 +88,7 @@ public class Term {
 
     public boolean addEvent(Event event) {
         if (events == null) {
-            events = Collections.emptyList();
+            events = new ArrayList<>();
         }
         return events.add(event);
     }
@@ -101,7 +102,7 @@ public class Term {
 
     public boolean addStaff(Staff staff) {
         if (staffMembers == null) {
-            staffMembers = Collections.emptyList();
+            staffMembers = new ArrayList<>();
         }
         return staffMembers.add(staff);
     }

@@ -5,6 +5,7 @@ import woorinaru.core.model.user.Student;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -81,7 +82,7 @@ public class StudentAdapter extends Student {
     @Override
     public boolean addFavouriteResource(Resource resource) {
         if (this.studentEntity.getFavouriteResources() == null) {
-            this.studentEntity.setFavouriteResources(Collections.emptyList());
+            this.studentEntity.setFavouriteResources(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
         return this.studentEntity.getFavouriteResources().add(resourceEntity);

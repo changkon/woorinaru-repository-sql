@@ -1,5 +1,6 @@
 package woorinaru.repository.sql.dao.impl;
 
+import org.hibernate.boot.model.source.internal.hbm.RootEntitySourceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import woorinaru.core.model.user.Staff;
 import woorinaru.core.model.user.StaffRole;
 import woorinaru.repository.sql.dao.helper.DatabaseContainerRule;
 import woorinaru.repository.sql.mapping.model.ResourceMapper;
+import woorinaru.repository.sql.mapping.model.StaffMapper;
 import woorinaru.repository.sql.util.EntityManagerFactoryUtil;
 
 import javax.persistence.EntityManager;
@@ -18,7 +20,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -106,7 +110,7 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(staffEntity.getFavouriteResources()).hasSize(1);
         woorinaru.repository.sql.entity.resource.Resource retrievedResourceEntity = staffEntity.getFavouriteResources().iterator().next();
         assertThat(retrievedResourceEntity.getId()).isEqualTo(1);
-        assertThat(retrievedResourceEntity.getResource()).isNull();
+        assertThat(retrievedResourceEntity.getResource()).isEqualTo("Test resource".getBytes());
         assertThat(retrievedResourceEntity.getDescription()).isEqualTo("Test resource description");
 
         assertThat(staffEntity.getSignUpDateTime()).isEqualTo(signupDateTime);
@@ -116,178 +120,253 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         em2.close();
     }
 
-//    @Test
-//    @DisplayName("Test retrieve student by id")
-//    public void testStudentGet() throws SQLException {
-//        // GIVEN
-//        StudentDao studentDao = new StudentDaoImpl();
-//        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
-//        em.getTransaction().begin();
-//        woorinaru.repository.sql.entity.user.Student studentEntity = createStudentEntity("Alan Foo", "Australia", "test@domain.com");
-//        em.persist(studentEntity);
-//        em.getTransaction().commit();
-//        em.close();
-//
-//        // WHEN
-//        Optional<Student> retrievedStudentModelOptional = studentDao.get(1);
-//
-//        // THEN
-//        assertThat(retrievedStudentModelOptional).isPresent();
-//        Student retrievedStudentModel = retrievedStudentModelOptional.get();
-//
-//        assertThat(retrievedStudentModel.getId()).isEqualTo(1);
-//        assertThat(retrievedStudentModel.getName()).isEqualTo("Alan Foo");
-//        assertThat(retrievedStudentModel.getNationality()).isEqualTo("Australia");
-//        assertThat(retrievedStudentModel.getEmail()).isEqualTo("test@domain.com");
-//        assertThat(retrievedStudentModel.getFavouriteResources()).isEmpty();
-//        assertThat(retrievedStudentModel.getSignUpDateTime()).isEqualTo(signupDateTime);
-//    }
-//
-//    @Test
-//    @DisplayName("Test retrieving non-existent student id")
-//    public void testGetNonExistentStudentId() {
-//        // GIVEN
-//        StudentDao studentDao = new StudentDaoImpl();
-//
-//        // WHEN
-//        Optional<Student> studentModelOptional = studentDao.get(111);
-//
-//        // THEN
-//        assertThat(studentModelOptional).isEmpty();
-//    }
-//
-//    @Test
-//    @DisplayName("Test student delete")
-//    public void testStudentDelete() throws SQLException {
-//        // GIVEN
-//        StudentDao studentDao = new StudentDaoImpl();
-//        EntityManager em1 = EntityManagerFactoryUtil.getEntityManager();
-//        em1.getTransaction().begin();
-//        woorinaru.repository.sql.entity.user.Student studentEntity = createStudentEntity("Alice Wonderland", "USA", "alice@test.com");
-//        em1.persist(studentEntity);
-//        em1.getTransaction().commit();
-//
-//        // Confirm that inserted query exists
-//        TypedQuery<woorinaru.repository.sql.entity.user.Student> query = em1.createQuery("SELECT s FROM Student s WHERE id='1'", woorinaru.repository.sql.entity.user.Student.class);
-//        woorinaru.repository.sql.entity.user.Student retrievedStudentEntity = query.getSingleResult();
-//
-//        assertThat(retrievedStudentEntity).isNotNull();
-//        StudentMapper mapper = new StudentMapper();
-//        Student studentModel = mapper.mapToModel(retrievedStudentEntity);
-//
-//        em1.close();
-//
-//        // WHEN
-//        studentDao.delete(studentModel);
-//
-//        // THEN
-//        EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
-//        TypedQuery<woorinaru.repository.sql.entity.user.Student> secondQuery = em2.createQuery("SELECT s FROM Student s WHERE id='1'", woorinaru.repository.sql.entity.user.Student.class);
-//        assertThat(secondQuery.getResultList()).isEmpty();
-//        em2.close();
-//    }
-//
-//    @Test
-//    @DisplayName("Test retrieve multiple students")
-//    public void testGetAllStudents() throws SQLException {
-//        // GIVEN
-//        StudentDao studentDao = new StudentDaoImpl();
-//        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
-//        em.getTransaction().begin();
-//        woorinaru.repository.sql.entity.user.Student studentEntity1 = createStudentEntity("Josh Howard", "USA", "josh@test.com");
-//        woorinaru.repository.sql.entity.user.Student studentEntity2 = createStudentEntity("Hayley Low", "Canada", "hayley@test.com");
-//        em.persist(studentEntity1);
-//        em.persist(studentEntity2);
-//        em.getTransaction().commit();
-//
-//        // Retrieve all students
-//        // WHEN
-//        List<Student> retrievedStudents = studentDao.getAll();
-//
-//        // THEN
-//        assertThat(retrievedStudents).isNotEmpty();
-//        assertThat(retrievedStudents).hasSize(2);
-//
-//        Student retrievedStudent1 = retrievedStudents.get(0);
-//        assertThat(retrievedStudent1.getId()).isEqualTo(1);
-//        assertThat(retrievedStudent1.getName()).isEqualTo("Josh Howard");
-//        assertThat(retrievedStudent1.getNationality()).isEqualTo("USA");
-//        assertThat(retrievedStudent1.getEmail()).isEqualTo("josh@test.com");
-//        assertThat(retrievedStudent1.getFavouriteResources()).isEmpty();
-//        assertThat(retrievedStudent1.getSignUpDateTime()).isEqualTo(signupDateTime);
-//
-//        Student retrievedStudent2 = retrievedStudents.get(1);
-//        assertThat(retrievedStudent2.getId()).isEqualTo(2);
-//        assertThat(retrievedStudent2.getName()).isEqualTo("Hayley Low");
-//        assertThat(retrievedStudent2.getNationality()).isEqualTo("Canada");
-//        assertThat(retrievedStudent2.getEmail()).isEqualTo("hayley@test.com");
-//        assertThat(retrievedStudent2.getFavouriteResources()).isEmpty();
-//        assertThat(retrievedStudent2.getSignUpDateTime()).isEqualTo(signupDateTime);
-//
-//        em.close();
-//    }
-//
-//    @Test
-//    @DisplayName("Test retrieve returns empty list when there are no students")
-//    public void testEmptyListIsReturnedWhenNoStudents() throws SQLException {
-//        // GIVEN
-//        StudentDao studentDao = new StudentDaoImpl();
-//
-//        // WHEN
-//        List<Student> students = studentDao.getAll();
-//
-//        // THEN
-//        assertThat(students).isEmpty();
-//    }
-//
-//    @Test
-//    @DisplayName("Test student with favourite resources returned")
-//    public void testStudentWithFavouriteResources() throws SQLException {
-//        // GIVEN
-//        StudentDao studentDao = new StudentDaoImpl();
-//        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
-//        em.getTransaction().begin();
-//
-//        String resource = new String("resource");
-//
-//        Resource resourceContainer = new Resource();
-//        resourceContainer.setResource(resource.getBytes());
-//        resourceContainer.setDescription("test resource");
-//        em.persist(resourceContainer);
-//        em.refresh(resourceContainer);
-//
-//        woorinaru.repository.sql.entity.user.Student studentEntity = createStudentEntity("Alan Foster", "UK", "alan@test.com");
-//        studentEntity.setFavouriteResources(List.of(resourceContainer));
-//
-//        em.persist(studentEntity);
-//        em.getTransaction().commit();
-//
-//        // WHEN
-//        Optional<Student> studentModelOptional = studentDao.get(1);
-//        assertThat(studentModelOptional).isNotEmpty();
-//        Student studentModel = studentModelOptional.get();
-//        assertThat(studentModel.getId()).isEqualTo(1);
-//        assertThat(studentModel.getName()).isEqualTo("Alan Foster");
-//        assertThat(studentModel.getNationality()).isEqualTo("UK");
-//        assertThat(studentModel.getEmail()).isEqualTo("alan@test.com");
-//        assertThat(studentModel.getFavouriteResources()).isNotEmpty();
-//        assertThat(studentModel.getFavouriteResources()).hasSize(1);
-//        assertThat(studentModel.getSignUpDateTime()).isEqualTo(signupDateTime);
-//
-//        woorinaru.core.model.management.administration.Resource resourceModel = studentModel.getFavouriteResources().iterator().next();
-//        assertThat(resourceModel.getId()).isEqualTo(1);
-//        assertThat(resourceModel.getResource()).isEqualTo(resource.getBytes());
-//        assertThat(resourceModel.getDescription()).isEqualTo("test resource");
-//
-//        em.close();
-//    }
+    @Test
+    @DisplayName("Test retrieve staff by id")
+    public void testStudentGet() throws SQLException {
+        // GIVEN
+        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
+        em.getTransaction().begin();
+        woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Alan Foo", "Australia", "test@domain.com");
+        em.persist(staffEntity);
+        em.getTransaction().commit();
+        em.close();
 
-    private woorinaru.repository.sql.entity.user.Student createStudentEntity(String name, String nationality, String email) {
-        woorinaru.repository.sql.entity.user.Student studentEntity = new woorinaru.repository.sql.entity.user.Student();
-        studentEntity.setName(name);
-        studentEntity.setNationality(nationality);
-        studentEntity.setEmail(email);
-        studentEntity.setSignUpDateTime(signupDateTime);
-        return studentEntity;
+        // WHEN
+        Optional<Staff> retrievedStaffModelOptional = staffDao.get(1);
+
+        // THEN
+        assertThat(retrievedStaffModelOptional).isPresent();
+        Staff retrievedStaffModel = retrievedStaffModelOptional.get();
+
+        assertThat(retrievedStaffModel.getId()).isEqualTo(1);
+        assertThat(retrievedStaffModel.getName()).isEqualTo("Alan Foo");
+        assertThat(retrievedStaffModel.getNationality()).isEqualTo("Australia");
+        assertThat(retrievedStaffModel.getEmail()).isEqualTo("test@domain.com");
+        assertThat(retrievedStaffModel.getFavouriteResources()).isEmpty();
+        assertThat(retrievedStaffModel.getSignUpDateTime()).isEqualTo(signupDateTime);
+        assertThat(retrievedStaffModel.getTeam()).isEqualTo(Team.DESIGN);
+        assertThat(retrievedStaffModel.getStaffRole()).isEqualTo(StaffRole.TEACHER);
+    }
+
+    @Test
+    @DisplayName("Test retrieve staff with favourite resources by id")
+    public void testStudentWithFavouriteResourcesGet() throws SQLException {
+        // GIVEN
+        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
+        em.getTransaction().begin();
+        woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Alan Foo", "Australia", "test@domain.com");
+
+        // Create staff favourite resources
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity1 = new woorinaru.repository.sql.entity.resource.Resource();
+        resourceEntity1.setDescription("test resource 1");
+        resourceEntity1.setResource("test 1".getBytes());
+
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity2 = new woorinaru.repository.sql.entity.resource.Resource();
+        resourceEntity2.setDescription("test resource 2");
+        resourceEntity2.setResource("test 2".getBytes());
+
+        em.persist(resourceEntity1);
+        em.persist(resourceEntity2);
+
+        staffEntity.addFavouriteResource(resourceEntity1);
+        staffEntity.addFavouriteResource(resourceEntity2);
+
+        em.persist(staffEntity);
+        em.getTransaction().commit();
+        em.close();
+
+        // WHEN
+        Optional<Staff> retrievedStaffModelOptional = staffDao.get(1);
+
+        // THEN
+        assertThat(retrievedStaffModelOptional).isPresent();
+        Staff retrievedStaffModel = retrievedStaffModelOptional.get();
+
+        assertThat(retrievedStaffModel.getId()).isEqualTo(1);
+        assertThat(retrievedStaffModel.getName()).isEqualTo("Alan Foo");
+        assertThat(retrievedStaffModel.getNationality()).isEqualTo("Australia");
+        assertThat(retrievedStaffModel.getEmail()).isEqualTo("test@domain.com");
+        assertThat(retrievedStaffModel.getSignUpDateTime()).isEqualTo(signupDateTime);
+        assertThat(retrievedStaffModel.getTeam()).isEqualTo(Team.DESIGN);
+        assertThat(retrievedStaffModel.getStaffRole()).isEqualTo(StaffRole.TEACHER);
+
+        assertThat(retrievedStaffModel.getFavouriteResources()).hasSize(2);
+        Iterator<Resource> iter = retrievedStaffModel.getFavouriteResources().iterator();
+        Resource resourceModel1 = iter.next();
+        Resource resourceModel2 = iter.next();
+
+        assertThat(resourceModel1.getId()).isEqualTo(1);
+        assertThat(resourceModel1.getDescription()).isEqualTo("test resource 1");
+        assertThat(resourceModel1.getResource()).isNull();
+
+        assertThat(resourceModel2.getId()).isEqualTo(2);
+        assertThat(resourceModel2.getDescription()).isEqualTo("test resource 2");
+        assertThat(resourceModel2.getResource()).isNull();
+    }
+
+    @Test
+    @DisplayName("Test retrieving non-existent staff id")
+    public void testGetNonExistentStaffId() {
+        // GIVEN
+        StaffDao studentDao = new StaffDaoImpl();
+
+        // WHEN
+        Optional<Staff> staffModelOptional = studentDao.get(111);
+
+        // THEN
+        assertThat(staffModelOptional).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Test staff delete")
+    public void testStudentDelete() throws SQLException {
+        // GIVEN
+        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager em1 = EntityManagerFactoryUtil.getEntityManager();
+        em1.getTransaction().begin();
+        woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Alice Wonderland", "USA", "alice@test.com");
+        em1.persist(staffEntity);
+        em1.getTransaction().commit();
+
+        // Confirm that inserted query exists
+        TypedQuery<woorinaru.repository.sql.entity.user.Staff> query = em1.createQuery("SELECT s FROM Staff s WHERE id='1'", woorinaru.repository.sql.entity.user.Staff.class);
+        woorinaru.repository.sql.entity.user.Staff retrievedStaffEntity = query.getSingleResult();
+
+        assertThat(retrievedStaffEntity).isNotNull();
+        StaffMapper mapper = StaffMapper.MAPPER;
+        Staff staffModel = mapper.mapToModel(retrievedStaffEntity);
+
+        em1.close();
+
+        // WHEN
+        staffDao.delete(staffModel);
+
+        // THEN
+        EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
+        TypedQuery<woorinaru.repository.sql.entity.user.Staff> secondQuery = em2.createQuery("SELECT s FROM Staff s WHERE id='1'", woorinaru.repository.sql.entity.user.Staff.class);
+        assertThat(secondQuery.getResultList()).isEmpty();
+        em2.close();
+    }
+
+    @Test
+    @DisplayName("Test deleting staff with favourite resources is not cascaded")
+    public void testStaffDeleteDoesNotCascadeResourceDelete() {
+        // GIVEN
+        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager em1 = EntityManagerFactoryUtil.getEntityManager();
+        em1.getTransaction().begin();
+        woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Alice Wonderland", "USA", "alice@test.com");
+
+        // Create staff favourite resources
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity1 = new woorinaru.repository.sql.entity.resource.Resource();
+        resourceEntity1.setDescription("test resource 1");
+        resourceEntity1.setResource("test 1".getBytes());
+
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity2 = new woorinaru.repository.sql.entity.resource.Resource();
+        resourceEntity2.setDescription("test resource 2");
+        resourceEntity2.setResource("test 2".getBytes());
+
+        em1.persist(resourceEntity1);
+        em1.persist(resourceEntity2);
+
+        staffEntity.addFavouriteResource(resourceEntity1);
+        staffEntity.addFavouriteResource(resourceEntity2);
+
+        em1.persist(staffEntity);
+        em1.getTransaction().commit();
+
+        // Confirm that inserted query exists
+        TypedQuery<woorinaru.repository.sql.entity.user.Staff> query = em1.createQuery("SELECT s FROM Staff s WHERE id='1'", woorinaru.repository.sql.entity.user.Staff.class);
+        woorinaru.repository.sql.entity.user.Staff retrievedStaffEntity = query.getSingleResult();
+
+        assertThat(retrievedStaffEntity).isNotNull();
+        StaffMapper mapper = StaffMapper.MAPPER;
+        Staff staffModel = mapper.mapToModel(retrievedStaffEntity);
+
+        em1.close();
+
+        // WHEN
+        staffDao.delete(staffModel);
+
+        // THEN
+        EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
+        TypedQuery<woorinaru.repository.sql.entity.user.Staff> secondQuery = em2.createQuery("SELECT s FROM Staff s WHERE id='1'", woorinaru.repository.sql.entity.user.Staff.class);
+        assertThat(secondQuery.getResultList()).isEmpty();
+        em2.close();
+
+        EntityManager em3 = EntityManagerFactoryUtil.getEntityManager();
+        TypedQuery<woorinaru.repository.sql.entity.resource.Resource> thirdQuery = em3.createQuery("SELECT r FROM Resource r", woorinaru.repository.sql.entity.resource.Resource.class);
+        assertThat(thirdQuery.getResultList()).hasSize(2);
+        em3.close();
+    }
+
+    @Test
+    @DisplayName("Test retrieve multiple staff")
+    public void testGetAllStaff() throws SQLException {
+        // GIVEN
+        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
+        em.getTransaction().begin();
+        woorinaru.repository.sql.entity.user.Staff studentEntity1 = createStaffEntity("Josh Howard", "USA", "josh@test.com");
+        woorinaru.repository.sql.entity.user.Staff studentEntity2 = createStaffEntity("Hayley Low", "Canada", "hayley@test.com");
+        em.persist(studentEntity1);
+        em.persist(studentEntity2);
+        em.getTransaction().commit();
+
+        // Retrieve all students
+        // WHEN
+        List<Staff> retrievedStaff = staffDao.getAll();
+
+        // THEN
+        assertThat(retrievedStaff).isNotEmpty();
+        assertThat(retrievedStaff).hasSize(2);
+
+        Staff retrievedStaff1 = retrievedStaff.get(0);
+        assertThat(retrievedStaff1.getId()).isEqualTo(1);
+        assertThat(retrievedStaff1.getName()).isEqualTo("Josh Howard");
+        assertThat(retrievedStaff1.getNationality()).isEqualTo("USA");
+        assertThat(retrievedStaff1.getEmail()).isEqualTo("josh@test.com");
+        assertThat(retrievedStaff1.getFavouriteResources()).isEmpty();
+        assertThat(retrievedStaff1.getSignUpDateTime()).isEqualTo(signupDateTime);
+        assertThat(retrievedStaff1.getTeam()).isEqualTo(Team.DESIGN);
+        assertThat(retrievedStaff1.getStaffRole()).isEqualTo(StaffRole.TEACHER);
+
+        Staff retrievedStaff2 = retrievedStaff.get(1);
+        assertThat(retrievedStaff2.getId()).isEqualTo(2);
+        assertThat(retrievedStaff2.getName()).isEqualTo("Hayley Low");
+        assertThat(retrievedStaff2.getNationality()).isEqualTo("Canada");
+        assertThat(retrievedStaff2.getEmail()).isEqualTo("hayley@test.com");
+        assertThat(retrievedStaff2.getFavouriteResources()).isEmpty();
+        assertThat(retrievedStaff2.getSignUpDateTime()).isEqualTo(signupDateTime);
+        assertThat(retrievedStaff2.getTeam()).isEqualTo(Team.DESIGN);
+        assertThat(retrievedStaff2.getStaffRole()).isEqualTo(StaffRole.TEACHER);
+
+        em.close();
+    }
+
+    @Test
+    @DisplayName("Test retrieve returns empty list when there are no staff")
+    public void testEmptyListIsReturnedWhenNoStaff() throws SQLException {
+        // GIVEN
+        StaffDao studentDao = new StaffDaoImpl();
+
+        // WHEN
+        List<Staff> staff = studentDao.getAll();
+
+        // THEN
+        assertThat(staff).isEmpty();
+    }
+
+    private woorinaru.repository.sql.entity.user.Staff createStaffEntity(String name, String nationality, String email) {
+        woorinaru.repository.sql.entity.user.Staff staffEntity = new woorinaru.repository.sql.entity.user.Staff();
+        staffEntity.setName(name);
+        staffEntity.setNationality(nationality);
+        staffEntity.setEmail(email);
+        staffEntity.setSignUpDateTime(signupDateTime);
+        staffEntity.setTeam(woorinaru.repository.sql.entity.management.administration.Team.DESIGN);
+        staffEntity.setStaffRole(woorinaru.repository.sql.entity.user.StaffRole.TEACHER);
+        return staffEntity;
     }
 }

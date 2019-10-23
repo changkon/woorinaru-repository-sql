@@ -5,6 +5,7 @@ import woorinaru.repository.sql.entity.resource.Resource;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -88,7 +89,7 @@ public abstract class User {
 
     public boolean addFavouriteResource(Resource resource) {
         if (favouriteResources == null) {
-            this.favouriteResources = Collections.emptyList();
+            this.favouriteResources = new ArrayList<>();
         }
         return this.favouriteResources.add(resource);
     }

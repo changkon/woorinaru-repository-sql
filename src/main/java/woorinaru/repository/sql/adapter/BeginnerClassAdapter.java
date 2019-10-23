@@ -8,6 +8,7 @@ import woorinaru.core.model.user.Staff;
 import woorinaru.core.model.user.Student;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -80,7 +81,7 @@ public class BeginnerClassAdapter extends BeginnerClass {
     @Override
     public boolean addResource(Resource resource) {
         if (this.beginnerClassEntity.getResources() == null) {
-            this.beginnerClassEntity.setResources(Collections.emptyList());
+            this.beginnerClassEntity.setResources(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
         return this.beginnerClassEntity.addResource(resourceEntity);
@@ -89,7 +90,7 @@ public class BeginnerClassAdapter extends BeginnerClass {
     @Override
     public boolean addStaff(Staff staff) {
         if (this.beginnerClassEntity.getStaff() == null) {
-            this.beginnerClassEntity.setStaff(Collections.emptyList());
+            this.beginnerClassEntity.setStaff(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.user.Staff staffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
         return this.beginnerClassEntity.addStaff(staffEntity);
@@ -98,7 +99,7 @@ public class BeginnerClassAdapter extends BeginnerClass {
     @Override
     public boolean addStudent(Student student) {
         if (this.beginnerClassEntity.getStudents() == null) {
-            this.beginnerClassEntity.setStudents(Collections.emptyList());
+            this.beginnerClassEntity.setStudents(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.user.Student studentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
         return this.beginnerClassEntity.addStudent(studentEntity);

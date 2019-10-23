@@ -5,6 +5,7 @@ import woorinaru.repository.sql.entity.user.Staff;
 import woorinaru.repository.sql.entity.user.Student;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -79,21 +80,21 @@ public abstract class WooriClass {
 
     public boolean addResource(Resource resource) {
         if (resources == null) {
-            resources = Collections.emptyList();
+            resources = new ArrayList<>();
         }
         return resources.add(resource);
     }
 
     public boolean addStaff(Staff staff) {
         if (this.staff == null) {
-            this.staff = Collections.emptyList();
+            this.staff = new ArrayList<>();
         }
         return this.staff.add(staff);
     }
 
     public boolean addStudent(Student student) {
         if (students == null) {
-            this.students = Collections.emptyList();
+            this.students = new ArrayList<>();
         }
         return this.students.add(student);
     }

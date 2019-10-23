@@ -6,8 +6,8 @@ import woorinaru.core.model.user.Student;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 public class EventAdapter extends Event {
 
@@ -92,7 +92,7 @@ public class EventAdapter extends Event {
     @Override
     public boolean addWooriClass(WooriClass wooriClass) {
         if (this.eventEntity.getWooriClasses() == null) {
-            this.eventEntity.setWooriClasses(Collections.emptyList());
+            this.eventEntity.setWooriClasses(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.management.administration.WooriClass wooriClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.WooriClass.class, wooriClass.getId());
         return this.eventEntity.getWooriClasses().add(wooriClassEntity);
@@ -101,7 +101,7 @@ public class EventAdapter extends Event {
     @Override
     public boolean addStudentReservation(Student student) {
         if (this.eventEntity.getStudentReservations() == null) {
-            this.eventEntity.setStudentReservations(Collections.emptyList());
+            this.eventEntity.setStudentReservations(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.user.Student studentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
         return this.eventEntity.getStudentReservations().add(studentEntity);

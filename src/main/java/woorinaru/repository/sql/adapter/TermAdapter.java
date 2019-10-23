@@ -6,6 +6,7 @@ import woorinaru.core.model.user.Staff;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +84,7 @@ public class TermAdapter extends Term {
     @Override
     public boolean addEvent(Event event) {
         if (this.termEntity.getEvents() == null) {
-            this.termEntity.setEvents(Collections.emptyList());
+            this.termEntity.setEvents(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.management.administration.Event eventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, event.getId());
         return this.termEntity.addEvent(eventEntity);
@@ -100,7 +101,7 @@ public class TermAdapter extends Term {
     @Override
     public boolean addStaff(Staff staff) {
         if (this.termEntity.getStaffMembers() == null) {
-            this.termEntity.setStaffMembers(Collections.emptyList());
+            this.termEntity.setStaffMembers(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.user.Staff staffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
         return this.termEntity.addStaff(staffEntity);

@@ -8,6 +8,7 @@ import woorinaru.core.model.user.Staff;
 import woorinaru.core.model.user.Student;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -80,7 +81,7 @@ public class IntermediateClassAdapter extends IntermediateClass {
     @Override
     public boolean addResource(Resource resource) {
         if (this.intermediateClassEntity.getResources() == null) {
-            this.intermediateClassEntity.setResources(Collections.emptyList());
+            this.intermediateClassEntity.setResources(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
         return this.intermediateClassEntity.addResource(resourceEntity);
@@ -89,7 +90,7 @@ public class IntermediateClassAdapter extends IntermediateClass {
     @Override
     public boolean addStaff(Staff staff) {
         if (this.intermediateClassEntity.getStaff() == null) {
-            this.intermediateClassEntity.setStaff(Collections.emptyList());
+            this.intermediateClassEntity.setStaff(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.user.Staff staffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
         return this.intermediateClassEntity.addStaff(staffEntity);
@@ -98,7 +99,7 @@ public class IntermediateClassAdapter extends IntermediateClass {
     @Override
     public boolean addStudent(Student student) {
         if (this.intermediateClassEntity.getStudents() == null) {
-            this.intermediateClassEntity.setStudents(Collections.emptyList());
+            this.intermediateClassEntity.setStudents(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.user.Student studentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
         return this.intermediateClassEntity.addStudent(studentEntity);

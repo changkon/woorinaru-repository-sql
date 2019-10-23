@@ -4,6 +4,7 @@ import woorinaru.repository.sql.entity.user.Student;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -95,14 +96,14 @@ public class Event {
 
     public boolean addWooriClass(WooriClass wooriClass) {
         if (wooriClasses == null) {
-            this.wooriClasses = Collections.emptyList();
+            this.wooriClasses = new ArrayList<>();
         }
         return this.wooriClasses.add(wooriClass);
     }
 
     public boolean addStudentReservation(Student student) {
         if (studentReservations == null) {
-            this.studentReservations = Collections.emptyList();
+            this.studentReservations = new ArrayList<>();
         }
 
         return this.studentReservations.add(student);

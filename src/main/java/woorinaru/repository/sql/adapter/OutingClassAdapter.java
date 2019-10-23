@@ -8,6 +8,7 @@ import woorinaru.core.model.user.Staff;
 import woorinaru.core.model.user.Student;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -80,7 +81,7 @@ public class OutingClassAdapter extends OutingClass {
     @Override
     public boolean addResource(Resource resource) {
         if (this.outingClassEntity.getResources() == null) {
-            this.outingClassEntity.setResources(Collections.emptyList());
+            this.outingClassEntity.setResources(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
         return this.outingClassEntity.addResource(resourceEntity);
@@ -89,7 +90,7 @@ public class OutingClassAdapter extends OutingClass {
     @Override
     public boolean addStaff(Staff staff) {
         if (this.outingClassEntity.getStaff() == null) {
-            this.outingClassEntity.setStaff(Collections.emptyList());
+            this.outingClassEntity.setStaff(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.user.Staff staffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
         return this.outingClassEntity.addStaff(staffEntity);
@@ -98,7 +99,7 @@ public class OutingClassAdapter extends OutingClass {
     @Override
     public boolean addStudent(Student student) {
         if (this.outingClassEntity.getStudents() == null) {
-            this.outingClassEntity.setStudents(Collections.emptyList());
+            this.outingClassEntity.setStudents(new ArrayList<>());
         }
         woorinaru.repository.sql.entity.user.Student studentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
         return this.outingClassEntity.addStudent(studentEntity);

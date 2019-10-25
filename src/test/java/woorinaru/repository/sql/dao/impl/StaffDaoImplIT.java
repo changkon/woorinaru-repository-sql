@@ -34,7 +34,8 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test staff create")
     public void testStaffCreate() throws SQLException {
         // GIVEN
-        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
         Staff staffModel = new Staff();
         staffModel.setName("Changkon Han");
         staffModel.setNationality("New Zealand");
@@ -68,7 +69,8 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test staff create with resource")
     public void testStaffCreateWithResource() {
         // GIVEN
-        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
         Staff staffModel = new Staff();
         staffModel.setName("Changkon Han");
         staffModel.setNationality("New Zealand");
@@ -123,7 +125,8 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test retrieve staff by id")
     public void testStudentGet() throws SQLException {
         // GIVEN
-        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         em.getTransaction().begin();
         woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Alan Foo", "Australia", "test@domain.com");
@@ -152,7 +155,8 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test retrieve staff with favourite resources by id")
     public void testStudentWithFavouriteResourcesGet() throws SQLException {
         // GIVEN
-        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         em.getTransaction().begin();
         woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Alan Foo", "Australia", "test@domain.com");
@@ -209,10 +213,11 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test retrieving non-existent staff id")
     public void testGetNonExistentStaffId() {
         // GIVEN
-        StaffDao studentDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
 
         // WHEN
-        Optional<Staff> staffModelOptional = studentDao.get(111);
+        Optional<Staff> staffModelOptional = staffDao.get(111);
 
         // THEN
         assertThat(staffModelOptional).isEmpty();
@@ -222,7 +227,8 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test staff delete")
     public void testStudentDelete() throws SQLException {
         // GIVEN
-        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
         EntityManager em1 = EntityManagerFactoryUtil.getEntityManager();
         em1.getTransaction().begin();
         woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Alice Wonderland", "USA", "alice@test.com");
@@ -253,7 +259,8 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test deleting staff with favourite resources is not cascaded")
     public void testStaffDeleteDoesNotCascadeResourceDelete() {
         // GIVEN
-        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
         EntityManager em1 = EntityManagerFactoryUtil.getEntityManager();
         em1.getTransaction().begin();
         woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Alice Wonderland", "USA", "alice@test.com");
@@ -305,7 +312,8 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test retrieve multiple staff")
     public void testGetAllStaff() throws SQLException {
         // GIVEN
-        StaffDao staffDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         em.getTransaction().begin();
         woorinaru.repository.sql.entity.user.Staff studentEntity1 = createStaffEntity("Josh Howard", "USA", "josh@test.com");
@@ -349,10 +357,11 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
     @DisplayName("Test retrieve returns empty list when there are no staff")
     public void testEmptyListIsReturnedWhenNoStaff() throws SQLException {
         // GIVEN
-        StaffDao studentDao = new StaffDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        StaffDao staffDao = new StaffDaoImpl(daoEm);
 
         // WHEN
-        List<Staff> staff = studentDao.getAll();
+        List<Staff> staff = staffDao.getAll();
 
         // THEN
         assertThat(staff).isEmpty();

@@ -26,6 +26,12 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
 
     private static final Logger LOGGER = LogManager.getLogger(BeginnerClassDao.class);
 
+    private EntityManager em;
+
+    public BeginnerClassDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(BeginnerClass beginnerClass) {
         LOGGER.debug("Creating beginner class");
@@ -33,7 +39,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         BeginnerClassMapper mapper = BeginnerClassMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.BeginnerClass beginnerClassEntity = mapper.mapToEntity(beginnerClass);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         if (Objects.nonNull(beginnerClass.getResources())) {
@@ -69,7 +74,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
 
         em.persist(beginnerClassEntity);
         em.getTransaction().commit();
-        em.close();
 
         LOGGER.debug("Finished creating beginner class");
     }
@@ -77,7 +81,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
     @Override
     public Optional<BeginnerClass> get(int id) {
         LOGGER.debug("Retrieving a beginner class with id: %d", id);
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.BeginnerClass beginnerClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.BeginnerClass.class, id);
 
         LOGGER.debug("Beginner class with id: %d. Found: %s", id, beginnerClassEntity == null ? "True" : "False");
@@ -88,8 +91,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return beginnerClassModel;
     }
 
@@ -98,7 +99,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         LOGGER.debug("Deleting beginner class with id: %d", beginnerClass.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.BeginnerClass deleteBeginnerClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.BeginnerClass.class, beginnerClass.getId());
 
         if (deleteBeginnerClassEntity != null) {
@@ -109,15 +109,12 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         } else {
             LOGGER.debug("Beginner class with id: '%d' not found. Could not be deleted", beginnerClass.getId());
         }
-
-        em.close();
     }
 
     @Override
     public void modify(UpdateCommand<BeginnerClass> updateCommand) {
         BeginnerClass beginnerClassModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying beginner class with id: %d", beginnerClassModel.getId());
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.BeginnerClass existingBeginnerClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.BeginnerClass.class, beginnerClassModel.getId());
 
         if (existingBeginnerClassEntity != null) {
@@ -127,8 +124,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         } else {
             LOGGER.debug("Beginner class with id: '%d' not found. Could not be modified", beginnerClassModel.getId());
         }
-
-        em.close();
     }
 
     @Override
@@ -136,7 +131,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         LOGGER.debug("Retrieving all beginner classes");
         BeginnerClassMapper mapper = BeginnerClassMapper.MAPPER;
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.management.administration.BeginnerClass> query = em.createQuery("SELECT b FROM BeginnerClass b", woorinaru.repository.sql.entity.management.administration.BeginnerClass.class);
         List<woorinaru.repository.sql.entity.management.administration.BeginnerClass> entityBeginnerClasses = query.getResultList();
 
@@ -145,7 +139,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d beginner classes", beginnerClasses.size());
-        em.close();
         return beginnerClasses;
     }
 }

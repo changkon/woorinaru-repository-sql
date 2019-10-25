@@ -21,6 +21,12 @@ public class StaffDaoImpl implements StaffDao {
 
     private static final Logger LOGGER = LogManager.getLogger(StaffDao.class);
 
+    private EntityManager em;
+
+    public StaffDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(Staff staff) {
         LOGGER.debug("Creating a staff resource");
@@ -28,7 +34,6 @@ public class StaffDaoImpl implements StaffDao {
         StaffMapper mapper = StaffMapper.MAPPER;
         woorinaru.repository.sql.entity.user.Staff staffEntity = mapper.mapToEntity(staff);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         // Set resources if present
@@ -43,7 +48,6 @@ public class StaffDaoImpl implements StaffDao {
 
         em.persist(staffEntity);
         em.getTransaction().commit();
-        em.close();
 
         LOGGER.debug("Finished creating a staff resource");
     }
@@ -51,7 +55,6 @@ public class StaffDaoImpl implements StaffDao {
     @Override
     public Optional<Staff> get(int id) {
         LOGGER.debug("Retrieving a staff resource with id: %d", id);
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.user.Staff staffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, id);
 
         LOGGER.debug("Staff with id: %d. Found: %s", id, staffEntity == null ? "True" : "False");
@@ -62,8 +65,6 @@ public class StaffDaoImpl implements StaffDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return staffModel;
     }
 
@@ -72,7 +73,6 @@ public class StaffDaoImpl implements StaffDao {
         LOGGER.debug("Deleting staff with id: %d", staff.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.user.Staff deleteStaffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
 
         if (deleteStaffEntity != null) {
@@ -83,15 +83,12 @@ public class StaffDaoImpl implements StaffDao {
         } else {
             LOGGER.debug("Staff with id: '%d' not found. Could not be deleted", staff.getId());
         }
-
-        em.close();
     }
 
     @Override
     public void modify(UpdateCommand<Staff> updateCommand) {
         Staff staffModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying staff with id: %d", staffModel.getId());
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.user.Staff existingStaffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staffModel.getId());
 
         if (existingStaffEntity != null) {
@@ -101,8 +98,6 @@ public class StaffDaoImpl implements StaffDao {
         } else {
             LOGGER.debug("Staff with id: '%d' not found. Could not be modified", staffModel.getId());
         }
-
-        em.close();
     }
 
     @Override
@@ -110,7 +105,6 @@ public class StaffDaoImpl implements StaffDao {
         LOGGER.debug("Retrieving all staff members");
         StaffMapper mapper = StaffMapper.MAPPER;
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.user.Staff> query = em.createQuery("SELECT s FROM Staff s", woorinaru.repository.sql.entity.user.Staff.class);
         List<woorinaru.repository.sql.entity.user.Staff> entityStaff = query.getResultList();
 
@@ -119,7 +113,6 @@ public class StaffDaoImpl implements StaffDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d staff", staff.size());
-        em.close();
         return staff;
     }
 }

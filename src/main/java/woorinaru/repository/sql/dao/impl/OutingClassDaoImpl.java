@@ -26,6 +26,12 @@ public class OutingClassDaoImpl implements OutingClassDao {
 
     private static final Logger LOGGER = LogManager.getLogger(OutingClassDao.class);
 
+    private EntityManager em;
+
+    public OutingClassDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(OutingClass outingClass) {
         LOGGER.debug("Creating an outing class");
@@ -33,7 +39,6 @@ public class OutingClassDaoImpl implements OutingClassDao {
         OutingClassMapper mapper = OutingClassMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.OutingClass outingClassEntity = mapper.mapToEntity(outingClass);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         if (Objects.nonNull(outingClass.getResources())) {
@@ -69,7 +74,6 @@ public class OutingClassDaoImpl implements OutingClassDao {
 
         em.persist(outingClassEntity);
         em.getTransaction().commit();
-        em.close();
 
         LOGGER.debug("Finished creating an outing class");
     }
@@ -77,7 +81,7 @@ public class OutingClassDaoImpl implements OutingClassDao {
     @Override
     public Optional<OutingClass> get(int id) {
         LOGGER.debug("Retrieving an outing class with id: %d", id);
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.management.administration.OutingClass outingClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.OutingClass.class, id);
 
         LOGGER.debug("Outing class with id: %d. Found: %s", id, outingClassEntity == null ? "True" : "False");
@@ -88,8 +92,6 @@ public class OutingClassDaoImpl implements OutingClassDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return outingClassModel;
     }
 
@@ -98,7 +100,6 @@ public class OutingClassDaoImpl implements OutingClassDao {
         LOGGER.debug("Deleting outing class with id: %d", outingClass.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.OutingClass deleteOutingClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.OutingClass.class, outingClass.getId());
 
         if (deleteOutingClassEntity != null) {
@@ -109,15 +110,13 @@ public class OutingClassDaoImpl implements OutingClassDao {
         } else {
             LOGGER.debug("Outing class with id: '%d' not found. Could not be deleted", outingClass.getId());
         }
-
-        em.close();
     }
 
     @Override
     public void modify(UpdateCommand<OutingClass> updateCommand) {
         OutingClass outingClassModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying outing class with id: %d", outingClassModel.getId());
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.management.administration.OutingClass existingOutingClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.OutingClass.class, outingClassModel.getId());
 
         if (existingOutingClassEntity != null) {
@@ -128,7 +127,6 @@ public class OutingClassDaoImpl implements OutingClassDao {
             LOGGER.debug("Outing class with id: '%d' not found. Could not be modified", outingClassModel.getId());
         }
 
-        em.close();
     }
 
     @Override
@@ -136,7 +134,6 @@ public class OutingClassDaoImpl implements OutingClassDao {
         LOGGER.debug("Retrieving all outing classes");
         OutingClassMapper mapper = OutingClassMapper.MAPPER;
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.management.administration.OutingClass> query = em.createQuery("SELECT o FROM OutingClass o", woorinaru.repository.sql.entity.management.administration.OutingClass.class);
         List<woorinaru.repository.sql.entity.management.administration.OutingClass> entityOutingClasses = query.getResultList();
 
@@ -145,7 +142,7 @@ public class OutingClassDaoImpl implements OutingClassDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d outing classes", outingClasses.size());
-        em.close();
+
         return outingClasses;
     }
 }

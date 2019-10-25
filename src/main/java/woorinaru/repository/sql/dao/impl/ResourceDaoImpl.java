@@ -21,6 +21,12 @@ public class ResourceDaoImpl implements ResourceDao {
 
     private static final Logger LOGGER = LogManager.getLogger(ResourceDao.class);
 
+    private EntityManager em;
+
+    public ResourceDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(Resource resource) {
         LOGGER.debug("Creating a resource");
@@ -28,11 +34,9 @@ public class ResourceDaoImpl implements ResourceDao {
         ResourceMapper mapper = ResourceMapper.MAPPER;
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = mapper.mapToEntity(resource);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
         em.persist(resourceEntity);
         em.getTransaction().commit();
-        em.close();
 
         LOGGER.debug("Finished creating a resource");
     }
@@ -40,7 +44,7 @@ public class ResourceDaoImpl implements ResourceDao {
     @Override
     public Optional<Resource> get(int id) {
         LOGGER.debug("Retrieving a resource with id: %d", id);
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, id);
 
         LOGGER.debug("Resource with id: %d. Found: %s", id, resourceEntity == null ? "True" : "False");
@@ -51,8 +55,6 @@ public class ResourceDaoImpl implements ResourceDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return resourceModel;
     }
 
@@ -61,7 +63,6 @@ public class ResourceDaoImpl implements ResourceDao {
         LOGGER.debug("Deleting resource with id: %d", resource.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.resource.Resource deleteResourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
 
         if (deleteResourceEntity != null) {
@@ -72,15 +73,13 @@ public class ResourceDaoImpl implements ResourceDao {
         } else {
             LOGGER.debug("Resource with id: '%d' not found. Could not be deleted", resource.getId());
         }
-
-        em.close();
     }
 
     @Override
     public void modify(UpdateCommand<Resource> updateCommand) {
         Resource resourceModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying resource with id: %d", resourceModel.getId());
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.resource.Resource existingResourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resourceModel.getId());
 
         if (existingResourceEntity != null) {
@@ -90,8 +89,6 @@ public class ResourceDaoImpl implements ResourceDao {
         } else {
             LOGGER.debug("Resource with id: '%d' not found. Could not be modified", resourceModel.getId());
         }
-
-        em.close();
     }
 
     @Override
@@ -99,7 +96,6 @@ public class ResourceDaoImpl implements ResourceDao {
         LOGGER.debug("Retrieving all resources");
         ResourceMapper mapper = ResourceMapper.MAPPER;
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.resource.Resource> query = em.createQuery("SELECT r FROM Resource r", woorinaru.repository.sql.entity.resource.Resource.class);
         List<woorinaru.repository.sql.entity.resource.Resource> entityResources = query.getResultList();
 
@@ -108,7 +104,6 @@ public class ResourceDaoImpl implements ResourceDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d resource", resources.size());
-        em.close();
         return resources;
     }
 }

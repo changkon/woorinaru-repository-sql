@@ -25,6 +25,12 @@ public class EventDaoImpl implements EventDao {
 
     private static final Logger LOGGER = LogManager.getLogger(EventDao.class);
 
+    private EntityManager em;
+
+    public EventDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(Event event) {
         LOGGER.debug("Creating an event");
@@ -32,7 +38,6 @@ public class EventDaoImpl implements EventDao {
         EventMapper mapper = EventMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.Event eventEntity = mapper.mapToEntity(event);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         if (Objects.nonNull(event.getWooriClasses())) {
@@ -51,7 +56,6 @@ public class EventDaoImpl implements EventDao {
 
         em.persist(eventEntity);
         em.getTransaction().commit();
-        em.close();
 
         LOGGER.debug("Finished creating an event");
     }
@@ -59,7 +63,7 @@ public class EventDaoImpl implements EventDao {
     @Override
     public Optional<Event> get(int id) {
         LOGGER.debug("Retrieving an event with id: %d", id);
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.management.administration.Event eventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, id);
 
         LOGGER.debug("Event with id: %d. Found: %s", id, eventEntity == null ? "True" : "False");
@@ -70,8 +74,6 @@ public class EventDaoImpl implements EventDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return eventModel;
     }
 
@@ -80,7 +82,6 @@ public class EventDaoImpl implements EventDao {
         LOGGER.debug("Deleting event with id: %d", event.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.Event deleteEventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, event.getId());
 
         if (deleteEventEntity != null) {
@@ -92,7 +93,6 @@ public class EventDaoImpl implements EventDao {
             LOGGER.debug("Event with id: '%d' not found. Could not be deleted", event.getId());
         }
 
-        em.close();
     }
 
 
@@ -100,7 +100,7 @@ public class EventDaoImpl implements EventDao {
     public void modify(UpdateCommand<Event> updateCommand) {
         Event eventModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying event with id: %d", eventModel.getId());
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.management.administration.Event existingEventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, eventModel.getId());
 
         if (existingEventEntity != null) {
@@ -111,7 +111,6 @@ public class EventDaoImpl implements EventDao {
             LOGGER.debug("Event with id: '%d' not found. Could not be modified", eventModel.getId());
         }
 
-        em.close();
     }
 
     @Override
@@ -119,7 +118,6 @@ public class EventDaoImpl implements EventDao {
         LOGGER.debug("Retrieving all events");
         EventMapper mapper = EventMapper.MAPPER;
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.management.administration.Event> query = em.createQuery("SELECT e FROM Event e", woorinaru.repository.sql.entity.management.administration.Event.class);
         List<woorinaru.repository.sql.entity.management.administration.Event> eventEntities = query.getResultList();
 
@@ -128,7 +126,6 @@ public class EventDaoImpl implements EventDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d events", events.size());
-        em.close();
 
         return events;
     }

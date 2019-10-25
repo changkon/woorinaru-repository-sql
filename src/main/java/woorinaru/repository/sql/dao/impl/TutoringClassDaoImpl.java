@@ -26,6 +26,12 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
 
     private static final Logger LOGGER = LogManager.getLogger(TutoringClassDao.class);
 
+    private EntityManager em;
+
+    public TutoringClassDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(TutoringClass tutoringClass) {
         LOGGER.debug("Creating tutoring class");
@@ -33,7 +39,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         TutoringClassMapper mapper = TutoringClassMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.TutoringClass tutoringClassEntity = mapper.mapToEntity(tutoringClass);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         if (Objects.nonNull(tutoringClass.getResources())) {
@@ -69,7 +74,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
 
         em.persist(tutoringClassEntity);
         em.getTransaction().commit();
-        em.close();
 
         LOGGER.debug("Finished creating tutoring class");
     }
@@ -77,7 +81,7 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
     @Override
     public Optional<TutoringClass> get(int id) {
         LOGGER.debug("Retrieving a tutoring class with id: %d", id);
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.management.administration.TutoringClass tutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, id);
 
         LOGGER.debug("Tutoring class with id: %d. Found: %s", id, tutoringClassEntity == null ? "True" : "False");
@@ -88,8 +92,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return tutoringClassModel;
     }
 
@@ -98,7 +100,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         LOGGER.debug("Deleting tutoring class with id: %d", tutoringClass.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.TutoringClass deleteTutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, tutoringClass.getId());
 
         if (deleteTutoringClassEntity != null) {
@@ -109,15 +110,13 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         } else {
             LOGGER.debug("Tutoring class with id: '%d' not found. Could not be deleted", tutoringClass.getId());
         }
-
-        em.close();
     }
 
     @Override
     public void modify(UpdateCommand<TutoringClass> updateCommand) {
         TutoringClass tutoringClassModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying tutoring class with id: %d", tutoringClassModel.getId());
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.management.administration.TutoringClass existingTutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, tutoringClassModel.getId());
 
         if (existingTutoringClassEntity != null) {
@@ -127,8 +126,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         } else {
             LOGGER.debug("Tutoring class with id: '%d' not found. Could not be modified", tutoringClassModel.getId());
         }
-
-        em.close();
     }
 
     @Override
@@ -136,7 +133,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         LOGGER.debug("Retrieving all tutoring classes");
         TutoringClassMapper mapper = TutoringClassMapper.MAPPER;
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.management.administration.TutoringClass> query = em.createQuery("SELECT t FROM TutoringClass t", woorinaru.repository.sql.entity.management.administration.TutoringClass.class);
         List<woorinaru.repository.sql.entity.management.administration.TutoringClass> entityTutoringClasses = query.getResultList();
 
@@ -145,7 +141,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d intermediate classes", tutoringClasses.size());
-        em.close();
         return tutoringClasses;
     }
 }

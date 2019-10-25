@@ -24,6 +24,12 @@ public class TermDaoImpl implements TermDao {
 
     private static final Logger LOGGER = LogManager.getLogger(TermDao.class);
 
+    private EntityManager em;
+
+    public TermDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(Term term) {
         LOGGER.debug("Creating a term resource");
@@ -31,7 +37,6 @@ public class TermDaoImpl implements TermDao {
         TermMapper mapper = TermMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.Term termEntity = mapper.mapToEntity(term);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         // Add staff if present
@@ -51,7 +56,6 @@ public class TermDaoImpl implements TermDao {
 
         em.persist(termEntity);
         em.getTransaction().commit();
-        em.close();
 
         LOGGER.debug("Finished creating a term resource");
     }
@@ -59,7 +63,6 @@ public class TermDaoImpl implements TermDao {
     @Override
     public Optional<Term> get(int id) {
         LOGGER.debug("Retrieving a term with id: %d", id);
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.Term termEntity = em.find(woorinaru.repository.sql.entity.management.administration.Term.class, id);
 
         LOGGER.debug("Term with id: %d. Found: %s", id, termEntity == null ? "True" : "False");
@@ -70,8 +73,6 @@ public class TermDaoImpl implements TermDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return termModel;
     }
 
@@ -80,7 +81,6 @@ public class TermDaoImpl implements TermDao {
         LOGGER.debug("Deleting term with id: %d", term.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.Term deleteTermEntity = em.find(woorinaru.repository.sql.entity.management.administration.Term.class, term.getId());
 
         if (deleteTermEntity != null) {
@@ -91,15 +91,12 @@ public class TermDaoImpl implements TermDao {
         } else {
             LOGGER.debug("Term with id: '%d' not found. Could not be deleted", term.getId());
         }
-
-        em.close();
     }
 
     @Override
     public void modify(UpdateCommand<Term> updateCommand) {
         Term termModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying term with id: %d", termModel.getId());
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.Term existingTermEntity = em.find(woorinaru.repository.sql.entity.management.administration.Term.class, termModel.getId());
 
         if (existingTermEntity != null) {
@@ -109,8 +106,6 @@ public class TermDaoImpl implements TermDao {
         } else {
             LOGGER.debug("Term with id: '%d' not found. Could not be modified", termModel.getId());
         }
-
-        em.close();
     }
 
     @Override
@@ -118,7 +113,6 @@ public class TermDaoImpl implements TermDao {
         LOGGER.debug("Retrieving all terms");
         TermMapper mapper = TermMapper.MAPPER;
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.management.administration.Term> query = em.createQuery("SELECT t FROM Term t", woorinaru.repository.sql.entity.management.administration.Term.class);
         List<woorinaru.repository.sql.entity.management.administration.Term> termEntities = query.getResultList();
 
@@ -127,7 +121,6 @@ public class TermDaoImpl implements TermDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d terms", terms.size());
-        em.close();
         return terms;
     }
 }

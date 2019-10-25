@@ -15,6 +15,7 @@ import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +25,12 @@ public class AdminDaoImpl implements AdminDao {
 
     private static final Logger LOGGER = LogManager.getLogger(AdminDao.class);
 
+    private EntityManager em;
+
+    public AdminDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(Admin admin) {
         LOGGER.debug("Creating an admin resource");
@@ -31,7 +38,6 @@ public class AdminDaoImpl implements AdminDao {
         AdminMapper mapper = Mappers.getMapper(AdminMapper.class);
         woorinaru.repository.sql.entity.user.Admin adminEntity = mapper.mapToEntity(admin);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         // Set resources if present
@@ -45,16 +51,14 @@ public class AdminDaoImpl implements AdminDao {
         }
 
         em.persist(adminEntity);
-        em.getTransaction().commit();
-        em.close();
 
+        em.getTransaction().commit();
         LOGGER.debug("Finished creating an admin resource");
     }
 
     @Override
     public Optional<Admin> get(int id) {
         LOGGER.debug("Retrieving an admin resource with id: %d", id);
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.user.Admin adminEntity = em.find(woorinaru.repository.sql.entity.user.Admin.class, id);
 
         LOGGER.debug("Admin with id: %d. Found: %s", id, adminEntity == null ? "True" : "False");
@@ -65,8 +69,6 @@ public class AdminDaoImpl implements AdminDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return adminModel;
     }
 
@@ -75,7 +77,6 @@ public class AdminDaoImpl implements AdminDao {
         LOGGER.debug("Deleting admin with id: %d", admin.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.user.Admin deleteAdminEntity = em.find(woorinaru.repository.sql.entity.user.Admin.class, admin.getId());
 
         if (deleteAdminEntity != null) {
@@ -86,15 +87,12 @@ public class AdminDaoImpl implements AdminDao {
         } else {
             LOGGER.debug("Admin with id: '%d' not found. Could not be deleted", admin.getId());
         }
-
-        em.close();
     }
 
     @Override
     public void modify(UpdateCommand<Admin> updateCommand) {
         Admin adminModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying admin with id: %d", adminModel.getId());
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.user.Admin existingAdminEntity = em.find(woorinaru.repository.sql.entity.user.Admin.class, adminModel.getId());
 
         if (existingAdminEntity != null) {
@@ -104,8 +102,6 @@ public class AdminDaoImpl implements AdminDao {
         } else {
             LOGGER.debug("Admin with id: '%d' not found. Could not be modified", adminModel.getId());
         }
-
-        em.close();
     }
 
     @Override
@@ -113,7 +109,6 @@ public class AdminDaoImpl implements AdminDao {
         LOGGER.debug("Retrieving all admins");
         AdminMapper mapper = Mappers.getMapper(AdminMapper.class);
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.user.Admin> query = em.createQuery("SELECT a FROM Admin a", woorinaru.repository.sql.entity.user.Admin.class);
         List<woorinaru.repository.sql.entity.user.Admin> entityAdmins = query.getResultList();
 
@@ -122,7 +117,7 @@ public class AdminDaoImpl implements AdminDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d admins", admins.size());
-        em.close();
+
         return admins;
     }
 }

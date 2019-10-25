@@ -28,7 +28,8 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         resourceModel.setDescription("resource description");
         resourceModel.setResource("resource".getBytes());
 
-        ResourceDao resourceDao = new ResourceDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
 
         // WHEN
         resourceDao.create(resourceModel);
@@ -60,7 +61,8 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(query1.getResultList()).hasSize(1);
 
         // WHEN
-        ResourceDao resourceDao = new ResourceDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
         ResourceMapper mapper = ResourceMapper.MAPPER;
         resourceDao.delete(mapper.mapToModel(resourceEntity));
 
@@ -88,7 +90,8 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         em.close();
 
         // WHEN
-        ResourceDao resourceDao = new ResourceDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
         Optional<Resource> resourceModelOptional = resourceDao.get(1);
 
         // THEN
@@ -104,7 +107,8 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
     public void testGetNonExistentResourceIsEmpty() {
         // GIVEN
         // WHEN
-        ResourceDao resourceDao = new ResourceDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
         Optional<Resource> resourceModelOptional = resourceDao.get(100);
 
         // THEN
@@ -131,7 +135,8 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         em.close();
 
         // WHEN
-        ResourceDao resourceDao = new ResourceDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
         List<Resource> resources = resourceDao.getAll();
 
         // THEN

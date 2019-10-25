@@ -26,6 +26,12 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
 
     private static final Logger LOGGER = LogManager.getLogger(IntermediateClassDao.class);
 
+    private EntityManager em;
+
+    public IntermediateClassDaoImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public void create(IntermediateClass intermediateClass) {
         LOGGER.debug("Creating intermediate class");
@@ -33,7 +39,6 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         IntermediateClassMapper mapper = IntermediateClassMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.IntermediateClass intermediateClassEntity = mapper.mapToEntity(intermediateClass);
 
-        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         if (Objects.nonNull(intermediateClass.getResources())) {
@@ -69,7 +74,6 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
 
         em.persist(intermediateClassEntity);
         em.getTransaction().commit();
-        em.close();
 
         LOGGER.debug("Finished creating intermediate class");
     }
@@ -77,7 +81,7 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
     @Override
     public Optional<IntermediateClass> get(int id) {
         LOGGER.debug("Retrieving a intermediate class with id: %d", id);
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.management.administration.IntermediateClass intermediateClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.IntermediateClass.class, id);
 
         LOGGER.debug("Intermediate class with id: %d. Found: %s", id, intermediateClassEntity == null ? "True" : "False");
@@ -88,8 +92,6 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
             .map(mapper::mapToModel)
             .findFirst();
 
-        em.close();
-
         return intermediateClassModel;
     }
 
@@ -98,7 +100,6 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         LOGGER.debug("Deleting intermediate class with id: %d", intermediateClass.getId());
 
         // Map file
-        EntityManager em = getEntityManager();
         woorinaru.repository.sql.entity.management.administration.IntermediateClass deleteIntermediateClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.IntermediateClass.class, intermediateClass.getId());
 
         if (deleteIntermediateClassEntity != null) {
@@ -109,15 +110,13 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         } else {
             LOGGER.debug("Intermediate class with id: '%d' not found. Could not be deleted", intermediateClass.getId());
         }
-
-        em.close();
     }
 
     @Override
     public void modify(UpdateCommand<IntermediateClass> updateCommand) {
         IntermediateClass intermediateClassModel = updateCommand.getReceiver();
         LOGGER.debug("Modifying intermediate class with id: %d", intermediateClassModel.getId());
-        EntityManager em = getEntityManager();
+
         woorinaru.repository.sql.entity.management.administration.IntermediateClass existingIntermediateClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.IntermediateClass.class, intermediateClassModel.getId());
 
         if (existingIntermediateClassEntity != null) {
@@ -128,7 +127,6 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
             LOGGER.debug("Intermediate class with id: '%d' not found. Could not be modified", intermediateClassModel.getId());
         }
 
-        em.close();
     }
 
     @Override
@@ -136,7 +134,6 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         LOGGER.debug("Retrieving all intermediate classes");
         IntermediateClassMapper mapper = IntermediateClassMapper.MAPPER;
 
-        EntityManager em = getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.management.administration.IntermediateClass> query = em.createQuery("SELECT i FROM IntermediateClass i", woorinaru.repository.sql.entity.management.administration.IntermediateClass.class);
         List<woorinaru.repository.sql.entity.management.administration.IntermediateClass> entityIntermediateClasses = query.getResultList();
 
@@ -145,7 +142,7 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
             .collect(Collectors.toList());
 
         LOGGER.debug("Retrieved %d intermediate classes", intermediateClasses.size());
-        em.close();
+
         return intermediateClasses;
     }
 }

@@ -28,7 +28,8 @@ public class BeginnerClassDaoImplIT extends AbstractContainerDatabaseIT {
         BeginnerClass beginnerClassModel = new BeginnerClass();
 
         // WHEN
-        BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl(daoEm);
         beginnerClassDao.create(beginnerClassModel);
 
         // THEN
@@ -85,7 +86,8 @@ public class BeginnerClassDaoImplIT extends AbstractContainerDatabaseIT {
         beginnerClassModel.addStudent(studentModel);
 
         // WHEN
-        BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl(daoEm);
         beginnerClassDao.create(beginnerClassModel);
 
         // THEN
@@ -118,7 +120,8 @@ public class BeginnerClassDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(query1.getResultList()).hasSize(1);
 
         // WHEN
-        BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl();
+        EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
+        BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl(daoEm);
         beginnerClassDao.delete(BeginnerClassMapper.MAPPER.mapToModel(beginnerClassEntity));
 
         // THEN

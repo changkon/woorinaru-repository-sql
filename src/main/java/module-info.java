@@ -24,4 +24,5 @@ module woorinaru.repository.sql {
 
     // exports for mapping
     exports woorinaru.repository.sql.mapping.model to org.mapstruct;
+    exports woorinaru.repository.sql.dao.impl;
 }

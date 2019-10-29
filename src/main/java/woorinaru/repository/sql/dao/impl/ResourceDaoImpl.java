@@ -34,9 +34,7 @@ public class ResourceDaoImpl implements ResourceDao {
         ResourceMapper mapper = ResourceMapper.MAPPER;
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = mapper.mapToEntity(resource);
 
-        em.getTransaction().begin();
         em.persist(resourceEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating a resource");
     }
@@ -66,9 +64,7 @@ public class ResourceDaoImpl implements ResourceDao {
         woorinaru.repository.sql.entity.resource.Resource deleteResourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
 
         if (deleteResourceEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteResourceEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Resource deleted");
         } else {
             LOGGER.debug("Resource with id: '%d' not found. Could not be deleted", resource.getId());

@@ -38,8 +38,6 @@ public class AdminDaoImpl implements AdminDao {
         AdminMapper mapper = Mappers.getMapper(AdminMapper.class);
         woorinaru.repository.sql.entity.user.Admin adminEntity = mapper.mapToEntity(admin);
 
-        em.getTransaction().begin();
-
         // Set resources if present
         if (Objects.nonNull(admin.getFavouriteResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : admin.getFavouriteResources()) {
@@ -52,7 +50,6 @@ public class AdminDaoImpl implements AdminDao {
 
         em.persist(adminEntity);
 
-        em.getTransaction().commit();
         LOGGER.debug("Finished creating an admin resource");
     }
 
@@ -80,9 +77,7 @@ public class AdminDaoImpl implements AdminDao {
         woorinaru.repository.sql.entity.user.Admin deleteAdminEntity = em.find(woorinaru.repository.sql.entity.user.Admin.class, admin.getId());
 
         if (deleteAdminEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteAdminEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Admin deleted");
         } else {
             LOGGER.debug("Admin with id: '%d' not found. Could not be deleted", admin.getId());

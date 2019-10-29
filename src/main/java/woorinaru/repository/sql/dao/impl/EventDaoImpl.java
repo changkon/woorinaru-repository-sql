@@ -38,8 +38,6 @@ public class EventDaoImpl implements EventDao {
         EventMapper mapper = EventMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.Event eventEntity = mapper.mapToEntity(event);
 
-        em.getTransaction().begin();
-
         if (Objects.nonNull(event.getWooriClasses())) {
             for (woorinaru.core.model.management.administration.WooriClass wooriClassModel : event.getWooriClasses()) {
                 WooriClass wooriClassEntity = em.find(WooriClass.class, wooriClassModel.getId());
@@ -55,7 +53,6 @@ public class EventDaoImpl implements EventDao {
         }
 
         em.persist(eventEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating an event");
     }
@@ -85,9 +82,7 @@ public class EventDaoImpl implements EventDao {
         woorinaru.repository.sql.entity.management.administration.Event deleteEventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, event.getId());
 
         if (deleteEventEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteEventEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Event deleted");
         } else {
             LOGGER.debug("Event with id: '%d' not found. Could not be deleted", event.getId());

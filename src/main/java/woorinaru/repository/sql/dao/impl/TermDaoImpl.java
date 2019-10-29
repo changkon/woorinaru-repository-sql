@@ -37,8 +37,6 @@ public class TermDaoImpl implements TermDao {
         TermMapper mapper = TermMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.Term termEntity = mapper.mapToEntity(term);
 
-        em.getTransaction().begin();
-
         // Add staff if present
         if (Objects.nonNull(term.getStaffMembers())) {
             for (woorinaru.core.model.user.Staff staffModel : term.getStaffMembers()) {
@@ -55,7 +53,6 @@ public class TermDaoImpl implements TermDao {
         }
 
         em.persist(termEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating a term resource");
     }
@@ -84,9 +81,7 @@ public class TermDaoImpl implements TermDao {
         woorinaru.repository.sql.entity.management.administration.Term deleteTermEntity = em.find(woorinaru.repository.sql.entity.management.administration.Term.class, term.getId());
 
         if (deleteTermEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteTermEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Term deleted");
         } else {
             LOGGER.debug("Term with id: '%d' not found. Could not be deleted", term.getId());

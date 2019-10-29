@@ -30,7 +30,7 @@ public class BeginnerClassDaoImplIT extends AbstractContainerDatabaseIT {
         // WHEN
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl(daoEm);
-        beginnerClassDao.create(beginnerClassModel);
+        executeInTransaction().accept(daoEm, () -> beginnerClassDao.create(beginnerClassModel));
 
         // THEN
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
@@ -88,7 +88,7 @@ public class BeginnerClassDaoImplIT extends AbstractContainerDatabaseIT {
         // WHEN
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl(daoEm);
-        beginnerClassDao.create(beginnerClassModel);
+        executeInTransaction().accept(daoEm, () -> beginnerClassDao.create(beginnerClassModel));
 
         // THEN
         EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
@@ -122,7 +122,7 @@ public class BeginnerClassDaoImplIT extends AbstractContainerDatabaseIT {
         // WHEN
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl(daoEm);
-        beginnerClassDao.delete(BeginnerClassMapper.MAPPER.mapToModel(beginnerClassEntity));
+        executeInTransaction().accept(daoEm, () -> beginnerClassDao.delete(BeginnerClassMapper.MAPPER.mapToModel(beginnerClassEntity)));
 
         // THEN
         TypedQuery<woorinaru.repository.sql.entity.management.administration.BeginnerClass> query2 = em.createQuery("SELECT b FROM BeginnerClass b", woorinaru.repository.sql.entity.management.administration.BeginnerClass.class);

@@ -39,8 +39,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         TutoringClassMapper mapper = TutoringClassMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.TutoringClass tutoringClassEntity = mapper.mapToEntity(tutoringClass);
 
-        em.getTransaction().begin();
-
         if (Objects.nonNull(tutoringClass.getResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : tutoringClass.getResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
@@ -73,7 +71,6 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         }
 
         em.persist(tutoringClassEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating tutoring class");
     }
@@ -103,9 +100,7 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         woorinaru.repository.sql.entity.management.administration.TutoringClass deleteTutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, tutoringClass.getId());
 
         if (deleteTutoringClassEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteTutoringClassEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Tutoring class deleted");
         } else {
             LOGGER.debug("Tutoring class with id: '%d' not found. Could not be deleted", tutoringClass.getId());

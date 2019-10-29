@@ -34,8 +34,6 @@ public class StaffDaoImpl implements StaffDao {
         StaffMapper mapper = StaffMapper.MAPPER;
         woorinaru.repository.sql.entity.user.Staff staffEntity = mapper.mapToEntity(staff);
 
-        em.getTransaction().begin();
-
         // Set resources if present
         if (Objects.nonNull(staff.getFavouriteResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : staff.getFavouriteResources()) {
@@ -47,7 +45,6 @@ public class StaffDaoImpl implements StaffDao {
         }
 
         em.persist(staffEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating a staff resource");
     }
@@ -76,9 +73,7 @@ public class StaffDaoImpl implements StaffDao {
         woorinaru.repository.sql.entity.user.Staff deleteStaffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
 
         if (deleteStaffEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteStaffEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Staff deleted");
         } else {
             LOGGER.debug("Staff with id: '%d' not found. Could not be deleted", staff.getId());

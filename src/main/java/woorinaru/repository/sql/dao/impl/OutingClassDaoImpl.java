@@ -39,8 +39,6 @@ public class OutingClassDaoImpl implements OutingClassDao {
         OutingClassMapper mapper = OutingClassMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.OutingClass outingClassEntity = mapper.mapToEntity(outingClass);
 
-        em.getTransaction().begin();
-
         if (Objects.nonNull(outingClass.getResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : outingClass.getResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
@@ -73,7 +71,6 @@ public class OutingClassDaoImpl implements OutingClassDao {
         }
 
         em.persist(outingClassEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating an outing class");
     }
@@ -103,9 +100,7 @@ public class OutingClassDaoImpl implements OutingClassDao {
         woorinaru.repository.sql.entity.management.administration.OutingClass deleteOutingClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.OutingClass.class, outingClass.getId());
 
         if (deleteOutingClassEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteOutingClassEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Outing class deleted");
         } else {
             LOGGER.debug("Outing class with id: '%d' not found. Could not be deleted", outingClass.getId());

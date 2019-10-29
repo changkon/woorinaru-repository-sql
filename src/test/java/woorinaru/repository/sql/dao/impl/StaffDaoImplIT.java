@@ -45,7 +45,7 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         staffModel.setStaffRole(StaffRole.TEACHER);
 
         // WHEN
-        staffDao.create(staffModel);
+        executeInTransaction().accept(daoEm, () -> staffDao.create(staffModel));
 
         // THEN
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
@@ -96,7 +96,7 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         staffModel.setFavouriteResources(List.of(resourceModel));
 
         // WHEN
-        staffDao.create(staffModel);
+        executeInTransaction().accept(daoEm, () -> staffDao.create(staffModel));
 
         // THEN
         EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
@@ -246,7 +246,7 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         em1.close();
 
         // WHEN
-        staffDao.delete(staffModel);
+        executeInTransaction().accept(daoEm, () -> staffDao.delete(staffModel));
 
         // THEN
         EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
@@ -294,7 +294,7 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         em1.close();
 
         // WHEN
-        staffDao.delete(staffModel);
+        executeInTransaction().accept(daoEm, () -> staffDao.delete(staffModel));
 
         // THEN
         EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();

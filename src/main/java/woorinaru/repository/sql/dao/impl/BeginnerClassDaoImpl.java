@@ -39,8 +39,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         BeginnerClassMapper mapper = BeginnerClassMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.BeginnerClass beginnerClassEntity = mapper.mapToEntity(beginnerClass);
 
-        em.getTransaction().begin();
-
         if (Objects.nonNull(beginnerClass.getResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : beginnerClass.getResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
@@ -73,7 +71,6 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         }
 
         em.persist(beginnerClassEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating beginner class");
     }
@@ -102,9 +99,7 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         woorinaru.repository.sql.entity.management.administration.BeginnerClass deleteBeginnerClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.BeginnerClass.class, beginnerClass.getId());
 
         if (deleteBeginnerClassEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteBeginnerClassEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Beginner class deleted");
         } else {
             LOGGER.debug("Beginner class with id: '%d' not found. Could not be deleted", beginnerClass.getId());

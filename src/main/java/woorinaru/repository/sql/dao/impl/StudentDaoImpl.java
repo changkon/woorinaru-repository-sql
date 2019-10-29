@@ -36,8 +36,6 @@ public class StudentDaoImpl implements StudentDao {
         StudentMapper mapper = StudentMapper.MAPPER;
         woorinaru.repository.sql.entity.user.Student studentEntity = mapper.mapToEntity(student);
 
-        em.getTransaction().begin();
-
         // Set resources if present
         if (Objects.nonNull(student.getFavouriteResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : student.getFavouriteResources()) {
@@ -49,7 +47,6 @@ public class StudentDaoImpl implements StudentDao {
         }
 
         em.persist(studentEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating a student resource");
     }
@@ -79,9 +76,7 @@ public class StudentDaoImpl implements StudentDao {
         woorinaru.repository.sql.entity.user.Student deleteStudentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
 
         if (deleteStudentEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteStudentEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Student deleted");
         } else {
             LOGGER.debug("Student with id: '%d' not found. Could not be deleted", student.getId());

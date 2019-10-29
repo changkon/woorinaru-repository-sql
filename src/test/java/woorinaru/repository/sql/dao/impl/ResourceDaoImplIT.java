@@ -32,7 +32,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
 
         // WHEN
-        resourceDao.create(resourceModel);
+        executeInTransaction().accept(daoEm, () -> resourceDao.create(resourceModel));
 
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.resource.Resource> query = em.createQuery("SELECT r FROM Resource r", woorinaru.repository.sql.entity.resource.Resource.class);
@@ -64,7 +64,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
         ResourceMapper mapper = ResourceMapper.MAPPER;
-        resourceDao.delete(mapper.mapToModel(resourceEntity));
+        executeInTransaction().accept(daoEm, () -> resourceDao.delete(mapper.mapToModel(resourceEntity)));
 
         // THEN
         TypedQuery<woorinaru.repository.sql.entity.resource.Resource> query2 = em.createQuery("SELECT r FROM Resource r", woorinaru.repository.sql.entity.resource.Resource.class);

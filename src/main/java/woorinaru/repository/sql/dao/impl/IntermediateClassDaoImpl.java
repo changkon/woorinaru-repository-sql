@@ -39,8 +39,6 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         IntermediateClassMapper mapper = IntermediateClassMapper.MAPPER;
         woorinaru.repository.sql.entity.management.administration.IntermediateClass intermediateClassEntity = mapper.mapToEntity(intermediateClass);
 
-        em.getTransaction().begin();
-
         if (Objects.nonNull(intermediateClass.getResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : intermediateClass.getResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
@@ -73,7 +71,6 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         }
 
         em.persist(intermediateClassEntity);
-        em.getTransaction().commit();
 
         LOGGER.debug("Finished creating intermediate class");
     }
@@ -103,9 +100,7 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
         woorinaru.repository.sql.entity.management.administration.IntermediateClass deleteIntermediateClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.IntermediateClass.class, intermediateClass.getId());
 
         if (deleteIntermediateClassEntity != null) {
-            em.getTransaction().begin();
             em.remove(deleteIntermediateClassEntity);
-            em.getTransaction().commit();
             LOGGER.debug("Intermediate class deleted");
         } else {
             LOGGER.debug("Intermediate class with id: '%d' not found. Could not be deleted", intermediateClass.getId());

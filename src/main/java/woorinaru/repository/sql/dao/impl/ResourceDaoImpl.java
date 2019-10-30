@@ -72,18 +72,17 @@ public class ResourceDaoImpl implements ResourceDao {
     }
 
     @Override
-    public void modify(UpdateCommand<Resource> updateCommand) {
-        Resource resourceModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying resource with id: %d", resourceModel.getId());
-
-        woorinaru.repository.sql.entity.resource.Resource existingResourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resourceModel.getId());
+    public void modify(Resource resource) {
+        LOGGER.debug("Modifying resource with id: %d", resource.getId());
+        woorinaru.repository.sql.entity.resource.Resource existingResourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, resource.getId());
 
         if (existingResourceEntity != null) {
-            Resource resourceAdapter = new ResourceAdapter(existingResourceEntity);
-            updateCommand.setReceiver(resourceAdapter);
-            updateCommand.execute();
+            existingResourceEntity.setDescription(resource.getDescription());
+            existingResourceEntity.setResource(resource.getResource());
+            em.merge(existingResourceEntity);
+            LOGGER.debug("Completed modifying resource with id: %d", resource.getId());
         } else {
-            LOGGER.debug("Resource with id: '%d' not found. Could not be modified", resourceModel.getId());
+            LOGGER.debug("Could not find resource with id: %d. Did not modify", resource.getId());
         }
     }
 

@@ -81,17 +81,31 @@ public class StaffDaoImpl implements StaffDao {
     }
 
     @Override
-    public void modify(UpdateCommand<Staff> updateCommand) {
-        Staff staffModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying staff with id: %d", staffModel.getId());
-        woorinaru.repository.sql.entity.user.Staff existingStaffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staffModel.getId());
+    public void modify(Staff staff) {
+        LOGGER.debug("Modifying staff with id: %d", staff.getId());
+        woorinaru.repository.sql.entity.user.Staff existingStaffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, staff.getId());
 
         if (existingStaffEntity != null) {
-            Staff staffAdapter = new StaffAdapter(existingStaffEntity, em);
-            updateCommand.setReceiver(staffAdapter);
-            updateCommand.execute();
+            existingStaffEntity.setName(staff.getName());
+            existingStaffEntity.setNationality(staff.getNationality());
+            existingStaffEntity.setEmail(staff.getEmail());
+            existingStaffEntity.setSignUpDateTime(staff.getSignUpDateTime());
+            existingStaffEntity.setFavouriteResources(new ArrayList<>());
+
+            // re add resources
+            for (woorinaru.core.model.management.administration.Resource resourceModel : staff.getFavouriteResources()) {
+                int resourceModelId = resourceModel.getId();
+                Resource existingResourceEntity = em.find(Resource.class, resourceModelId);
+                existingStaffEntity.addFavouriteResource(existingResourceEntity);
+            }
+
+            existingStaffEntity.setTeam(StaffMapper.MAPPER.mapTeamModelToTeamEntity(staff.getTeam()));
+            existingStaffEntity.setStaffRole(StaffMapper.MAPPER.mapStaffRoleModelToStaffRoleEntity(staff.getStaffRole()));
+
+            em.merge(existingStaffEntity);
+            LOGGER.debug("Finished modifying staff");
         } else {
-            LOGGER.debug("Staff with id: '%d' not found. Could not be modified", staffModel.getId());
+            LOGGER.debug("Could not find staff with id: %d. Did not modify", staff.getId());
         }
     }
 

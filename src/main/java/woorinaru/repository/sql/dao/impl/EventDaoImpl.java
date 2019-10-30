@@ -3,23 +3,20 @@ package woorinaru.repository.sql.dao.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mapstruct.factory.Mappers;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.EventDao;
 import woorinaru.core.model.management.administration.Event;
-import woorinaru.repository.sql.adapter.EventAdapter;
 import woorinaru.repository.sql.entity.management.administration.WooriClass;
 import woorinaru.repository.sql.entity.user.Student;
 import woorinaru.repository.sql.mapping.model.EventMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class EventDaoImpl implements EventDao {
 
@@ -92,18 +89,34 @@ public class EventDaoImpl implements EventDao {
 
 
     @Override
-    public void modify(UpdateCommand<Event> updateCommand) {
-        Event eventModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying event with id: %d", eventModel.getId());
+    public void modify(Event event) {
+        LOGGER.debug("Modifying event with id: %d", event.getId());
 
-        woorinaru.repository.sql.entity.management.administration.Event existingEventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, eventModel.getId());
+        woorinaru.repository.sql.entity.management.administration.Event existingEventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, event.getId());
 
         if (existingEventEntity != null) {
-            Event eventAdapter = new EventAdapter(existingEventEntity, em);
-            updateCommand.setReceiver(eventAdapter);
-            updateCommand.execute();
+            existingEventEntity.setStartDateTime(event.getStartDateTime());
+            existingEventEntity.setEndDateTime(event.getEndDateTime());
+            existingEventEntity.setDescription(event.getDescription());
+            existingEventEntity.setAddress(event.getAddress());
+
+            // flush existing collections
+            existingEventEntity.setStudentReservations(new ArrayList<>());
+            existingEventEntity.setWooriClasses(new ArrayList<>());
+
+            // re-populate
+            for (woorinaru.core.model.user.Student studentModel : event.getStudentReservations()) {
+                Student existingStudent = em.find(Student.class, studentModel.getId());
+                existingEventEntity.addStudentReservation(existingStudent);
+            }
+
+            for (woorinaru.core.model.management.administration.WooriClass wooriClassModel : event.getWooriClasses()) {
+                WooriClass existingWooriClass = em.find(WooriClass.class, wooriClassModel.getId());
+                existingEventEntity.addWooriClass(existingWooriClass);
+            }
+
         } else {
-            LOGGER.debug("Event with id: '%d' not found. Could not be modified", eventModel.getId());
+            LOGGER.debug("Event with id: '%d' not found. Could not be modified", event.getId());
         }
 
     }

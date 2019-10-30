@@ -12,6 +12,7 @@ import woorinaru.repository.sql.mapping.model.AdminMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -85,17 +86,27 @@ public class AdminDaoImpl implements AdminDao {
     }
 
     @Override
-    public void modify(UpdateCommand<Admin> updateCommand) {
-        Admin adminModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying admin with id: %d", adminModel.getId());
-        woorinaru.repository.sql.entity.user.Admin existingAdminEntity = em.find(woorinaru.repository.sql.entity.user.Admin.class, adminModel.getId());
+    public void modify(Admin admin) {
+        LOGGER.debug("Modifying admin with id: %d", admin.getId());
+        woorinaru.repository.sql.entity.user.Admin existingAdminEntity = em.find(woorinaru.repository.sql.entity.user.Admin.class, admin.getId());
 
         if (existingAdminEntity != null) {
-            Admin adminAdapter = new AdminAdapter(existingAdminEntity, em);
-            updateCommand.setReceiver(adminAdapter);
-            updateCommand.execute();
+            existingAdminEntity.setName(admin.getName());
+            existingAdminEntity.setNationality(admin.getNationality());
+            existingAdminEntity.setEmail(admin.getEmail());
+            existingAdminEntity.setSignUpDateTime(admin.getSignUpDateTime());
+            existingAdminEntity.setFavouriteResources(new ArrayList<>());
+
+            // re add resources
+            for (woorinaru.core.model.management.administration.Resource resourceModel : admin.getFavouriteResources()) {
+                int resourceModelId = resourceModel.getId();
+                Resource existingResourceEntity = em.find(Resource.class, resourceModelId);
+                existingAdminEntity.addFavouriteResource(existingResourceEntity);
+            }
+            em.merge(existingAdminEntity);
+            LOGGER.debug("Finished modifying admin");
         } else {
-            LOGGER.debug("Admin with id: '%d' not found. Could not be modified", adminModel.getId());
+            LOGGER.debug("Could not find admin with id: %d. Did not modify", admin.getId());
         }
     }
 

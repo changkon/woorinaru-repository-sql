@@ -2,10 +2,8 @@ package woorinaru.repository.sql.dao.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.BeginnerClassDao;
 import woorinaru.core.model.management.administration.BeginnerClass;
-import woorinaru.repository.sql.adapter.BeginnerClassAdapter;
 import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
@@ -14,13 +12,12 @@ import woorinaru.repository.sql.mapping.model.BeginnerClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class BeginnerClassDaoImpl implements BeginnerClassDao {
 
@@ -107,17 +104,39 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
     }
 
     @Override
-    public void modify(UpdateCommand<BeginnerClass> updateCommand) {
-        BeginnerClass beginnerClassModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying beginner class with id: %d", beginnerClassModel.getId());
-        woorinaru.repository.sql.entity.management.administration.BeginnerClass existingBeginnerClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.BeginnerClass.class, beginnerClassModel.getId());
+    public void modify(BeginnerClass beginnerClass) {
+        LOGGER.debug("Modifying beginner class with id: %d", beginnerClass.getId());
+        woorinaru.repository.sql.entity.management.administration.BeginnerClass existingBeginnerClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.BeginnerClass.class, beginnerClass.getId());
 
         if (existingBeginnerClassEntity != null) {
-            BeginnerClass beginnerClassAdapter = new BeginnerClassAdapter(existingBeginnerClassEntity, em);
-            updateCommand.setReceiver(beginnerClassAdapter);
-            updateCommand.execute();
+            woorinaru.core.model.management.administration.Event eventModel = beginnerClass.getEvent();
+            if (eventModel != null) {
+                Event existingEventEntity = em.find(Event.class, eventModel.getId());
+                existingBeginnerClassEntity.setEvent(existingEventEntity);
+            }
+
+            // flush the existing collections
+            existingBeginnerClassEntity.setStudents(new ArrayList<>());
+            existingBeginnerClassEntity.setStaff(new ArrayList<>());
+            existingBeginnerClassEntity.setResources(new ArrayList<>());
+
+            // re-populate
+            for (woorinaru.core.model.user.Student studentModel : beginnerClass.getStudents()) {
+                Student existingStudent = em.find(Student.class, studentModel.getId());
+                existingBeginnerClassEntity.addStudent(existingStudent);
+            }
+
+            for (woorinaru.core.model.user.Staff staffModel : beginnerClass.getStaff()) {
+                Staff existingStaff = em.find(Staff.class, staffModel.getId());
+                existingBeginnerClassEntity.addStaff(existingStaff);
+            }
+
+            for (woorinaru.core.model.management.administration.Resource resourceModel : beginnerClass.getResources()) {
+                Resource existingResource = em.find(Resource.class, resourceModel.getId());
+                existingBeginnerClassEntity.addResource(existingResource);
+            }
         } else {
-            LOGGER.debug("Beginner class with id: '%d' not found. Could not be modified", beginnerClassModel.getId());
+            LOGGER.debug("Beginner class with id: '%d' not found. Could not be modified", beginnerClass.getId());
         }
     }
 

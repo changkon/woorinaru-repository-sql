@@ -12,6 +12,7 @@ import woorinaru.repository.sql.mapping.model.TermMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -89,17 +90,31 @@ public class TermDaoImpl implements TermDao {
     }
 
     @Override
-    public void modify(UpdateCommand<Term> updateCommand) {
-        Term termModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying term with id: %d", termModel.getId());
-        woorinaru.repository.sql.entity.management.administration.Term existingTermEntity = em.find(woorinaru.repository.sql.entity.management.administration.Term.class, termModel.getId());
+    public void modify(Term term) {
+        LOGGER.debug("Modifying term with id: %d", term.getId());
+        woorinaru.repository.sql.entity.management.administration.Term existingTermEntity = em.find(woorinaru.repository.sql.entity.management.administration.Term.class, term.getId());
 
         if (existingTermEntity != null) {
-            Term termAdapter = new TermAdapter(existingTermEntity, em);
-            updateCommand.setReceiver(termAdapter);
-            updateCommand.execute();
+            existingTermEntity.setTerm(term.getTerm());
+            existingTermEntity.setStartDate(term.getStartDate());
+            existingTermEntity.setEndDate(term.getEndDate());
+
+            // flush existing collections
+            existingTermEntity.setEvents(new ArrayList<>());
+            existingTermEntity.setStaffMembers(new ArrayList<>());
+
+            // re-populate
+            for (woorinaru.core.model.management.administration.Event eventModel : term.getEvents()) {
+                Event existingEvent = em.find(Event.class, eventModel.getId());
+                existingTermEntity.addEvent(existingEvent);
+            }
+
+            for (woorinaru.core.model.user.Staff staffModel : term.getStaffMembers()) {
+                Staff existingStaffMember = em.find(Staff.class, staffModel.getId());
+                existingTermEntity.addStaff(existingStaffMember);
+            }
         } else {
-            LOGGER.debug("Term with id: '%d' not found. Could not be modified", termModel.getId());
+            LOGGER.debug("Term with id: '%d' not found. Could not be modified", term.getId());
         }
     }
 

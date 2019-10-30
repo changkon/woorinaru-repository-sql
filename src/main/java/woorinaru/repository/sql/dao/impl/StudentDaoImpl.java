@@ -2,22 +2,19 @@ package woorinaru.repository.sql.dao.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.StudentDao;
 import woorinaru.core.model.user.Student;
-import woorinaru.repository.sql.adapter.StudentAdapter;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.mapping.model.StudentMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class StudentDaoImpl implements StudentDao {
 
@@ -84,17 +81,27 @@ public class StudentDaoImpl implements StudentDao {
     }
 
     @Override
-    public void modify(UpdateCommand<Student> updateCommand) {
-        Student studentModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying student with id: %d", studentModel.getId());
-        woorinaru.repository.sql.entity.user.Student existingStudentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, studentModel.getId());
+    public void modify(Student student) {
+        LOGGER.debug("Modifying student with id: %d", student.getId());
+        woorinaru.repository.sql.entity.user.Student existingStudentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, student.getId());
 
         if (existingStudentEntity != null) {
-            Student staffAdapter = new StudentAdapter(existingStudentEntity, em);
-            updateCommand.setReceiver(staffAdapter);
-            updateCommand.execute();
+            existingStudentEntity.setName(student.getName());
+            existingStudentEntity.setNationality(student.getNationality());
+            existingStudentEntity.setEmail(student.getEmail());
+            existingStudentEntity.setSignUpDateTime(student.getSignUpDateTime());
+            existingStudentEntity.setFavouriteResources(new ArrayList<>());
+
+            // re add resources
+            for (woorinaru.core.model.management.administration.Resource resourceModel : student.getFavouriteResources()) {
+                int resourceModelId = resourceModel.getId();
+                Resource existingResourceEntity = em.find(Resource.class, resourceModelId);
+                existingStudentEntity.addFavouriteResource(existingResourceEntity);
+            }
+            em.merge(existingStudentEntity);
+            LOGGER.debug("Finished modifying student");
         } else {
-            LOGGER.debug("Student with id: '%d' not found. Could not be modified", studentModel.getId());
+            LOGGER.debug("Could not find student with id: %d. Did not modify", student.getId());
         }
     }
 

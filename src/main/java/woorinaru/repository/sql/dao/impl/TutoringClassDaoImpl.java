@@ -2,10 +2,8 @@ package woorinaru.repository.sql.dao.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.TutoringClassDao;
 import woorinaru.core.model.management.administration.TutoringClass;
-import woorinaru.repository.sql.adapter.TutoringClassAdapter;
 import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
@@ -14,13 +12,12 @@ import woorinaru.repository.sql.mapping.model.TutoringClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class TutoringClassDaoImpl implements TutoringClassDao {
 
@@ -108,18 +105,39 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
     }
 
     @Override
-    public void modify(UpdateCommand<TutoringClass> updateCommand) {
-        TutoringClass tutoringClassModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying tutoring class with id: %d", tutoringClassModel.getId());
-
-        woorinaru.repository.sql.entity.management.administration.TutoringClass existingTutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, tutoringClassModel.getId());
+    public void modify(TutoringClass tutoringClass) {
+        LOGGER.debug("Modifying tutoring class with id: %d", tutoringClass.getId());
+        woorinaru.repository.sql.entity.management.administration.TutoringClass existingTutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, tutoringClass.getId());
 
         if (existingTutoringClassEntity != null) {
-            TutoringClass tutoringClassAdapter = new TutoringClassAdapter(existingTutoringClassEntity, em);
-            updateCommand.setReceiver(tutoringClassAdapter);
-            updateCommand.execute();
+            woorinaru.core.model.management.administration.Event eventModel = tutoringClass.getEvent();
+            if (eventModel != null) {
+                Event existingEventEntity = em.find(Event.class, eventModel.getId());
+                existingTutoringClassEntity.setEvent(existingEventEntity);
+            }
+
+            // flush the existing collections
+            existingTutoringClassEntity.setStudents(new ArrayList<>());
+            existingTutoringClassEntity.setStaff(new ArrayList<>());
+            existingTutoringClassEntity.setResources(new ArrayList<>());
+
+            // re-populate
+            for (woorinaru.core.model.user.Student studentModel : tutoringClass.getStudents()) {
+                Student existingStudent = em.find(Student.class, studentModel.getId());
+                existingTutoringClassEntity.addStudent(existingStudent);
+            }
+
+            for (woorinaru.core.model.user.Staff staffModel : tutoringClass.getStaff()) {
+                Staff existingStaff = em.find(Staff.class, staffModel.getId());
+                existingTutoringClassEntity.addStaff(existingStaff);
+            }
+
+            for (woorinaru.core.model.management.administration.Resource resourceModel : tutoringClass.getResources()) {
+                Resource existingResource = em.find(Resource.class, resourceModel.getId());
+                existingTutoringClassEntity.addResource(existingResource);
+            }
         } else {
-            LOGGER.debug("Tutoring class with id: '%d' not found. Could not be modified", tutoringClassModel.getId());
+            LOGGER.debug("Tutoring class with id: '%d' not found. Could not be modified", tutoringClass.getId());
         }
     }
 

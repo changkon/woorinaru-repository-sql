@@ -2,10 +2,8 @@ package woorinaru.repository.sql.dao.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.OutingClassDao;
 import woorinaru.core.model.management.administration.OutingClass;
-import woorinaru.repository.sql.adapter.OutingClassAdapter;
 import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
@@ -14,13 +12,12 @@ import woorinaru.repository.sql.mapping.model.OutingClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class OutingClassDaoImpl implements OutingClassDao {
 
@@ -108,18 +105,39 @@ public class OutingClassDaoImpl implements OutingClassDao {
     }
 
     @Override
-    public void modify(UpdateCommand<OutingClass> updateCommand) {
-        OutingClass outingClassModel = updateCommand.getReceiver();
-        LOGGER.debug("Modifying outing class with id: %d", outingClassModel.getId());
-
-        woorinaru.repository.sql.entity.management.administration.OutingClass existingOutingClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.OutingClass.class, outingClassModel.getId());
+    public void modify(OutingClass outingClass) {
+        LOGGER.debug("Modifying outing class with id: %d", outingClass.getId());
+        woorinaru.repository.sql.entity.management.administration.OutingClass existingOutingClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.OutingClass.class, outingClass.getId());
 
         if (existingOutingClassEntity != null) {
-            OutingClass outingClassAdapter = new OutingClassAdapter(existingOutingClassEntity, em);
-            updateCommand.setReceiver(outingClassAdapter);
-            updateCommand.execute();
+            woorinaru.core.model.management.administration.Event eventModel = outingClass.getEvent();
+            if (eventModel != null) {
+                Event existingEventEntity = em.find(Event.class, eventModel.getId());
+                existingOutingClassEntity.setEvent(existingEventEntity);
+            }
+
+            // flush the existing collections
+            existingOutingClassEntity.setStudents(new ArrayList<>());
+            existingOutingClassEntity.setStaff(new ArrayList<>());
+            existingOutingClassEntity.setResources(new ArrayList<>());
+
+            // re-populate
+            for (woorinaru.core.model.user.Student studentModel : outingClass.getStudents()) {
+                Student existingStudent = em.find(Student.class, studentModel.getId());
+                existingOutingClassEntity.addStudent(existingStudent);
+            }
+
+            for (woorinaru.core.model.user.Staff staffModel : outingClass.getStaff()) {
+                Staff existingStaff = em.find(Staff.class, staffModel.getId());
+                existingOutingClassEntity.addStaff(existingStaff);
+            }
+
+            for (woorinaru.core.model.management.administration.Resource resourceModel : outingClass.getResources()) {
+                Resource existingResource = em.find(Resource.class, resourceModel.getId());
+                existingOutingClassEntity.addResource(existingResource);
+            }
         } else {
-            LOGGER.debug("Outing class with id: '%d' not found. Could not be modified", outingClassModel.getId());
+            LOGGER.debug("Outing class with id: '%d' not found. Could not be modified", outingClass.getId());
         }
 
     }

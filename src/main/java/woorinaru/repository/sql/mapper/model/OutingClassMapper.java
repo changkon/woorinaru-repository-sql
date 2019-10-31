@@ -1,14 +1,14 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapper.model;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import woorinaru.repository.sql.entity.management.administration.IntermediateClass;
+import woorinaru.repository.sql.entity.management.administration.OutingClass;
 
 @Mapper(uses={PartialResourceMapper.class, StudentMapper.class, StaffMapper.class})
-public interface IntermediateClassMapper {
+public interface OutingClassMapper {
 
-    IntermediateClassMapper MAPPER = Mappers.getMapper(IntermediateClassMapper.class);
+    OutingClassMapper MAPPER = Mappers.getMapper(OutingClassMapper.class);
 
     @Mapping(source="event.id", target="event.id")
     @Mapping(target="event.startDateTime", ignore=true)
@@ -20,7 +20,7 @@ public interface IntermediateClassMapper {
     @Mapping(target="resources", ignore=true)
     @Mapping(target="staff", ignore=true)
     @Mapping(target="students", ignore=true)
-    IntermediateClass mapToEntity(woorinaru.core.model.management.administration.IntermediateClass intermediateClassModel);
+    OutingClass mapToEntity(woorinaru.core.model.management.administration.OutingClass outingClassModel);
 
     @Mapping(source="event.id", target="event.id")
     @Mapping(target="event.startDateTime", ignore=true)
@@ -29,6 +29,5 @@ public interface IntermediateClassMapper {
     @Mapping(target="event.description", ignore=true)
     @Mapping(target="event.wooriClasses", ignore=true)
     @Mapping(target="event.studentReservations", ignore=true)
-    woorinaru.core.model.management.administration.IntermediateClass mapToModel(IntermediateClass intermediateClassEntity);
-
+    woorinaru.core.model.management.administration.OutingClass mapToModel(OutingClass outingClassEntity);
 }

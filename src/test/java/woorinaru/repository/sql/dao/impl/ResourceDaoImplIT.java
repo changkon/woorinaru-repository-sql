@@ -4,18 +4,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import woorinaru.core.dao.spi.ResourceDao;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.management.administration.Resource;
 import woorinaru.repository.sql.dao.helper.DatabaseContainerRule;
-import woorinaru.repository.sql.mapping.model.ResourceMapper;
+import woorinaru.repository.sql.mapper.model.ResourceMapper;
 import woorinaru.repository.sql.util.EntityManagerFactoryUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 @ExtendWith(DatabaseContainerRule.class)
 public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
@@ -32,7 +32,10 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
 
         // WHEN
-        executeInTransaction().accept(daoEm, () -> resourceDao.create(resourceModel));
+        executeInTransaction().accept(daoEm, () -> {
+            int generatedId = resourceDao.create(resourceModel);
+            assertThat(generatedId).isEqualTo(1);
+        });
 
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         TypedQuery<woorinaru.repository.sql.entity.resource.Resource> query = em.createQuery("SELECT r FROM Resource r", woorinaru.repository.sql.entity.resource.Resource.class);
@@ -92,11 +95,9 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         // WHEN
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
-        Optional<Resource> resourceModelOptional = resourceDao.get(1);
+        Resource resourceModel = resourceDao.get(1);
 
         // THEN
-        assertThat(resourceModelOptional).isNotEmpty();
-        Resource resourceModel = resourceModelOptional.get();
         assertThat(resourceModel.getId()).isEqualTo(1);
         assertThat(resourceModel.getDescription()).isEqualTo("resource description");
         assertThat(resourceModel.getResource()).isEqualTo("random resource".getBytes());
@@ -109,10 +110,11 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         // WHEN
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
-        Optional<Resource> resourceModelOptional = resourceDao.get(100);
+        Throwable thrown = catchThrowable(() -> resourceDao.get(100));
 
         // THEN
-        assertThat(resourceModelOptional).isEmpty();
+        assertThat(thrown).isInstanceOf(ResourceNotFoundException.class);
+        assertThat(thrown).hasMessage("Could not find resource with id: 100");
     }
 
     @Test

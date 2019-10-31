@@ -3,24 +3,19 @@ package woorinaru.repository.sql.dao.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mapstruct.factory.Mappers;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.AdminDao;
+import woorinaru.core.exception.ReferenceNotFoundException;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.user.Admin;
-import woorinaru.repository.sql.adapter.AdminAdapter;
 import woorinaru.repository.sql.entity.resource.Resource;
-import woorinaru.repository.sql.mapping.model.AdminMapper;
+import woorinaru.repository.sql.mapper.model.AdminMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class AdminDaoImpl implements AdminDao {
 
@@ -33,39 +28,45 @@ public class AdminDaoImpl implements AdminDao {
     }
 
     @Override
-    public void create(Admin admin) {
+    public int create(Admin admin) {
         LOGGER.debug("Creating an admin resource");
         // Map file
-        AdminMapper mapper = Mappers.getMapper(AdminMapper.class);
+        AdminMapper mapper = AdminMapper.MAPPER;
         woorinaru.repository.sql.entity.user.Admin adminEntity = mapper.mapToEntity(admin);
 
         // Set resources if present
         if (Objects.nonNull(admin.getFavouriteResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : admin.getFavouriteResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
-                if (Objects.nonNull(resourceEntity)) {
+                if (Objects.isNull(resourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
                     adminEntity.addFavouriteResource(resourceEntity);
                 }
             }
         }
 
         em.persist(adminEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating an admin resource");
+
+        return adminEntity.getId();
     }
 
     @Override
-    public Optional<Admin> get(int id) {
+    public Admin get(int id) {
         LOGGER.debug("Retrieving an admin resource with id: %d", id);
         woorinaru.repository.sql.entity.user.Admin adminEntity = em.find(woorinaru.repository.sql.entity.user.Admin.class, id);
 
         LOGGER.debug("Admin with id: %d. Found: %s", id, adminEntity == null ? "True" : "False");
 
-        AdminMapper mapper = Mappers.getMapper(AdminMapper.class);
+        if (Objects.isNull(adminEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find admin with id: %d", id));
+        }
 
-        Optional<Admin> adminModel = Stream.ofNullable(adminEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        AdminMapper mapper = AdminMapper.MAPPER;
+        Admin adminModel = mapper.mapToModel(adminEntity);
 
         return adminModel;
     }
@@ -82,6 +83,7 @@ public class AdminDaoImpl implements AdminDao {
             LOGGER.debug("Admin deleted");
         } else {
             LOGGER.debug("Admin with id: '%d' not found. Could not be deleted", admin.getId());
+            throw new ResourceNotFoundException(String.format("Admin with id: '%d' not found. Could not be deleted", admin.getId()));
         }
     }
 
@@ -101,12 +103,17 @@ public class AdminDaoImpl implements AdminDao {
             for (woorinaru.core.model.management.administration.Resource resourceModel : admin.getFavouriteResources()) {
                 int resourceModelId = resourceModel.getId();
                 Resource existingResourceEntity = em.find(Resource.class, resourceModelId);
-                existingAdminEntity.addFavouriteResource(existingResourceEntity);
+                if (Objects.isNull(existingResourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
+                    existingAdminEntity.addFavouriteResource(existingResourceEntity);
+                }
             }
             em.merge(existingAdminEntity);
             LOGGER.debug("Finished modifying admin");
         } else {
             LOGGER.debug("Could not find admin with id: %d. Did not modify", admin.getId());
+            throw new ResourceNotFoundException(String.format("Could not find admin with id: %d. Did not modify", admin.getId()));
         }
     }
 

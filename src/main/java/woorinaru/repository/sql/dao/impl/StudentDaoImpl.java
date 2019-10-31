@@ -3,9 +3,11 @@ package woorinaru.repository.sql.dao.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.StudentDao;
+import woorinaru.core.exception.ReferenceNotFoundException;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.user.Student;
 import woorinaru.repository.sql.entity.resource.Resource;
-import woorinaru.repository.sql.mapping.model.StudentMapper;
+import woorinaru.repository.sql.mapper.model.StudentMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -27,7 +29,7 @@ public class StudentDaoImpl implements StudentDao {
     }
 
     @Override
-    public void create(Student student) {
+    public int create(Student student) {
         LOGGER.debug("Creating a student resource");
         // Map file
         StudentMapper mapper = StudentMapper.MAPPER;
@@ -37,30 +39,36 @@ public class StudentDaoImpl implements StudentDao {
         if (Objects.nonNull(student.getFavouriteResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : student.getFavouriteResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
-                if (Objects.nonNull(resourceEntity)) {
+                if (Objects.isNull(resourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
                     studentEntity.addFavouriteResource(resourceEntity);
                 }
             }
         }
 
         em.persist(studentEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating a student resource");
+        return studentEntity.getId();
     }
 
     @Override
-    public Optional<Student> get(int id) {
+    public Student get(int id) {
         LOGGER.debug("Retrieving a student resource with id: %d", id);
 
         woorinaru.repository.sql.entity.user.Student studentEntity = em.find(woorinaru.repository.sql.entity.user.Student.class, id);
 
         LOGGER.debug("Student with id: %d. Found: %s", id, studentEntity == null ? "True" : "False");
 
+        if (Objects.isNull(studentEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find student with id: %d", id));
+        }
+
         StudentMapper mapper = StudentMapper.MAPPER;
 
-        Optional<Student> studentModel = Stream.ofNullable(studentEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        Student studentModel = mapper.mapToModel(studentEntity);
 
         return studentModel;
     }
@@ -77,6 +85,7 @@ public class StudentDaoImpl implements StudentDao {
             LOGGER.debug("Student deleted");
         } else {
             LOGGER.debug("Student with id: '%d' not found. Could not be deleted", student.getId());
+            throw new ResourceNotFoundException(String.format("Student with id: '%d' not found. Could not be deleted", student.getId()));
         }
     }
 
@@ -96,12 +105,17 @@ public class StudentDaoImpl implements StudentDao {
             for (woorinaru.core.model.management.administration.Resource resourceModel : student.getFavouriteResources()) {
                 int resourceModelId = resourceModel.getId();
                 Resource existingResourceEntity = em.find(Resource.class, resourceModelId);
-                existingStudentEntity.addFavouriteResource(existingResourceEntity);
+                if (Objects.isNull(existingResourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
+                    existingStudentEntity.addFavouriteResource(existingResourceEntity);
+                }
             }
             em.merge(existingStudentEntity);
             LOGGER.debug("Finished modifying student");
         } else {
             LOGGER.debug("Could not find student with id: %d. Did not modify", student.getId());
+            throw new ResourceNotFoundException(String.format("Could not find student with id: %d. Did not modify", student.getId()));
         }
     }
 

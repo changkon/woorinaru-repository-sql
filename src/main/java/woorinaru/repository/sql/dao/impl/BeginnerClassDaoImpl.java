@@ -3,15 +3,18 @@ package woorinaru.repository.sql.dao.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.BeginnerClassDao;
+import woorinaru.core.exception.ReferenceNotFoundException;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.management.administration.BeginnerClass;
 import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
 import woorinaru.repository.sql.entity.user.Student;
-import woorinaru.repository.sql.mapping.model.BeginnerClassMapper;
+import woorinaru.repository.sql.mapper.model.BeginnerClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +33,7 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
     }
 
     @Override
-    public void create(BeginnerClass beginnerClass) {
+    public int create(BeginnerClass beginnerClass) {
         LOGGER.debug("Creating beginner class");
         // Map file
         BeginnerClassMapper mapper = BeginnerClassMapper.MAPPER;
@@ -39,7 +42,9 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         if (Objects.nonNull(beginnerClass.getResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : beginnerClass.getResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
-                if (Objects.nonNull(resourceEntity)) {
+                if (Objects.isNull(resourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
                     beginnerClassEntity.addResource(resourceEntity);
                 }
             }
@@ -48,42 +53,56 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
         if (Objects.nonNull(beginnerClass.getStaff())) {
             for (woorinaru.core.model.user.Staff staffModel : beginnerClass.getStaff()) {
                 Staff staffEntity = em.find(Staff.class, staffModel.getId());
-                beginnerClassEntity.addStaff(staffEntity);
+                if (Objects.isNull(staffEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                } else {
+                    beginnerClassEntity.addStaff(staffEntity);
+                }
             }
         }
 
         if (Objects.nonNull(beginnerClass.getStudents())) {
             for (woorinaru.core.model.user.Student studentModel : beginnerClass.getStudents()) {
                 Student studentEntity = em.find(Student.class, studentModel.getId());
-                beginnerClassEntity.addStudent(studentEntity);
+                if (Objects.isNull(studentEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
+                } else {
+                    beginnerClassEntity.addStudent(studentEntity);
+                }
             }
         }
 
         if (Objects.nonNull(beginnerClass.getEvent())) {
             Event eventEntity = em.find(Event.class, beginnerClass.getEvent().getId());
 
-            if (Objects.nonNull(eventEntity)) {
+            if (Objects.isNull(eventEntity)) {
+                throw new ReferenceNotFoundException(String.format("Could not find event id: %d", beginnerClass.getEvent().getId()));
+            } else {
                 beginnerClassEntity.setEvent(eventEntity);
             }
         }
 
         em.persist(beginnerClassEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating beginner class");
+
+        return beginnerClassEntity.getId();
     }
 
     @Override
-    public Optional<BeginnerClass> get(int id) {
+    public BeginnerClass get(int id) {
         LOGGER.debug("Retrieving a beginner class with id: %d", id);
         woorinaru.repository.sql.entity.management.administration.BeginnerClass beginnerClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.BeginnerClass.class, id);
 
         LOGGER.debug("Beginner class with id: %d. Found: %s", id, beginnerClassEntity == null ? "True" : "False");
 
-        BeginnerClassMapper mapper = BeginnerClassMapper.MAPPER;
+        if (Objects.isNull(beginnerClassEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find beginner class with id: %d", id));
+        }
 
-        Optional<BeginnerClass> beginnerClassModel = Stream.ofNullable(beginnerClassEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        BeginnerClassMapper mapper = BeginnerClassMapper.MAPPER;
+        BeginnerClass beginnerClassModel = mapper.mapToModel(beginnerClassEntity);
 
         return beginnerClassModel;
     }
@@ -100,6 +119,7 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
             LOGGER.debug("Beginner class deleted");
         } else {
             LOGGER.debug("Beginner class with id: '%d' not found. Could not be deleted", beginnerClass.getId());
+            throw new ResourceNotFoundException(String.format("Beginner class with id: '%d' not found. Could not be deleted", beginnerClass.getId()));
         }
     }
 
@@ -110,9 +130,14 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
 
         if (existingBeginnerClassEntity != null) {
             woorinaru.core.model.management.administration.Event eventModel = beginnerClass.getEvent();
+
             if (eventModel != null) {
                 Event existingEventEntity = em.find(Event.class, eventModel.getId());
-                existingBeginnerClassEntity.setEvent(existingEventEntity);
+                if (Objects.isNull(existingEventEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find event id: %d", eventModel.getId()));
+                } else {
+                    existingBeginnerClassEntity.setEvent(existingEventEntity);
+                }
             }
 
             // flush the existing collections
@@ -123,20 +148,33 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
             // re-populate
             for (woorinaru.core.model.user.Student studentModel : beginnerClass.getStudents()) {
                 Student existingStudent = em.find(Student.class, studentModel.getId());
-                existingBeginnerClassEntity.addStudent(existingStudent);
+                if (Objects.isNull(existingStudent)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
+                } else {
+                    existingBeginnerClassEntity.addStudent(existingStudent);
+                }
             }
 
             for (woorinaru.core.model.user.Staff staffModel : beginnerClass.getStaff()) {
                 Staff existingStaff = em.find(Staff.class, staffModel.getId());
-                existingBeginnerClassEntity.addStaff(existingStaff);
+                if (Objects.isNull(existingStaff)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                } else {
+                    existingBeginnerClassEntity.addStaff(existingStaff);
+                }
             }
 
             for (woorinaru.core.model.management.administration.Resource resourceModel : beginnerClass.getResources()) {
                 Resource existingResource = em.find(Resource.class, resourceModel.getId());
-                existingBeginnerClassEntity.addResource(existingResource);
+                if (Objects.isNull(existingResource)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
+                    existingBeginnerClassEntity.addResource(existingResource);
+                }
             }
         } else {
             LOGGER.debug("Beginner class with id: '%d' not found. Could not be modified", beginnerClass.getId());
+            throw new ResourceNotFoundException(String.format("Beginner class with id: '%d' not found. Could not be modified", beginnerClass.getId()));
         }
     }
 

@@ -1,4 +1,4 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapper.model;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

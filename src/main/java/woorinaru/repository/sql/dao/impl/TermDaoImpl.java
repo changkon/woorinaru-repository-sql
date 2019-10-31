@@ -2,13 +2,13 @@ package woorinaru.repository.sql.dao.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.TermDao;
+import woorinaru.core.exception.ReferenceNotFoundException;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.management.administration.Term;
-import woorinaru.repository.sql.adapter.TermAdapter;
 import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.user.Staff;
-import woorinaru.repository.sql.mapping.model.TermMapper;
+import woorinaru.repository.sql.mapper.model.TermMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -18,8 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class TermDaoImpl implements TermDao {
 
@@ -32,7 +30,7 @@ public class TermDaoImpl implements TermDao {
     }
 
     @Override
-    public void create(Term term) {
+    public int create(Term term) {
         LOGGER.debug("Creating a term resource");
         // Map file
         TermMapper mapper = TermMapper.MAPPER;
@@ -42,34 +40,46 @@ public class TermDaoImpl implements TermDao {
         if (Objects.nonNull(term.getStaffMembers())) {
             for (woorinaru.core.model.user.Staff staffModel : term.getStaffMembers()) {
                 Staff staffEntity = em.find(Staff.class, staffModel.getId());
-                termEntity.addStaff(staffEntity);
+                if (Objects.isNull(staffEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                } else {
+                    termEntity.addStaff(staffEntity);
+                }
             }
         }
 
         if (Objects.nonNull(term.getEvents())) {
             for (woorinaru.core.model.management.administration.Event eventModel : term.getEvents()) {
                 Event eventEntity = em.find(Event.class, eventModel.getId());
-                termEntity.addEvent(eventEntity);
+                if (Objects.isNull(eventEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find event id: %d", eventModel.getId()));
+                } else {
+                    termEntity.addEvent(eventEntity);
+                }
             }
         }
 
         em.persist(termEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating a term resource");
+        return termEntity.getId();
     }
 
     @Override
-    public Optional<Term> get(int id) {
+    public Term get(int id) {
         LOGGER.debug("Retrieving a term with id: %d", id);
         woorinaru.repository.sql.entity.management.administration.Term termEntity = em.find(woorinaru.repository.sql.entity.management.administration.Term.class, id);
 
         LOGGER.debug("Term with id: %d. Found: %s", id, termEntity == null ? "True" : "False");
 
+        if (Objects.isNull(termEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find term id: %d", id));
+        }
+
         TermMapper mapper = TermMapper.MAPPER;
 
-        Optional<Term> termModel = Stream.ofNullable(termEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        Term termModel = mapper.mapToModel(termEntity);
 
         return termModel;
     }
@@ -86,6 +96,7 @@ public class TermDaoImpl implements TermDao {
             LOGGER.debug("Term deleted");
         } else {
             LOGGER.debug("Term with id: '%d' not found. Could not be deleted", term.getId());
+            throw new ResourceNotFoundException(String.format("Term with id: '%d' not found. Could not be deleted", term.getId()));
         }
     }
 
@@ -106,15 +117,25 @@ public class TermDaoImpl implements TermDao {
             // re-populate
             for (woorinaru.core.model.management.administration.Event eventModel : term.getEvents()) {
                 Event existingEvent = em.find(Event.class, eventModel.getId());
-                existingTermEntity.addEvent(existingEvent);
+                if (Objects.isNull(existingEvent)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find event id: %d", eventModel.getId()));
+                } else {
+                    existingTermEntity.addEvent(existingEvent);
+                }
             }
 
             for (woorinaru.core.model.user.Staff staffModel : term.getStaffMembers()) {
                 Staff existingStaffMember = em.find(Staff.class, staffModel.getId());
-                existingTermEntity.addStaff(existingStaffMember);
+
+                if (Objects.isNull(existingStaffMember)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                } else {
+                    existingTermEntity.addStaff(existingStaffMember);
+                }
             }
         } else {
             LOGGER.debug("Term with id: '%d' not found. Could not be modified", term.getId());
+            throw new ResourceNotFoundException(String.format("Term with id: '%d' not found. Could not be modified", term.getId()));
         }
     }
 

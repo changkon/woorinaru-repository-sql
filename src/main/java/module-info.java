@@ -23,6 +23,6 @@ module woorinaru.repository.sql {
     opens woorinaru.repository.sql.entity.management.administration to org.hibernate.orm.core;
 
     // exports for mapping
-    exports woorinaru.repository.sql.mapping.model to org.mapstruct;
+    exports woorinaru.repository.sql.mapper.model to org.mapstruct;
     exports woorinaru.repository.sql.dao.impl;
 }

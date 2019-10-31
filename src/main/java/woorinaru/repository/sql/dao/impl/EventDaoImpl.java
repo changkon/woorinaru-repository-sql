@@ -4,10 +4,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mapstruct.factory.Mappers;
 import woorinaru.core.dao.spi.EventDao;
+import woorinaru.core.exception.ReferenceNotFoundException;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.management.administration.Event;
 import woorinaru.repository.sql.entity.management.administration.WooriClass;
 import woorinaru.repository.sql.entity.user.Student;
-import woorinaru.repository.sql.mapping.model.EventMapper;
+import woorinaru.repository.sql.mapper.model.EventMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -29,7 +31,7 @@ public class EventDaoImpl implements EventDao {
     }
 
     @Override
-    public void create(Event event) {
+    public int create(Event event) {
         LOGGER.debug("Creating an event");
         // Map file
         EventMapper mapper = EventMapper.MAPPER;
@@ -38,35 +40,47 @@ public class EventDaoImpl implements EventDao {
         if (Objects.nonNull(event.getWooriClasses())) {
             for (woorinaru.core.model.management.administration.WooriClass wooriClassModel : event.getWooriClasses()) {
                 WooriClass wooriClassEntity = em.find(WooriClass.class, wooriClassModel.getId());
-                eventEntity.addWooriClass(wooriClassEntity);
+                if (Objects.isNull(wooriClassEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not woori class id: %d", wooriClassModel.getId()));
+                } else {
+                    eventEntity.addWooriClass(wooriClassEntity);
+                }
             }
         }
 
         if (Objects.nonNull(event.getStudentReservations())) {
             for (woorinaru.core.model.user.Student studentModel : event.getStudentReservations()) {
                 Student studentEntity = em.find(Student.class, studentModel.getId());
-                eventEntity.addStudentReservation(studentEntity);
+                if (Objects.isNull(studentEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
+                } else {
+                    eventEntity.addStudentReservation(studentEntity);
+                }
             }
         }
 
         em.persist(eventEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating an event");
+        return eventEntity.getId();
     }
 
     @Override
-    public Optional<Event> get(int id) {
+    public Event get(int id) {
         LOGGER.debug("Retrieving an event with id: %d", id);
 
         woorinaru.repository.sql.entity.management.administration.Event eventEntity = em.find(woorinaru.repository.sql.entity.management.administration.Event.class, id);
 
         LOGGER.debug("Event with id: %d. Found: %s", id, eventEntity == null ? "True" : "False");
 
+        if (Objects.isNull(eventEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find event id: %d", id));
+        }
+
         EventMapper mapper = Mappers.getMapper(EventMapper.class);
 
-        Optional<Event> eventModel = Stream.ofNullable(eventEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        Event eventModel = mapper.mapToModel(eventEntity);
 
         return eventModel;
     }
@@ -83,6 +97,7 @@ public class EventDaoImpl implements EventDao {
             LOGGER.debug("Event deleted");
         } else {
             LOGGER.debug("Event with id: '%d' not found. Could not be deleted", event.getId());
+            throw new ResourceNotFoundException(String.format("Event with id: '%d' not found. Could not be deleted", event.getId()));
         }
 
     }
@@ -108,15 +123,25 @@ public class EventDaoImpl implements EventDao {
             for (woorinaru.core.model.user.Student studentModel : event.getStudentReservations()) {
                 Student existingStudent = em.find(Student.class, studentModel.getId());
                 existingEventEntity.addStudentReservation(existingStudent);
+                if (Objects.isNull(existingStudent)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
+                } else {
+                    existingEventEntity.addStudentReservation(existingStudent);
+                }
             }
 
             for (woorinaru.core.model.management.administration.WooriClass wooriClassModel : event.getWooriClasses()) {
                 WooriClass existingWooriClass = em.find(WooriClass.class, wooriClassModel.getId());
-                existingEventEntity.addWooriClass(existingWooriClass);
+                if (Objects.isNull(existingWooriClass)) {
+                    throw new ReferenceNotFoundException(String.format("Could not woori class id: %d", wooriClassModel.getId()));
+                } else {
+                    existingEventEntity.addWooriClass(existingWooriClass);
+                }
             }
 
         } else {
             LOGGER.debug("Event with id: '%d' not found. Could not be modified", event.getId());
+            throw new ResourceNotFoundException(String.format("Event with id: '%d' not found. Could not be modified", event.getId()));
         }
 
     }

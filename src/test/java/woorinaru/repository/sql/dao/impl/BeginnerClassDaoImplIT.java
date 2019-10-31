@@ -10,7 +10,7 @@ import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
 import woorinaru.repository.sql.entity.user.Student;
-import woorinaru.repository.sql.mapping.model.*;
+import woorinaru.repository.sql.mapper.model.*;
 import woorinaru.repository.sql.util.EntityManagerFactoryUtil;
 
 import javax.persistence.EntityManager;
@@ -30,7 +30,10 @@ public class BeginnerClassDaoImplIT extends AbstractContainerDatabaseIT {
         // WHEN
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl(daoEm);
-        executeInTransaction().accept(daoEm, () -> beginnerClassDao.create(beginnerClassModel));
+        executeInTransaction().accept(daoEm, () -> {
+            int generatedId = beginnerClassDao.create(beginnerClassModel);
+            assertThat(generatedId).isEqualTo(1);
+        });
 
         // THEN
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
@@ -88,7 +91,10 @@ public class BeginnerClassDaoImplIT extends AbstractContainerDatabaseIT {
         // WHEN
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         BeginnerClassDao beginnerClassDao = new BeginnerClassDaoImpl(daoEm);
-        executeInTransaction().accept(daoEm, () -> beginnerClassDao.create(beginnerClassModel));
+        executeInTransaction().accept(daoEm, () -> {
+            int generatedId = beginnerClassDao.create(beginnerClassModel);
+            assertThat(generatedId).isEqualTo(1);
+        });
 
         // THEN
         EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();

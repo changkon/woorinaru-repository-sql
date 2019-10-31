@@ -3,12 +3,14 @@ package woorinaru.repository.sql.dao.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.OutingClassDao;
+import woorinaru.core.exception.ReferenceNotFoundException;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.management.administration.OutingClass;
 import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
 import woorinaru.repository.sql.entity.user.Student;
-import woorinaru.repository.sql.mapping.model.OutingClassMapper;
+import woorinaru.repository.sql.mapper.model.OutingClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -30,7 +32,7 @@ public class OutingClassDaoImpl implements OutingClassDao {
     }
 
     @Override
-    public void create(OutingClass outingClass) {
+    public int create(OutingClass outingClass) {
         LOGGER.debug("Creating an outing class");
         // Map file
         OutingClassMapper mapper = OutingClassMapper.MAPPER;
@@ -39,7 +41,9 @@ public class OutingClassDaoImpl implements OutingClassDao {
         if (Objects.nonNull(outingClass.getResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : outingClass.getResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
-                if (Objects.nonNull(resourceEntity)) {
+                if (Objects.isNull(resourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
                     outingClassEntity.addResource(resourceEntity);
                 }
             }
@@ -48,43 +52,57 @@ public class OutingClassDaoImpl implements OutingClassDao {
         if (Objects.nonNull(outingClass.getStaff())) {
             for (woorinaru.core.model.user.Staff staffModel : outingClass.getStaff()) {
                 Staff staffEntity = em.find(Staff.class, staffModel.getId());
-                outingClassEntity.addStaff(staffEntity);
+                if (Objects.isNull(staffEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                } else {
+                    outingClassEntity.addStaff(staffEntity);
+                }
             }
         }
 
         if (Objects.nonNull(outingClass.getStudents())) {
             for (woorinaru.core.model.user.Student studentModel : outingClass.getStudents()) {
                 Student studentEntity = em.find(Student.class, studentModel.getId());
-                outingClassEntity.addStudent(studentEntity);
+                if (Objects.isNull(studentEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
+                } else {
+                    outingClassEntity.addStudent(studentEntity);
+                }
             }
         }
 
         if (Objects.nonNull(outingClass.getEvent())) {
             Event eventEntity = em.find(Event.class, outingClass.getEvent().getId());
 
-            if (Objects.nonNull(eventEntity)) {
+            if (Objects.isNull(eventEntity)) {
+                throw new ReferenceNotFoundException(String.format("Could not find event id: %d", outingClass.getEvent().getId()));
+            } else {
                 outingClassEntity.setEvent(eventEntity);
             }
         }
 
         em.persist(outingClassEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating an outing class");
+        return outingClassEntity.getId();
     }
 
     @Override
-    public Optional<OutingClass> get(int id) {
+    public OutingClass get(int id) {
         LOGGER.debug("Retrieving an outing class with id: %d", id);
 
         woorinaru.repository.sql.entity.management.administration.OutingClass outingClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.OutingClass.class, id);
 
         LOGGER.debug("Outing class with id: %d. Found: %s", id, outingClassEntity == null ? "True" : "False");
 
+        if (Objects.isNull(outingClassEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find outing class with id: %d", id));
+        }
+
         OutingClassMapper mapper = OutingClassMapper.MAPPER;
 
-        Optional<OutingClass> outingClassModel = Stream.ofNullable(outingClassEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        OutingClass outingClassModel = mapper.mapToModel(outingClassEntity);
 
         return outingClassModel;
     }
@@ -101,6 +119,7 @@ public class OutingClassDaoImpl implements OutingClassDao {
             LOGGER.debug("Outing class deleted");
         } else {
             LOGGER.debug("Outing class with id: '%d' not found. Could not be deleted", outingClass.getId());
+            throw new ResourceNotFoundException(String.format("Outing class with id: '%d' not found. Could not be deleted", outingClass.getId()));
         }
     }
 
@@ -113,7 +132,11 @@ public class OutingClassDaoImpl implements OutingClassDao {
             woorinaru.core.model.management.administration.Event eventModel = outingClass.getEvent();
             if (eventModel != null) {
                 Event existingEventEntity = em.find(Event.class, eventModel.getId());
-                existingOutingClassEntity.setEvent(existingEventEntity);
+                if (Objects.isNull(existingEventEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find event id: %d", eventModel.getId()));
+                } else {
+                    existingOutingClassEntity.setEvent(existingEventEntity);
+                }
             }
 
             // flush the existing collections
@@ -124,20 +147,33 @@ public class OutingClassDaoImpl implements OutingClassDao {
             // re-populate
             for (woorinaru.core.model.user.Student studentModel : outingClass.getStudents()) {
                 Student existingStudent = em.find(Student.class, studentModel.getId());
-                existingOutingClassEntity.addStudent(existingStudent);
+                if (Objects.isNull(existingStudent)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
+                } else {
+                    existingOutingClassEntity.addStudent(existingStudent);
+                }
             }
 
             for (woorinaru.core.model.user.Staff staffModel : outingClass.getStaff()) {
                 Staff existingStaff = em.find(Staff.class, staffModel.getId());
-                existingOutingClassEntity.addStaff(existingStaff);
+                if (Objects.isNull(existingStaff)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                } else {
+                    existingOutingClassEntity.addStaff(existingStaff);
+                }
             }
 
             for (woorinaru.core.model.management.administration.Resource resourceModel : outingClass.getResources()) {
                 Resource existingResource = em.find(Resource.class, resourceModel.getId());
-                existingOutingClassEntity.addResource(existingResource);
+                if (Objects.isNull(existingResource)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
+                    existingOutingClassEntity.addResource(existingResource);
+                }
             }
         } else {
             LOGGER.debug("Outing class with id: '%d' not found. Could not be modified", outingClass.getId());
+            throw new ResourceNotFoundException(String.format("Outing class with id: '%d' not found. Could not be modified", outingClass.getId()));
         }
 
     }

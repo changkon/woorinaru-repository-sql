@@ -1,14 +1,14 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapper.model;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import woorinaru.repository.sql.entity.management.administration.BeginnerClass;
+import woorinaru.repository.sql.entity.management.administration.TutoringClass;
 
 @Mapper(uses={PartialResourceMapper.class, StudentMapper.class, StaffMapper.class})
-public interface BeginnerClassMapper {
+public interface TutoringClassMapper {
 
-    BeginnerClassMapper MAPPER = Mappers.getMapper(BeginnerClassMapper.class);
+    TutoringClassMapper MAPPER = Mappers.getMapper(TutoringClassMapper.class);
 
     @Mapping(source="event.id", target="event.id")
     @Mapping(target="event.startDateTime", ignore=true)
@@ -20,7 +20,7 @@ public interface BeginnerClassMapper {
     @Mapping(target="resources", ignore=true)
     @Mapping(target="staff", ignore=true)
     @Mapping(target="students", ignore=true)
-    BeginnerClass mapToEntity(woorinaru.core.model.management.administration.BeginnerClass beginnerClassModel);
+    TutoringClass mapToEntity(woorinaru.core.model.management.administration.TutoringClass tutoringClassModel);
 
     @Mapping(source="event.id", target="event.id")
     @Mapping(target="event.startDateTime", ignore=true)
@@ -29,5 +29,5 @@ public interface BeginnerClassMapper {
     @Mapping(target="event.description", ignore=true)
     @Mapping(target="event.wooriClasses", ignore=true)
     @Mapping(target="event.studentReservations", ignore=true)
-    woorinaru.core.model.management.administration.BeginnerClass mapToModel(BeginnerClass beginnerClassEntity);
+    woorinaru.core.model.management.administration.TutoringClass mapToModel(TutoringClass tutoringClassEntity);
 }

@@ -3,12 +3,14 @@ package woorinaru.repository.sql.dao.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import woorinaru.core.dao.spi.TutoringClassDao;
+import woorinaru.core.exception.ReferenceNotFoundException;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.management.administration.TutoringClass;
 import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;
 import woorinaru.repository.sql.entity.user.Staff;
 import woorinaru.repository.sql.entity.user.Student;
-import woorinaru.repository.sql.mapping.model.TutoringClassMapper;
+import woorinaru.repository.sql.mapper.model.TutoringClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -30,7 +32,7 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
     }
 
     @Override
-    public void create(TutoringClass tutoringClass) {
+    public int create(TutoringClass tutoringClass) {
         LOGGER.debug("Creating tutoring class");
         // Map file
         TutoringClassMapper mapper = TutoringClassMapper.MAPPER;
@@ -39,7 +41,9 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         if (Objects.nonNull(tutoringClass.getResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : tutoringClass.getResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
-                if (Objects.nonNull(resourceEntity)) {
+                if (Objects.isNull(resourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
                     tutoringClassEntity.addResource(resourceEntity);
                 }
             }
@@ -48,43 +52,57 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
         if (Objects.nonNull(tutoringClass.getStaff())) {
             for (woorinaru.core.model.user.Staff staffModel : tutoringClass.getStaff()) {
                 Staff staffEntity = em.find(Staff.class, staffModel.getId());
-                tutoringClassEntity.addStaff(staffEntity);
+                if (Objects.isNull(staffEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                } else {
+                    tutoringClassEntity.addStaff(staffEntity);
+                }
             }
         }
 
         if (Objects.nonNull(tutoringClass.getStudents())) {
             for (woorinaru.core.model.user.Student studentModel : tutoringClass.getStudents()) {
                 Student studentEntity = em.find(Student.class, studentModel.getId());
-                tutoringClassEntity.addStudent(studentEntity);
+                if (Objects.isNull(studentEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
+                } else {
+                    tutoringClassEntity.addStudent(studentEntity);
+                }
             }
         }
 
         if (Objects.nonNull(tutoringClass.getEvent())) {
             Event eventEntity = em.find(Event.class, tutoringClass.getEvent().getId());
 
-            if (Objects.nonNull(eventEntity)) {
+            if (Objects.isNull(eventEntity)) {
+                throw new ReferenceNotFoundException(String.format("Could not find event id: %d", tutoringClass.getEvent().getId()));
+            } else {
                 tutoringClassEntity.setEvent(eventEntity);
             }
         }
 
         em.persist(tutoringClassEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating tutoring class");
+        return tutoringClassEntity.getId();
     }
 
     @Override
-    public Optional<TutoringClass> get(int id) {
+    public TutoringClass get(int id) {
         LOGGER.debug("Retrieving a tutoring class with id: %d", id);
 
         woorinaru.repository.sql.entity.management.administration.TutoringClass tutoringClassEntity = em.find(woorinaru.repository.sql.entity.management.administration.TutoringClass.class, id);
 
         LOGGER.debug("Tutoring class with id: %d. Found: %s", id, tutoringClassEntity == null ? "True" : "False");
 
+        if (Objects.isNull(tutoringClassEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find tutoring class with id: %d", id));
+        }
+
         TutoringClassMapper mapper = TutoringClassMapper.MAPPER;
 
-        Optional<TutoringClass> tutoringClassModel = Stream.ofNullable(tutoringClassEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        TutoringClass tutoringClassModel = mapper.mapToModel(tutoringClassEntity);
 
         return tutoringClassModel;
     }
@@ -101,6 +119,7 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
             LOGGER.debug("Tutoring class deleted");
         } else {
             LOGGER.debug("Tutoring class with id: '%d' not found. Could not be deleted", tutoringClass.getId());
+            throw new ResourceNotFoundException(String.format("Tutoring class with id: '%d' not found. Could not be deleted", tutoringClass.getId()));
         }
     }
 
@@ -113,7 +132,11 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
             woorinaru.core.model.management.administration.Event eventModel = tutoringClass.getEvent();
             if (eventModel != null) {
                 Event existingEventEntity = em.find(Event.class, eventModel.getId());
-                existingTutoringClassEntity.setEvent(existingEventEntity);
+                if (Objects.isNull(existingEventEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find event id: %d", eventModel.getId()));
+                } else {
+                    existingTutoringClassEntity.setEvent(existingEventEntity);
+                }
             }
 
             // flush the existing collections
@@ -124,20 +147,33 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
             // re-populate
             for (woorinaru.core.model.user.Student studentModel : tutoringClass.getStudents()) {
                 Student existingStudent = em.find(Student.class, studentModel.getId());
-                existingTutoringClassEntity.addStudent(existingStudent);
+                if (Objects.isNull(existingStudent)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
+                } else {
+                    existingTutoringClassEntity.addStudent(existingStudent);
+                }
             }
 
             for (woorinaru.core.model.user.Staff staffModel : tutoringClass.getStaff()) {
                 Staff existingStaff = em.find(Staff.class, staffModel.getId());
-                existingTutoringClassEntity.addStaff(existingStaff);
+                if (Objects.isNull(existingStaff)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                } else {
+                    existingTutoringClassEntity.addStaff(existingStaff);
+                }
             }
 
             for (woorinaru.core.model.management.administration.Resource resourceModel : tutoringClass.getResources()) {
                 Resource existingResource = em.find(Resource.class, resourceModel.getId());
-                existingTutoringClassEntity.addResource(existingResource);
+                if (Objects.isNull(existingResource)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
+                    existingTutoringClassEntity.addResource(existingResource);
+                }
             }
         } else {
             LOGGER.debug("Tutoring class with id: '%d' not found. Could not be modified", tutoringClass.getId());
+            throw new ResourceNotFoundException(String.format("Tutoring class with id: '%d' not found. Could not be modified", tutoringClass.getId()));
         }
     }
 

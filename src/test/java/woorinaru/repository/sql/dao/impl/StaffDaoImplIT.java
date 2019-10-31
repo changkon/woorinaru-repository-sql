@@ -4,13 +4,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import woorinaru.core.dao.spi.StaffDao;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.management.administration.Resource;
 import woorinaru.core.model.management.administration.Team;
 import woorinaru.core.model.user.Staff;
 import woorinaru.core.model.user.StaffRole;
 import woorinaru.repository.sql.dao.helper.DatabaseContainerRule;
-import woorinaru.repository.sql.mapping.model.ResourceMapper;
-import woorinaru.repository.sql.mapping.model.StaffMapper;
+import woorinaru.repository.sql.mapper.model.ResourceMapper;
+import woorinaru.repository.sql.mapper.model.StaffMapper;
 import woorinaru.repository.sql.util.EntityManagerFactoryUtil;
 
 import javax.persistence.EntityManager;
@@ -21,9 +22,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 @ExtendWith(DatabaseContainerRule.class)
 public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
@@ -45,7 +46,10 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         staffModel.setStaffRole(StaffRole.TEACHER);
 
         // WHEN
-        executeInTransaction().accept(daoEm, () -> staffDao.create(staffModel));
+        executeInTransaction().accept(daoEm, () -> {
+            int generatedId = staffDao.create(staffModel);
+            assertThat(generatedId).isEqualTo(1);
+        });
 
         // THEN
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
@@ -96,7 +100,10 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         staffModel.setFavouriteResources(List.of(resourceModel));
 
         // WHEN
-        executeInTransaction().accept(daoEm, () -> staffDao.create(staffModel));
+        executeInTransaction().accept(daoEm, () -> {
+            int generatedId = staffDao.create(staffModel);
+            assertThat(generatedId).isEqualTo(1);
+        });
 
         // THEN
         EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
@@ -135,12 +142,9 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         em.close();
 
         // WHEN
-        Optional<Staff> retrievedStaffModelOptional = staffDao.get(1);
+        Staff retrievedStaffModel = staffDao.get(1);
 
         // THEN
-        assertThat(retrievedStaffModelOptional).isPresent();
-        Staff retrievedStaffModel = retrievedStaffModelOptional.get();
-
         assertThat(retrievedStaffModel.getId()).isEqualTo(1);
         assertThat(retrievedStaffModel.getName()).isEqualTo("Alan Foo");
         assertThat(retrievedStaffModel.getNationality()).isEqualTo("Australia");
@@ -181,12 +185,9 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         em.close();
 
         // WHEN
-        Optional<Staff> retrievedStaffModelOptional = staffDao.get(1);
+        Staff retrievedStaffModel = staffDao.get(1);
 
         // THEN
-        assertThat(retrievedStaffModelOptional).isPresent();
-        Staff retrievedStaffModel = retrievedStaffModelOptional.get();
-
         assertThat(retrievedStaffModel.getId()).isEqualTo(1);
         assertThat(retrievedStaffModel.getName()).isEqualTo("Alan Foo");
         assertThat(retrievedStaffModel.getNationality()).isEqualTo("Australia");
@@ -217,10 +218,11 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         StaffDao staffDao = new StaffDaoImpl(daoEm);
 
         // WHEN
-        Optional<Staff> staffModelOptional = staffDao.get(111);
+        Throwable thrown = catchThrowable(() -> staffDao.get(111));
 
         // THEN
-        assertThat(staffModelOptional).isEmpty();
+        assertThat(thrown).isInstanceOf(ResourceNotFoundException.class);
+        assertThat(thrown).hasMessage("Could not find staff with id: 111");
     }
 
     @Test

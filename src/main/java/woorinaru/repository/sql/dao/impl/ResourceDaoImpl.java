@@ -2,20 +2,18 @@ package woorinaru.repository.sql.dao.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.ResourceDao;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.management.administration.Resource;
-import woorinaru.repository.sql.adapter.ResourceAdapter;
-import woorinaru.repository.sql.mapping.model.ResourceMapper;
+import woorinaru.repository.sql.mapper.model.ResourceMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class ResourceDaoImpl implements ResourceDao {
 
@@ -28,30 +26,33 @@ public class ResourceDaoImpl implements ResourceDao {
     }
 
     @Override
-    public void create(Resource resource) {
+    public int create(Resource resource) {
         LOGGER.debug("Creating a resource");
         // Map file
         ResourceMapper mapper = ResourceMapper.MAPPER;
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = mapper.mapToEntity(resource);
 
         em.persist(resourceEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating a resource");
+        return resourceEntity.getId();
     }
 
     @Override
-    public Optional<Resource> get(int id) {
+    public Resource get(int id) {
         LOGGER.debug("Retrieving a resource with id: %d", id);
 
         woorinaru.repository.sql.entity.resource.Resource resourceEntity = em.find(woorinaru.repository.sql.entity.resource.Resource.class, id);
 
         LOGGER.debug("Resource with id: %d. Found: %s", id, resourceEntity == null ? "True" : "False");
 
-        ResourceMapper mapper = ResourceMapper.MAPPER;
+        if (Objects.isNull(resourceEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find resource with id: %d", id));
+        }
 
-        Optional<Resource> resourceModel = Stream.ofNullable(resourceEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        ResourceMapper mapper = ResourceMapper.MAPPER;
+        Resource resourceModel = mapper.mapToModel(resourceEntity);
 
         return resourceModel;
     }
@@ -68,6 +69,7 @@ public class ResourceDaoImpl implements ResourceDao {
             LOGGER.debug("Resource deleted");
         } else {
             LOGGER.debug("Resource with id: '%d' not found. Could not be deleted", resource.getId());
+            throw new ResourceNotFoundException(String.format("Resource with id: '%d' not found. Could not be deleted", resource.getId()));
         }
     }
 
@@ -83,6 +85,7 @@ public class ResourceDaoImpl implements ResourceDao {
             LOGGER.debug("Completed modifying resource with id: %d", resource.getId());
         } else {
             LOGGER.debug("Could not find resource with id: %d. Did not modify", resource.getId());
+            throw new ResourceNotFoundException(String.format("Could not find resource with id: %d. Did not modify", resource.getId()));
         }
     }
 

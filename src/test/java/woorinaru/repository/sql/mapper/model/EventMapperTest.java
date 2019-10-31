@@ -1,4 +1,4 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapper.model;
 
 import org.junit.jupiter.api.Test;
 import woorinaru.repository.sql.entity.management.administration.BeginnerClass;

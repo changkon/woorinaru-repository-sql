@@ -2,20 +2,18 @@ package woorinaru.repository.sql.dao.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import woorinaru.core.command.UpdateCommand;
 import woorinaru.core.dao.spi.StaffDao;
+import woorinaru.core.exception.ReferenceNotFoundException;
+import woorinaru.core.exception.ResourceNotFoundException;
 import woorinaru.core.model.user.Staff;
-import woorinaru.repository.sql.adapter.StaffAdapter;
 import woorinaru.repository.sql.entity.resource.Resource;
-import woorinaru.repository.sql.mapping.model.StaffMapper;
+import woorinaru.repository.sql.mapper.model.StaffMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static woorinaru.repository.sql.util.EntityManagerFactoryUtil.getEntityManager;
 
 public class StaffDaoImpl implements StaffDao {
 
@@ -28,7 +26,7 @@ public class StaffDaoImpl implements StaffDao {
     }
 
     @Override
-    public void create(Staff staff) {
+    public int create(Staff staff) {
         LOGGER.debug("Creating a staff resource");
         // Map file
         StaffMapper mapper = StaffMapper.MAPPER;
@@ -38,29 +36,35 @@ public class StaffDaoImpl implements StaffDao {
         if (Objects.nonNull(staff.getFavouriteResources())) {
             for (woorinaru.core.model.management.administration.Resource resourceModel : staff.getFavouriteResources()) {
                 Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
-                if (Objects.nonNull(resourceEntity)) {
+                if (Objects.isNull(resourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
                     staffEntity.addFavouriteResource(resourceEntity);
                 }
             }
         }
 
         em.persist(staffEntity);
+        em.flush();
 
         LOGGER.debug("Finished creating a staff resource");
+        return staffEntity.getId();
     }
 
     @Override
-    public Optional<Staff> get(int id) {
+    public Staff get(int id) {
         LOGGER.debug("Retrieving a staff resource with id: %d", id);
         woorinaru.repository.sql.entity.user.Staff staffEntity = em.find(woorinaru.repository.sql.entity.user.Staff.class, id);
 
         LOGGER.debug("Staff with id: %d. Found: %s", id, staffEntity == null ? "True" : "False");
 
+        if (Objects.isNull(staffEntity)) {
+            throw new ResourceNotFoundException(String.format("Could not find staff with id: %d", id));
+        }
+
         StaffMapper mapper = StaffMapper.MAPPER;
 
-        Optional<Staff> staffModel = Stream.ofNullable(staffEntity)
-            .map(mapper::mapToModel)
-            .findFirst();
+        Staff staffModel = mapper.mapToModel(staffEntity);
 
         return staffModel;
     }
@@ -77,6 +81,7 @@ public class StaffDaoImpl implements StaffDao {
             LOGGER.debug("Staff deleted");
         } else {
             LOGGER.debug("Staff with id: '%d' not found. Could not be deleted", staff.getId());
+            throw new ResourceNotFoundException(String.format("Staff with id: '%d' not found. Could not be deleted", staff.getId()));
         }
     }
 
@@ -96,7 +101,11 @@ public class StaffDaoImpl implements StaffDao {
             for (woorinaru.core.model.management.administration.Resource resourceModel : staff.getFavouriteResources()) {
                 int resourceModelId = resourceModel.getId();
                 Resource existingResourceEntity = em.find(Resource.class, resourceModelId);
-                existingStaffEntity.addFavouriteResource(existingResourceEntity);
+                if (Objects.isNull(existingResourceEntity)) {
+                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                } else {
+                    existingStaffEntity.addFavouriteResource(existingResourceEntity);
+                }
             }
 
             existingStaffEntity.setTeam(StaffMapper.MAPPER.mapTeamModelToTeamEntity(staff.getTeam()));
@@ -106,6 +115,7 @@ public class StaffDaoImpl implements StaffDao {
             LOGGER.debug("Finished modifying staff");
         } else {
             LOGGER.debug("Could not find staff with id: %d. Did not modify", staff.getId());
+            throw new ResourceNotFoundException(String.format("Could not find staff with id: %d. Did not modify", staff.getId()));
         }
     }
 

@@ -1,8 +1,6 @@
-package woorinaru.repository.sql.mapping.model;
+package woorinaru.repository.sql.mapper.model;
 
 import org.junit.jupiter.api.Test;
-import woorinaru.core.model.management.administration.Team;
-import woorinaru.core.model.user.StaffRole;
 import woorinaru.repository.sql.entity.management.administration.BeginnerClass;
 import woorinaru.repository.sql.entity.management.administration.Event;
 import woorinaru.repository.sql.entity.resource.Resource;

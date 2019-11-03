@@ -14,10 +14,7 @@ import woorinaru.repository.sql.mapper.model.TutoringClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -140,9 +137,9 @@ public class TutoringClassDaoImpl implements TutoringClassDao {
             }
 
             // flush the existing collections
-            existingTutoringClassEntity.setStudents(new ArrayList<>());
-            existingTutoringClassEntity.setStaff(new ArrayList<>());
-            existingTutoringClassEntity.setResources(new ArrayList<>());
+            Optional.ofNullable(existingTutoringClassEntity.getStudents()).ifPresentOrElse(Collection::clear, () -> existingTutoringClassEntity.setStudents(new ArrayList<>()));
+            Optional.ofNullable(existingTutoringClassEntity.getStaff()).ifPresentOrElse(Collection::clear, () -> existingTutoringClassEntity.setStaff(new ArrayList<>()));
+            Optional.ofNullable(existingTutoringClassEntity.getResources()).ifPresentOrElse(Collection::clear, () -> existingTutoringClassEntity.setResources(new ArrayList<>()));
 
             // re-populate
             for (woorinaru.core.model.user.Student studentModel : tutoringClass.getStudents()) {

@@ -12,9 +12,7 @@ import woorinaru.repository.sql.mapper.model.AdminMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AdminDaoImpl implements AdminDao {
@@ -97,7 +95,7 @@ public class AdminDaoImpl implements AdminDao {
             existingAdminEntity.setNationality(admin.getNationality());
             existingAdminEntity.setEmail(admin.getEmail());
             existingAdminEntity.setSignUpDateTime(admin.getSignUpDateTime());
-            existingAdminEntity.setFavouriteResources(new ArrayList<>());
+            Optional.ofNullable(existingAdminEntity.getFavouriteResources()).ifPresentOrElse(Collection::clear, () -> existingAdminEntity.setFavouriteResources(new ArrayList<>()));
 
             // re add resources
             for (woorinaru.core.model.management.administration.Resource resourceModel : admin.getFavouriteResources()) {

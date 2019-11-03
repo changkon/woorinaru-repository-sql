@@ -14,9 +14,7 @@ import woorinaru.repository.sql.mapper.model.IntermediateClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class IntermediateClassDaoImpl implements IntermediateClassDao {
@@ -138,9 +136,9 @@ public class IntermediateClassDaoImpl implements IntermediateClassDao {
             }
 
             // flush the existing collections
-            existingIntermediateClassEntity.setStudents(new ArrayList<>());
-            existingIntermediateClassEntity.setStaff(new ArrayList<>());
-            existingIntermediateClassEntity.setResources(new ArrayList<>());
+            Optional.ofNullable(existingIntermediateClassEntity.getStudents()).ifPresentOrElse(Collection::clear, () -> existingIntermediateClassEntity.setStudents(new ArrayList<>()));
+            Optional.ofNullable(existingIntermediateClassEntity.getStaff()).ifPresentOrElse(Collection::clear, () -> existingIntermediateClassEntity.setStaff(new ArrayList<>()));
+            Optional.ofNullable(existingIntermediateClassEntity.getResources()).ifPresentOrElse(Collection::clear, () -> existingIntermediateClassEntity.setResources(new ArrayList<>()));
 
             // re-populate
             for (woorinaru.core.model.user.Student studentModel : intermediateClass.getStudents()) {

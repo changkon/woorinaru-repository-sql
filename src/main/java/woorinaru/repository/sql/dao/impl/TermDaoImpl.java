@@ -12,10 +12,7 @@ import woorinaru.repository.sql.mapper.model.TermMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -111,8 +108,8 @@ public class TermDaoImpl implements TermDao {
             existingTermEntity.setEndDate(term.getEndDate());
 
             // flush existing collections
-            existingTermEntity.getEvents().clear();
-            existingTermEntity.getStaffMembers().clear();
+            Optional.ofNullable(existingTermEntity.getEvents()).ifPresentOrElse(Collection::clear, () -> existingTermEntity.setEvents(new ArrayList<>()));
+            Optional.ofNullable(existingTermEntity.getStaffMembers()).ifPresentOrElse(Collection::clear, () -> existingTermEntity.setStaffMembers(new ArrayList<>()));
 
             // re-populate
             for (woorinaru.core.model.management.administration.Event eventModel : term.getEvents()) {

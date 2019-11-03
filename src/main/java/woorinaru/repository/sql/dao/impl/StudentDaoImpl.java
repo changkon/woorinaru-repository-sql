@@ -11,10 +11,7 @@ import woorinaru.repository.sql.mapper.model.StudentMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -99,7 +96,7 @@ public class StudentDaoImpl implements StudentDao {
             existingStudentEntity.setNationality(student.getNationality());
             existingStudentEntity.setEmail(student.getEmail());
             existingStudentEntity.setSignUpDateTime(student.getSignUpDateTime());
-            existingStudentEntity.setFavouriteResources(new ArrayList<>());
+            Optional.ofNullable(existingStudentEntity.getFavouriteResources()).ifPresentOrElse(Collection::clear, () -> existingStudentEntity.setFavouriteResources(new ArrayList<>()));
 
             // re add resources
             for (woorinaru.core.model.management.administration.Resource resourceModel : student.getFavouriteResources()) {

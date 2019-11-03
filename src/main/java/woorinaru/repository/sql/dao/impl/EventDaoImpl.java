@@ -13,10 +13,7 @@ import woorinaru.repository.sql.mapper.model.EventMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -116,13 +113,13 @@ public class EventDaoImpl implements EventDao {
             existingEventEntity.setAddress(event.getAddress());
 
             // flush existing collections
-            existingEventEntity.setStudentReservations(new ArrayList<>());
-            existingEventEntity.setWooriClasses(new ArrayList<>());
+            Optional.ofNullable(existingEventEntity.getStudentReservations()).ifPresentOrElse(Collection::clear, () -> existingEventEntity.setStudentReservations(new ArrayList<>()));
+            Optional.ofNullable(existingEventEntity.getWooriClasses()).ifPresentOrElse(Collection::clear, () -> existingEventEntity.setWooriClasses(new ArrayList<>()));
 
             // re-populate
             for (woorinaru.core.model.user.Student studentModel : event.getStudentReservations()) {
                 Student existingStudent = em.find(Student.class, studentModel.getId());
-                existingEventEntity.addStudentReservation(existingStudent);
+
                 if (Objects.isNull(existingStudent)) {
                     throw new ReferenceNotFoundException(String.format("Could not find student id: %d", studentModel.getId()));
                 } else {

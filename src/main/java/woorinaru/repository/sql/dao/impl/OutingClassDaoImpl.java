@@ -14,10 +14,7 @@ import woorinaru.repository.sql.mapper.model.OutingClassMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -140,9 +137,9 @@ public class OutingClassDaoImpl implements OutingClassDao {
             }
 
             // flush the existing collections
-            existingOutingClassEntity.setStudents(new ArrayList<>());
-            existingOutingClassEntity.setStaff(new ArrayList<>());
-            existingOutingClassEntity.setResources(new ArrayList<>());
+            Optional.ofNullable(existingOutingClassEntity.getStudents()).ifPresentOrElse(Collection::clear, () -> existingOutingClassEntity.setStudents(new ArrayList<>()));
+            Optional.ofNullable(existingOutingClassEntity.getStaff()).ifPresentOrElse(Collection::clear, () -> existingOutingClassEntity.setStaff(new ArrayList<>()));
+            Optional.ofNullable(existingOutingClassEntity.getResources()).ifPresentOrElse(Collection::clear, () -> existingOutingClassEntity.setResources(new ArrayList<>()));
 
             // re-populate
             for (woorinaru.core.model.user.Student studentModel : outingClass.getStudents()) {

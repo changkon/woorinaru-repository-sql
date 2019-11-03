@@ -95,7 +95,7 @@ public class StaffDaoImpl implements StaffDao {
             existingStaffEntity.setNationality(staff.getNationality());
             existingStaffEntity.setEmail(staff.getEmail());
             existingStaffEntity.setSignUpDateTime(staff.getSignUpDateTime());
-            existingStaffEntity.setFavouriteResources(new ArrayList<>());
+            Optional.ofNullable(existingStaffEntity.getFavouriteResources()).ifPresentOrElse(Collection::clear, () -> existingStaffEntity.setFavouriteResources(new ArrayList<>()));
 
             // re add resources
             for (woorinaru.core.model.management.administration.Resource resourceModel : staff.getFavouriteResources()) {

@@ -15,10 +15,7 @@ import woorinaru.repository.sql.mapper.model.BeginnerClassMapper;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.lang.ref.Reference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -141,9 +138,9 @@ public class BeginnerClassDaoImpl implements BeginnerClassDao {
             }
 
             // flush the existing collections
-            existingBeginnerClassEntity.setStudents(new ArrayList<>());
-            existingBeginnerClassEntity.setStaff(new ArrayList<>());
-            existingBeginnerClassEntity.setResources(new ArrayList<>());
+            Optional.ofNullable(existingBeginnerClassEntity.getStudents()).ifPresentOrElse(Collection::clear, () -> existingBeginnerClassEntity.setStudents(new ArrayList<>()));
+            Optional.ofNullable(existingBeginnerClassEntity.getStaff()).ifPresentOrElse(Collection::clear, () -> existingBeginnerClassEntity.setStaff(new ArrayList<>()));
+            Optional.ofNullable(existingBeginnerClassEntity.getResources()).ifPresentOrElse(Collection::clear, () -> existingBeginnerClassEntity.setResources(new ArrayList<>()));
 
             // re-populate
             for (woorinaru.core.model.user.Student studentModel : beginnerClass.getStudents()) {

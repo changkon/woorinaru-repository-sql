@@ -111,8 +111,8 @@ public class TermDaoImpl implements TermDao {
             existingTermEntity.setEndDate(term.getEndDate());
 
             // flush existing collections
-            existingTermEntity.setEvents(new ArrayList<>());
-            existingTermEntity.setStaffMembers(new ArrayList<>());
+            existingTermEntity.getEvents().clear();
+            existingTermEntity.getStaffMembers().clear();
 
             // re-populate
             for (woorinaru.core.model.management.administration.Event eventModel : term.getEvents()) {

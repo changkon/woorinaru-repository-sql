@@ -103,20 +103,8 @@ public class EventMapperTest {
         assertThat(eventEntity.getStartDateTime()).isEqualTo(LocalDateTime.of(LocalDate.of(2019, 5, 1), LocalTime.of(14, 0, 0)));
         assertThat(eventEntity.getEndDateTime()).isEqualTo(LocalDateTime.of(LocalDate.of(2019, 5, 1), LocalTime.of(20, 0, 0)));
 
-        assertThat(eventEntity.getWooriClasses()).hasSize(1);
-        assertThat(eventEntity.getWooriClasses().iterator().next()).isInstanceOf(BeginnerClass.class);
-
-        assertThat(eventEntity.getStudentReservations()).hasSize(2);
-
-        Iterator<Student> iter = eventEntity.getStudentReservations().iterator();
-
-        Student studentEntity1 = iter.next();
-        assertThat(studentEntity1.getId()).isEqualTo(1);
-        assertThat(studentEntity1.getName()).isNull();
-
-        Student studentEntity2 = iter.next();
-        assertThat(studentEntity2.getId()).isEqualTo(2);
-        assertThat(studentEntity2.getName()).isNull();
+        assertThat(eventEntity.getWooriClasses()).isNullOrEmpty();
+        assertThat(eventEntity.getStudentReservations()).isNullOrEmpty();
     }
 
 }

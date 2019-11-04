@@ -369,7 +369,41 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(staff).isEmpty();
     }
 
-    // TODO modify staff resource
+    @Test
+    @DisplayName("Test modify staff")
+    public void testModifyStaff() {
+        // GIVEN
+        woorinaru.repository.sql.entity.user.Staff staffEntity = createStaffEntity("Test staff name", "New Zealand", "test@test.com");
+        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
+
+        em.getTransaction().begin();
+        em.persist(staffEntity);
+        em.getTransaction().commit();
+
+        Staff modifyStaffModel = new Staff();
+        modifyStaffModel.setId(1);
+        modifyStaffModel.setName("Modified name");
+        modifyStaffModel.setNationality("South Korea");
+        modifyStaffModel.setTeam(Team.PLANNING);
+        modifyStaffModel.setStaffRole(StaffRole.LEADER);
+
+        // WHEN
+        StaffDao staffDao = new StaffDaoImpl(em);
+        executeInTransaction().accept(em, () -> staffDao.modify(modifyStaffModel));
+
+        TypedQuery<woorinaru.repository.sql.entity.user.Staff> query = em.createQuery("SELECT s FROM Staff s", woorinaru.repository.sql.entity.user.Staff.class);
+        woorinaru.repository.sql.entity.user.Staff returnedStaffEntity = query.getSingleResult();
+
+        // THEN
+        assertThat(returnedStaffEntity.getName()).isEqualTo("Modified name");
+        assertThat(returnedStaffEntity.getNationality()).isEqualTo("South Korea");
+        assertThat(returnedStaffEntity.getTeam()).isEqualTo(woorinaru.repository.sql.entity.management.administration.Team.PLANNING);
+        assertThat(returnedStaffEntity.getStaffRole()).isEqualTo(woorinaru.repository.sql.entity.user.StaffRole.LEADER);
+        assertThat(returnedStaffEntity.getSignUpDateTime()).isNull();
+        assertThat(returnedStaffEntity.getFavouriteResources()).isNullOrEmpty();
+
+        em.close();
+    }
 
     private woorinaru.repository.sql.entity.user.Staff createStaffEntity(String name, String nationality, String email) {
         woorinaru.repository.sql.entity.user.Staff staffEntity = new woorinaru.repository.sql.entity.user.Staff();

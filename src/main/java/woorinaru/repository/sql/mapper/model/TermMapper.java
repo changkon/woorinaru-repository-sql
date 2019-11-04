@@ -12,6 +12,8 @@ public interface TermMapper {
 
     TermMapper MAPPER = Mappers.getMapper(TermMapper.class);
 
+    @Mapping(target="staffMembers", ignore=true)
+    @Mapping(target="events", ignore=true)
     Term mapToEntity(woorinaru.core.model.management.administration.Term termModel);
 
     woorinaru.core.model.management.administration.Term mapToModel(Term termEntity);

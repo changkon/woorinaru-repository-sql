@@ -11,6 +11,8 @@ public interface EventMapper {
 
     EventMapper MAPPER = Mappers.getMapper(EventMapper.class);
 
+    @Mapping(target="wooriClasses", ignore=true)
+    @Mapping(target="studentReservations", ignore=true)
     Event mapToEntity(woorinaru.core.model.management.administration.Event eventModel);
 
     woorinaru.core.model.management.administration.Event mapToModel(Event eventEntity);
@@ -29,7 +31,7 @@ public interface EventMapper {
     @Mapping(target="email", ignore=true)
     @Mapping(target="favouriteResources", ignore=true)
     @Mapping(target="signUpDateTime", ignore=true)
-    woorinaru.core.model.user.Student mapToEntity(Student studentEntity);
+    woorinaru.core.model.user.Student mapToModel(Student studentEntity);
 
     default WooriClass mapToEntity(woorinaru.core.model.management.administration.WooriClass wooriClassModel) {
         if (wooriClassModel instanceof woorinaru.core.model.management.administration.BeginnerClass) {

@@ -32,7 +32,7 @@ public class Term {
     @Column(name="ENDDATE", columnDefinition="DATE")
     private LocalDate endDate;
 
-    @OneToMany(fetch=FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JoinColumn(name="TERM_ID")
     private List<Event> events;
 

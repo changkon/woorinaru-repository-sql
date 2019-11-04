@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class StaffDaoImpl implements StaffDao {
 
@@ -98,13 +97,14 @@ public class StaffDaoImpl implements StaffDao {
             Optional.ofNullable(existingStaffEntity.getFavouriteResources()).ifPresentOrElse(Collection::clear, () -> existingStaffEntity.setFavouriteResources(new ArrayList<>()));
 
             // re add resources
-            for (woorinaru.core.model.management.administration.Resource resourceModel : staff.getFavouriteResources()) {
-                int resourceModelId = resourceModel.getId();
-                Resource existingResourceEntity = em.find(Resource.class, resourceModelId);
-                if (Objects.isNull(existingResourceEntity)) {
-                    throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
-                } else {
-                    existingStaffEntity.addFavouriteResource(existingResourceEntity);
+            if (Objects.nonNull(staff.getFavouriteResources())) {
+                for (woorinaru.core.model.management.administration.Resource resourceModel : staff.getFavouriteResources()) {
+                    Resource resourceEntity = em.find(Resource.class, resourceModel.getId());
+                    if (Objects.isNull(resourceEntity)) {
+                        throw new ReferenceNotFoundException(String.format("Could not find resource id: %d", resourceModel.getId()));
+                    } else {
+                        existingStaffEntity.addFavouriteResource(resourceEntity);
+                    }
                 }
             }
 

@@ -14,7 +14,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class TermDaoImpl implements TermDao {
 
@@ -112,22 +111,26 @@ public class TermDaoImpl implements TermDao {
             Optional.ofNullable(existingTermEntity.getStaffMembers()).ifPresentOrElse(Collection::clear, () -> existingTermEntity.setStaffMembers(new ArrayList<>()));
 
             // re-populate
-            for (woorinaru.core.model.management.administration.Event eventModel : term.getEvents()) {
-                Event existingEvent = em.find(Event.class, eventModel.getId());
-                if (Objects.isNull(existingEvent)) {
-                    throw new ReferenceNotFoundException(String.format("Could not find event id: %d", eventModel.getId()));
-                } else {
-                    existingTermEntity.addEvent(existingEvent);
+            if (Objects.nonNull(term.getEvents())) {
+                for (woorinaru.core.model.management.administration.Event eventModel : term.getEvents()) {
+                    Event existingEvent = em.find(Event.class, eventModel.getId());
+                    if (Objects.isNull(existingEvent)) {
+                        throw new ReferenceNotFoundException(String.format("Could not find event id: %d", eventModel.getId()));
+                    } else {
+                        existingTermEntity.addEvent(existingEvent);
+                    }
                 }
             }
 
-            for (woorinaru.core.model.user.Staff staffModel : term.getStaffMembers()) {
-                Staff existingStaffMember = em.find(Staff.class, staffModel.getId());
+            if (Objects.nonNull(term.getStaffMembers())) {
+                for (woorinaru.core.model.user.Staff staffModel : term.getStaffMembers()) {
+                    Staff existingStaffMember = em.find(Staff.class, staffModel.getId());
 
-                if (Objects.isNull(existingStaffMember)) {
-                    throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
-                } else {
-                    existingTermEntity.addStaff(existingStaffMember);
+                    if (Objects.isNull(existingStaffMember)) {
+                        throw new ReferenceNotFoundException(String.format("Could not find staff id: %d", staffModel.getId()));
+                    } else {
+                        existingTermEntity.addStaff(existingStaffMember);
+                    }
                 }
             }
         } else {

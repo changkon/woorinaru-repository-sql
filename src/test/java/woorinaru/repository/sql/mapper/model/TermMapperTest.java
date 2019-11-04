@@ -98,20 +98,7 @@ public class TermMapperTest {
         assertThat(termEntity.getStartDate()).isEqualTo(LocalDate.of(2019, 1, 10));
         assertThat(termEntity.getEndDate()).isEqualTo(LocalDate.of(2019, 4, 10));
 
-        assertThat(termEntity.getEvents()).hasSize(1);
-        Event eventEntity = termEntity.getEvents().iterator().next();
-        assertThat(eventEntity.getId()).isEqualTo(1);
-        assertThat(eventEntity.getDescription()).isNull();
-
-        Iterator<Staff> iter = termEntity.getStaffMembers().iterator();
-
-        Staff staffEntity1 = iter.next();
-        Staff staffEntity2 = iter.next();
-
-        assertThat(staffEntity1.getId()).isEqualTo(1);
-        assertThat(staffEntity1.getName()).isNull();
-
-        assertThat(staffEntity2.getId()).isEqualTo(2);
-        assertThat(staffEntity2.getName()).isNull();
+        assertThat(termEntity.getEvents()).isNullOrEmpty();
+        assertThat(termEntity.getStaffMembers()).isNullOrEmpty();
     }
 }

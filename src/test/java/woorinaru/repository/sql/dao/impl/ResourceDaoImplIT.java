@@ -76,7 +76,37 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         em.close();
     }
 
-    // TODO modify resource
+    @Test
+    @DisplayName("Test modify resource")
+    public void testModifyResource() {
+        // GIVEN
+        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
+        woorinaru.repository.sql.entity.resource.Resource resourceEntity = new woorinaru.repository.sql.entity.resource.Resource();
+        resourceEntity.setDescription("resource description");
+        resourceEntity.setResource("resource".getBytes());
+
+        em.getTransaction().begin();
+        em.persist(resourceEntity);
+        em.getTransaction().commit();
+
+        // WHEN
+        Resource modifyResourceModel = new Resource();
+        modifyResourceModel.setId(1);
+        modifyResourceModel.setDescription("modified resource description");
+        modifyResourceModel.setResource("modify resource description".getBytes());
+
+        ResourceDao resourceDao = new ResourceDaoImpl(em);
+        executeInTransaction().accept(em, () -> resourceDao.modify(modifyResourceModel));
+
+        TypedQuery<woorinaru.repository.sql.entity.resource.Resource> query = em.createQuery("SELECT r FROM Resource r", woorinaru.repository.sql.entity.resource.Resource.class);
+        woorinaru.repository.sql.entity.resource.Resource modifiedResourceEntity = query.getSingleResult();
+
+        // THEN
+        assertThat(modifiedResourceEntity.getDescription()).isEqualTo("modified resource description");
+        assertThat(modifiedResourceEntity.getResource()).isEqualTo("modify resource description".getBytes());
+
+        em.close();
+    }
 
     @Test
     @DisplayName("Test get resource")

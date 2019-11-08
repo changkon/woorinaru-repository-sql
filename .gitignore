@@ -89,4 +89,4 @@ gradle-app.setting
 target/
 
 # Temp main file
-**/src/main/java/woorinaru/repository/sql/main/*
+**/src/main/java/com/woorinaru/repository/sql/main/*

@@ -5,18 +5,18 @@
     <persistence-unit name="woorinaru-repository" transaction-type="RESOURCE_LOCAL">
         <description>Persistence xml file for woorinaru project</description>
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>woorinaru.repository.sql.entity.resource.Resource</class>
-        <class>woorinaru.repository.sql.entity.user.User</class>
-        <class>woorinaru.repository.sql.entity.user.Admin</class>
-        <class>woorinaru.repository.sql.entity.user.Student</class>
-        <class>woorinaru.repository.sql.entity.user.Staff</class>
-        <class>woorinaru.repository.sql.entity.management.administration.WooriClass</class>
-        <class>woorinaru.repository.sql.entity.management.administration.BeginnerClass</class>
-        <class>woorinaru.repository.sql.entity.management.administration.IntermediateClass</class>
-        <class>woorinaru.repository.sql.entity.management.administration.OutingClass</class>
-        <class>woorinaru.repository.sql.entity.management.administration.TutoringClass</class>
-        <class>woorinaru.repository.sql.entity.management.administration.Event</class>
-        <class>woorinaru.repository.sql.entity.management.administration.Term</class>
+        <class>com.woorinaru.repository.sql.entity.resource.Resource</class>
+        <class>com.woorinaru.repository.sql.entity.user.User</class>
+        <class>com.woorinaru.repository.sql.entity.user.Admin</class>
+        <class>com.woorinaru.repository.sql.entity.user.Student</class>
+        <class>com.woorinaru.repository.sql.entity.user.Staff</class>
+        <class>com.woorinaru.repository.sql.entity.management.administration.WooriClass</class>
+        <class>com.woorinaru.repository.sql.entity.management.administration.BeginnerClass</class>
+        <class>com.woorinaru.repository.sql.entity.management.administration.IntermediateClass</class>
+        <class>com.woorinaru.repository.sql.entity.management.administration.OutingClass</class>
+        <class>com.woorinaru.repository.sql.entity.management.administration.TutoringClass</class>
+        <class>com.woorinaru.repository.sql.entity.management.administration.Event</class>
+        <class>com.woorinaru.repository.sql.entity.management.administration.Term</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <!-- database connection -->

@@ -1,6 +1,6 @@
-module woorinaru.repository.sql {
+module com.woorinaru.repository.sql {
     // woorinaru models
-    requires woorinaru.core;
+    requires com.woorinaru.core;
     // JPA
     requires java.persistence;
     requires java.sql;
@@ -18,11 +18,11 @@ module woorinaru.repository.sql {
     // mapstruct
     requires org.mapstruct;
 
-    opens woorinaru.repository.sql.entity.resource to org.hibernate.orm.core;
-    opens woorinaru.repository.sql.entity.user to org.hibernate.orm.core;
-    opens woorinaru.repository.sql.entity.management.administration to org.hibernate.orm.core;
+    opens com.woorinaru.repository.sql.entity.resource to org.hibernate.orm.core;
+    opens com.woorinaru.repository.sql.entity.user to org.hibernate.orm.core;
+    opens com.woorinaru.repository.sql.entity.management.administration to org.hibernate.orm.core;
 
     // exports for mapping
-    exports woorinaru.repository.sql.mapper.model to org.mapstruct;
-    exports woorinaru.repository.sql.dao.impl;
+    exports com.woorinaru.repository.sql.mapper.model to org.mapstruct;
+    exports com.woorinaru.repository.sql.dao.impl;
 }

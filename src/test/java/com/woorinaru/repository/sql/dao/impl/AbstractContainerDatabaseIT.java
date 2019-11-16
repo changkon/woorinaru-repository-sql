@@ -57,8 +57,8 @@ public abstract class AbstractContainerDatabaseIT {
                 runnable.run();
                 em.getTransaction().commit();
             } catch (Exception e) {
-                System.out.println(e);
                 em.getTransaction().rollback();
+                throw new RuntimeException(e);
             }
         };
     }

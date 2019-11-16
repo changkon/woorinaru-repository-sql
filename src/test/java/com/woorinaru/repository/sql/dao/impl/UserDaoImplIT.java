@@ -7,6 +7,7 @@ import com.woorinaru.core.model.management.administration.Team;
 import com.woorinaru.core.model.user.Staff;
 import com.woorinaru.core.model.user.StaffRole;
 import com.woorinaru.core.model.user.Student;
+import com.woorinaru.core.model.user.User;
 import com.woorinaru.repository.sql.dao.helper.DatabaseContainerRule;
 import com.woorinaru.repository.sql.util.EntityManagerFactoryUtil;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +22,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(DatabaseContainerRule.class)
 public class UserDaoImplIT extends AbstractContainerDatabaseIT {
+
+    @Test
+    @DisplayName("Test get user by email")
+    public void testGetUserByEmail() {
+        // GIVEN
+        EntityManager em = EntityManagerFactoryUtil.getEntityManager();
+        StudentDao studentDao = new StudentDaoImpl(em);
+        UserDao userDao = new UserDaoImpl(em);
+        Student student = new Student();
+        student.setEmail("random@test.com");
+
+        executeInTransaction().accept(em, () -> {
+            int generatedId = studentDao.create(student);
+            assertThat(generatedId).isEqualTo(1);
+        });
+
+        executeInTransaction().accept(em, () -> {
+            User user = userDao.getByEmail("random@test.com");
+            assertThat(user).isNotNull();
+            assertThat(user.getId()).isEqualTo(1);
+            assertThat(user.getEmail()).isEqualTo("random@test.com");
+            assertThat(user).isInstanceOf(Student.class);
+        });
+
+        em.close();
+    }
 
     @Test
     @DisplayName("Test user type is changed to staff")

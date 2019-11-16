@@ -58,6 +58,24 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public User getByEmail(String email) {
+        LOGGER.debug("Retrieving user from database with email: %s", email);
+        TypedQuery<com.woorinaru.repository.sql.entity.user.User> query = em.createQuery("SELECT u FROM User u WHERE u.email=:email", com.woorinaru.repository.sql.entity.user.User.class)
+            .setParameter("email", email);
+        com.woorinaru.repository.sql.entity.user.User userEntity = query.getSingleResult();
+
+        if (Objects.isNull(userEntity)) {
+            LOGGER.warn("No user found with email: %s", email);
+            throw new ResourceNotFoundException(String.format("Could not find user with email: %s", email));
+        }
+
+        UserMapper mapper = UserMapper.MAPPER;
+        User userModel = mapper.mapToModel(userEntity);
+
+        return userModel;
+    }
+
+    @Override
     public void modifyUserType(User user, Class<? extends User> userClass) {
         LOGGER.debug("Changing user with id %d to class type: %s", user.getId(), userClass.getSimpleName());
         Optional<com.woorinaru.repository.sql.entity.user.User> userEntity = getUser(user.getId());

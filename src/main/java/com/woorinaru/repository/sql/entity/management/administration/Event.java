@@ -28,7 +28,7 @@ public class Event {
     @Column(name="DESCRIPTION")
     private String description;
 
-    @OneToMany(fetch=FetchType.LAZY, mappedBy="event")
+    @OneToMany(fetch=FetchType.LAZY, mappedBy="event", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<WooriClass> wooriClasses;
 
     @ManyToMany(fetch=FetchType.LAZY)

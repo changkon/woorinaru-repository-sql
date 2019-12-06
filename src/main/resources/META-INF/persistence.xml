@@ -21,18 +21,19 @@
         <properties>
             <!-- database connection -->
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver " />
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1:3306/woorinaru" />
-            <property name="javax.persistence.jdbc.user" value="root" />
-            <property name="javax.persistence.jdbc.password" value="changkon" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3307/woorinaru?useSSL=false" />
+            <property name="javax.persistence.jdbc.user" value="admin" />
+            <property name="javax.persistence.jdbc.password" value="woorinaru" />
 
             <!-- Schema generation -->
-            <property name="javax.persistence.schema-generation.database.action" value="create" />
-            <property name="javax.persistence.sql-load-script-source" value="META-INF/sql/woorinaru_create.sql"/>
+<!--            <property name="javax.persistence.schema-generation.database.action" value="create" />-->
+<!--            <property name="javax.persistence.sql-load-script-source" value="META-INF/sql/woorinaru_create.sql"/>-->
 
             <!-- Dialect -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.hbm2ddl.auto" value="validate" />
         </properties>
     </persistence-unit>
 </persistence>

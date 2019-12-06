@@ -11,7 +11,7 @@ import java.util.Collection;
 @Entity
 @Table(name="WOORICLASS")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="CLASS_TYPE")
+@DiscriminatorColumn(name="CLASS_TYPE", discriminatorType = DiscriminatorType.STRING, length = 1)
 public abstract class WooriClass {
 
     @Id

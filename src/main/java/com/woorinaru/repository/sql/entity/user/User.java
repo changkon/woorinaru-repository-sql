@@ -11,7 +11,7 @@ import java.util.Collection;
 @Entity
 @Table(name="USER")
 @Inheritance(strategy= InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="USER_TYPE")
+@DiscriminatorColumn(name="USER_TYPE", discriminatorType = DiscriminatorType.STRING, length = 1)
 public abstract class User {
 
     @Id
@@ -29,8 +29,10 @@ public abstract class User {
     protected String email;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="USER_RESOURCE", joinColumns = @JoinColumn(name = "USER_ID"),
-        inverseJoinColumns = @JoinColumn(name = "RESOURCE_ID"))
+    @JoinTable(name="USER_RESOURCE",
+        joinColumns = @JoinColumn(name = "USER_ID"),
+        inverseJoinColumns = @JoinColumn(name = "RESOURCE_ID")
+    )
     protected Collection<Resource> favouriteResources;
 
     @Column(name="SIGNUPDATETIME", columnDefinition="TIMESTAMP")

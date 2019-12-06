@@ -11,7 +11,7 @@ public class Resource {
     @Column(name="ID", updatable=false, nullable=false)
     private int id;
 
-    @Column(name="RESOURCE")
+    @Column(name="RESOURCE", columnDefinition = "MEDIUMBLOB")
     @Lob
     private byte[] resource;
 

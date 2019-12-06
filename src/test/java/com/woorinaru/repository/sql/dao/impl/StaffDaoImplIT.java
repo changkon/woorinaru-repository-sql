@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -296,19 +297,29 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
 
         em1.close();
 
+        EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
+        Query userResourceQuery1 = em2.createNativeQuery("SELECT * FROM USER_RESOURCE");
+        int userResourceSize1 = userResourceQuery1.getResultList().size();
+        assertThat(userResourceSize1).isEqualTo(2);
+
         // WHEN
         executeInTransaction().accept(daoEm, () -> staffDao.delete(staffModel));
 
         // THEN
-        EntityManager em2 = EntityManagerFactoryUtil.getEntityManager();
-        TypedQuery<com.woorinaru.repository.sql.entity.user.Staff> secondQuery = em2.createQuery("SELECT s FROM Staff s WHERE id='1'", com.woorinaru.repository.sql.entity.user.Staff.class);
-        assertThat(secondQuery.getResultList()).isEmpty();
-        em2.close();
-
         EntityManager em3 = EntityManagerFactoryUtil.getEntityManager();
-        TypedQuery<com.woorinaru.repository.sql.entity.resource.Resource> thirdQuery = em3.createQuery("SELECT r FROM Resource r", com.woorinaru.repository.sql.entity.resource.Resource.class);
-        assertThat(thirdQuery.getResultList()).hasSize(2);
+        TypedQuery<com.woorinaru.repository.sql.entity.user.Staff> secondQuery = em3.createQuery("SELECT s FROM Staff s WHERE id='1'", com.woorinaru.repository.sql.entity.user.Staff.class);
+        assertThat(secondQuery.getResultList()).isEmpty();
         em3.close();
+
+        EntityManager em4 = EntityManagerFactoryUtil.getEntityManager();
+        TypedQuery<com.woorinaru.repository.sql.entity.resource.Resource> thirdQuery = em4.createQuery("SELECT r FROM Resource r", com.woorinaru.repository.sql.entity.resource.Resource.class);
+        assertThat(thirdQuery.getResultList()).hasSize(2);
+        em4.close();
+
+        EntityManager em5 = EntityManagerFactoryUtil.getEntityManager();
+        Query userResourceQuery2 = em5.createNativeQuery("SELECT * FROM USER_RESOURCE");
+        int userResourceSize2 = userResourceQuery2.getResultList().size();
+        assertThat(userResourceSize2).isZero();
     }
 
     @Test

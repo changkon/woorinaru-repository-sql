@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses={PartialResourceMapper.class, StudentMapper.class, StaffMapper.class})
+@Mapper(uses={StudentMapper.class, StaffMapper.class})
 public interface OutingClassMapper {
 
     OutingClassMapper MAPPER = Mappers.getMapper(OutingClassMapper.class);

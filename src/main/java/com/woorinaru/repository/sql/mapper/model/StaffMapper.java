@@ -9,12 +9,11 @@ import org.mapstruct.ValueMapping;
 import org.mapstruct.ValueMappings;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses=PartialResourceMapper.class)
+@Mapper
 public interface StaffMapper {
 
     StaffMapper MAPPER = Mappers.getMapper(StaffMapper.class);
 
-    @Mapping(target="favouriteResources", ignore=true)
     Staff mapToEntity(com.woorinaru.core.model.user.Staff staffModel);
 
     com.woorinaru.core.model.user.Staff mapToModel(Staff staffEntity);

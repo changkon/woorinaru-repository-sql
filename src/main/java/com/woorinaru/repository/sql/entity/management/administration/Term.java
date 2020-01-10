@@ -5,6 +5,8 @@ import com.woorinaru.repository.sql.entity.user.Staff;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +36,12 @@ public class Term {
     @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="TERM_ID")
     private List<Event> events;
+
+    @Column(name="CREATEDATETIME", columnDefinition="TIMESTAMP")
+    protected LocalDateTime createDateTime;
+
+    @Column(name="UPDATEDATETIME", columnDefinition="TIMESTAMP")
+    protected LocalDateTime updateDateTime;
 
     public Term() {}
 
@@ -111,5 +119,31 @@ public class Term {
             return false;
         }
         return staffMembers.removeIf(staff -> staff.getId() == id);
+    }
+
+    public LocalDateTime getCreateDateTime() {
+        return createDateTime;
+    }
+
+    public void setCreateDateTime(LocalDateTime createDateTime) {
+        this.createDateTime = createDateTime;
+    }
+
+    public LocalDateTime getUpdateDateTime() {
+        return updateDateTime;
+    }
+
+    public void setUpdateDateTime(LocalDateTime updateDateTime) {
+        this.updateDateTime = updateDateTime;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createDateTime = LocalDateTime.now(ZoneOffset.UTC);
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateDateTime = LocalDateTime.now(ZoneOffset.UTC);
     }
 }

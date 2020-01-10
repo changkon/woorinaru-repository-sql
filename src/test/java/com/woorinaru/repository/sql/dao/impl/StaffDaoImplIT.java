@@ -89,7 +89,7 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         EntityManager em1 = EntityManagerFactoryUtil.getEntityManager();
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity.setDescription("Test resource description");
-        resourceEntity.setResource("Test resource".getBytes());
+//        resourceEntity.setResource("Test resource".getBytes());
         // Send resource to db
         em1.getTransaction().begin();
         em1.persist(resourceEntity);
@@ -120,7 +120,7 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         Assertions.assertThat(staffEntity.getFavouriteResources()).hasSize(1);
         com.woorinaru.repository.sql.entity.resource.Resource retrievedResourceEntity = staffEntity.getFavouriteResources().iterator().next();
         assertThat(retrievedResourceEntity.getId()).isEqualTo(1);
-        assertThat(retrievedResourceEntity.getResource()).isEqualTo("Test resource".getBytes());
+//        assertThat(retrievedResourceEntity.getResource()).isEqualTo("Test resource".getBytes());
         assertThat(retrievedResourceEntity.getDescription()).isEqualTo("Test resource description");
 
         assertThat(staffEntity.getSignUpDateTime()).isEqualTo(signupDateTime);
@@ -170,11 +170,11 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         // Create staff favourite resources
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity1 = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity1.setDescription("test resource 1");
-        resourceEntity1.setResource("test 1".getBytes());
+//        resourceEntity1.setResource("test 1".getBytes());
 
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity2 = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity2.setDescription("test resource 2");
-        resourceEntity2.setResource("test 2".getBytes());
+//        resourceEntity2.setResource("test 2".getBytes());
 
         em.persist(resourceEntity1);
         em.persist(resourceEntity2);
@@ -205,11 +205,11 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
 
         assertThat(resourceModel1.getId()).isEqualTo(1);
         assertThat(resourceModel1.getDescription()).isEqualTo("test resource 1");
-        assertThat(resourceModel1.getResource()).isNull();
+//        assertThat(resourceModel1.getResource()).isNull();
 
         assertThat(resourceModel2.getId()).isEqualTo(2);
         assertThat(resourceModel2.getDescription()).isEqualTo("test resource 2");
-        assertThat(resourceModel2.getResource()).isNull();
+//        assertThat(resourceModel2.getResource()).isNull();
     }
 
     @Test
@@ -272,11 +272,11 @@ public class StaffDaoImplIT extends AbstractContainerDatabaseIT {
         // Create staff favourite resources
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity1 = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity1.setDescription("test resource 1");
-        resourceEntity1.setResource("test 1".getBytes());
+//        resourceEntity1.setResource("test 1".getBytes());
 
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity2 = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity2.setDescription("test resource 2");
-        resourceEntity2.setResource("test 2".getBytes());
+//        resourceEntity2.setResource("test 2".getBytes());
 
         em1.persist(resourceEntity1);
         em1.persist(resourceEntity2);

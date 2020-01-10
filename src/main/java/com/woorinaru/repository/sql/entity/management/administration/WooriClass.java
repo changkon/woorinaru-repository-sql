@@ -5,6 +5,8 @@ import com.woorinaru.repository.sql.entity.user.Student;
 import com.woorinaru.repository.sql.entity.resource.Resource;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -34,6 +36,12 @@ public abstract class WooriClass {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="EVENT_ID")
     protected Event event;
+
+    @Column(name="CREATEDATETIME", columnDefinition="TIMESTAMP")
+    protected LocalDateTime createDateTime;
+
+    @Column(name="UPDATEDATETIME", columnDefinition="TIMESTAMP")
+    protected LocalDateTime updateDateTime;
 
     public WooriClass() {}
 
@@ -117,6 +125,32 @@ public abstract class WooriClass {
             return false;
         }
         return this.students.removeIf(student -> student.getId() == id);
+    }
+
+    public LocalDateTime getCreateDateTime() {
+        return createDateTime;
+    }
+
+    public LocalDateTime getUpdateDateTime() {
+        return updateDateTime;
+    }
+
+    public void setCreateDateTime(LocalDateTime createDateTime) {
+        this.createDateTime = createDateTime;
+    }
+
+    public void setUpdateDateTime(LocalDateTime updateDateTime) {
+        this.updateDateTime = updateDateTime;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createDateTime = LocalDateTime.now(ZoneOffset.UTC);
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateDateTime = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     @Transient

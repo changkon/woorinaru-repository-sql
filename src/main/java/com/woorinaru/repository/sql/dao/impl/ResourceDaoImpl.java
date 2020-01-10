@@ -78,7 +78,7 @@ public class ResourceDaoImpl implements ResourceDao {
 
         if (existingResourceEntity != null) {
             existingResourceEntity.setDescription(resource.getDescription());
-            existingResourceEntity.setResource(resource.getResource());
+            existingResourceEntity.setLocation(resource.getLocation());
             em.merge(existingResourceEntity);
             LOGGER.debug("Completed modifying resource with id: %d", resource.getId());
         } else {

@@ -4,6 +4,7 @@ import com.woorinaru.repository.sql.entity.user.Student;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -34,6 +35,12 @@ public class Event {
     @ManyToMany(fetch=FetchType.LAZY)
     @JoinTable(name="EVENT_STUDENT_RESERVATION", joinColumns=@JoinColumn(name="EVENT_ID"), inverseJoinColumns = @JoinColumn(name="STUDENT_ID"))
     private Collection<Student> studentReservations;
+
+    @Column(name="CREATEDATETIME", columnDefinition="TIMESTAMP")
+    protected LocalDateTime createDateTime;
+
+    @Column(name="UPDATEDATETIME", columnDefinition="TIMESTAMP")
+    protected LocalDateTime updateDateTime;
 
     public Event() {}
 
@@ -120,5 +127,31 @@ public class Event {
             return false;
         }
         return this.studentReservations.removeIf(student -> student.getId() == id);
+    }
+
+    public LocalDateTime getCreateDateTime() {
+        return createDateTime;
+    }
+
+    public LocalDateTime getUpdateDateTime() {
+        return updateDateTime;
+    }
+
+    public void setCreateDateTime(LocalDateTime createDateTime) {
+        this.createDateTime = createDateTime;
+    }
+
+    public void setUpdateDateTime(LocalDateTime updateDateTime) {
+        this.updateDateTime = updateDateTime;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createDateTime = LocalDateTime.now(ZoneOffset.UTC);
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateDateTime = LocalDateTime.now(ZoneOffset.UTC);
     }
 }

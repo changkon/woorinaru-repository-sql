@@ -5,6 +5,7 @@ import com.woorinaru.repository.sql.entity.resource.Resource;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -37,6 +38,12 @@ public abstract class User {
 
     @Column(name="SIGNUPDATETIME", columnDefinition="TIMESTAMP")
     protected LocalDateTime signUpDateTime;
+
+    @Column(name="CREATEDATETIME", columnDefinition="TIMESTAMP")
+    protected LocalDateTime createDateTime;
+
+    @Column(name="UPDATEDATETIME", columnDefinition="TIMESTAMP")
+    protected LocalDateTime updateDateTime;
 
     public User() {}
 
@@ -100,6 +107,32 @@ public abstract class User {
             return false;
         }
         return this.favouriteResources.removeIf(resource -> resource.getId() == resourceId);
+    }
+
+    public LocalDateTime getCreateDateTime() {
+        return createDateTime;
+    }
+
+    public LocalDateTime getUpdateDateTime() {
+        return updateDateTime;
+    }
+
+    public void setCreateDateTime(LocalDateTime createDateTime) {
+        this.createDateTime = createDateTime;
+    }
+
+    public void setUpdateDateTime(LocalDateTime updateDateTime) {
+        this.updateDateTime = updateDateTime;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createDateTime = LocalDateTime.now(ZoneOffset.UTC);
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateDateTime = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     @Transient

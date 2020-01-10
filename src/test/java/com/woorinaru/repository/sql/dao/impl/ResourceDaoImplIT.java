@@ -26,7 +26,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         // GIVEN
         Resource resourceModel = new Resource();
         resourceModel.setDescription("resource description");
-        resourceModel.setResource("resource".getBytes());
+//        resourceModel.setResource("resource".getBytes());
 
         EntityManager daoEm = EntityManagerFactoryUtil.getEntityManager();
         ResourceDao resourceDao = new ResourceDaoImpl(daoEm);
@@ -44,7 +44,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         assertThat(resourceEntity).isNotNull();
         assertThat(resourceEntity.getId()).isEqualTo(1);
         assertThat(resourceEntity.getDescription()).isEqualTo("resource description");
-        assertThat(resourceEntity.getResource()).isEqualTo("resource".getBytes());
+//        assertThat(resourceEntity.getResource()).isEqualTo("resource".getBytes());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         // GIVEN
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity.setDescription("resource entity description");
-        resourceEntity.setResource("resource".getBytes());
+//        resourceEntity.setResource("resource".getBytes());
 
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         em.getTransaction().begin();
@@ -83,7 +83,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity.setDescription("resource description");
-        resourceEntity.setResource("resource".getBytes());
+//        resourceEntity.setResource("resource".getBytes());
 
         em.getTransaction().begin();
         em.persist(resourceEntity);
@@ -93,7 +93,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         Resource modifyResourceModel = new Resource();
         modifyResourceModel.setId(1);
         modifyResourceModel.setDescription("modified resource description");
-        modifyResourceModel.setResource("modify resource description".getBytes());
+//        modifyResourceModel.setResource("modify resource description".getBytes());
 
         ResourceDao resourceDao = new ResourceDaoImpl(em);
         executeInTransaction().accept(em, () -> resourceDao.modify(modifyResourceModel));
@@ -103,7 +103,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
 
         // THEN
         assertThat(modifiedResourceEntity.getDescription()).isEqualTo("modified resource description");
-        assertThat(modifiedResourceEntity.getResource()).isEqualTo("modify resource description".getBytes());
+//        assertThat(modifiedResourceEntity.getResource()).isEqualTo("modify resource description".getBytes());
 
         em.close();
     }
@@ -114,7 +114,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         // GIVEN
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity.setDescription("resource description");
-        resourceEntity.setResource("random resource".getBytes());
+//        resourceEntity.setResource("random resource".getBytes());
 
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         em.getTransaction().begin();
@@ -130,7 +130,7 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         // THEN
         assertThat(resourceModel.getId()).isEqualTo(1);
         assertThat(resourceModel.getDescription()).isEqualTo("resource description");
-        assertThat(resourceModel.getResource()).isEqualTo("random resource".getBytes());
+//        assertThat(resourceModel.getResource()).isEqualTo("random resource".getBytes());
     }
 
     @Test
@@ -153,11 +153,11 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
         // GIVEN
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity1 = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity1.setDescription("description 1");
-        resourceEntity1.setResource("resource 1".getBytes());
+//        resourceEntity1.setResource("resource 1".getBytes());
 
         com.woorinaru.repository.sql.entity.resource.Resource resourceEntity2 = new com.woorinaru.repository.sql.entity.resource.Resource();
         resourceEntity2.setDescription("description 2");
-        resourceEntity2.setResource("resource 2".getBytes());
+//        resourceEntity2.setResource("resource 2".getBytes());
 
         EntityManager em = EntityManagerFactoryUtil.getEntityManager();
         em.getTransaction().begin();
@@ -178,10 +178,10 @@ public class ResourceDaoImplIT extends AbstractContainerDatabaseIT {
 
         assertThat(resourceModel1.getId()).isEqualTo(1);
         assertThat(resourceModel1.getDescription()).isEqualTo("description 1");
-        assertThat(resourceModel1.getResource()).isEqualTo("resource 1".getBytes());
+//        assertThat(resourceModel1.getResource()).isEqualTo("resource 1".getBytes());
 
         assertThat(resourceModel2.getId()).isEqualTo(2);
         assertThat(resourceModel2.getDescription()).isEqualTo("description 2");
-        assertThat(resourceModel2.getResource()).isEqualTo("resource 2".getBytes());
+//        assertThat(resourceModel2.getResource()).isEqualTo("resource 2".getBytes());
     }
 }

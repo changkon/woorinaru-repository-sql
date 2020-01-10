@@ -28,7 +28,7 @@ public class BeginnerClassMapperTest {
         com.woorinaru.core.model.management.administration.Resource resourceModel = new com.woorinaru.core.model.management.administration.Resource();
         resourceModel.setId(1);
         resourceModel.setDescription("test resource description");
-        resourceModel.setResource("test resource".getBytes());
+        resourceModel.setLocation("test resource location");
 
         beginnerClassModel.setResources(List.of(resourceModel));
 
@@ -58,12 +58,6 @@ public class BeginnerClassMapperTest {
         assertThat(beginnerClassEntity.getId()).isEqualTo(1);
         Assertions.assertThat(beginnerClassEntity.getResources()).isNullOrEmpty();
 
-//        Resource resourceEntity = beginnerClassEntity.getResources().iterator().next();
-//
-//        assertThat(resourceEntity.getId()).isEqualTo(1);
-//        assertThat(resourceEntity.getDescription()).isEqualTo("test resource description");
-//        assertThat(resourceEntity.getResource()).isNull();
-
         assertThat(beginnerClassEntity.getStaff()).isNullOrEmpty();
 
         assertThat(beginnerClassEntity.getStudents()).isNullOrEmpty();
@@ -86,7 +80,7 @@ public class BeginnerClassMapperTest {
         Resource resourceEntity = new Resource();
         resourceEntity.setId(1);
         resourceEntity.setDescription("test resource description");
-        resourceEntity.setResource("test resource".getBytes());
+        resourceEntity.setLocation("test resource location");
 
         beginnerClassEntity.setResources(List.of(resourceEntity));
 
@@ -120,7 +114,7 @@ public class BeginnerClassMapperTest {
 
         assertThat(resourceModel.getId()).isEqualTo(1);
         assertThat(resourceModel.getDescription()).isEqualTo("test resource description");
-        assertThat(resourceModel.getResource()).isNull();
+        assertThat(resourceModel.getLocation()).isEqualTo("test resource location");
 
         assertThat(beginnerClassModel.getStaff()).hasSize(1);
 

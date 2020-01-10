@@ -20,15 +20,15 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.testcontainers.jdbc.ContainerDatabaseDriver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:tc:mysql:5.7://doesntmatter/test?TC_INITSCRIPT=META-INF/sql/woorinaru_create.sql" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:tc:mysql:8.0://doesntmatter/test?TC_INITSCRIPT=META-INF/sql/woorinaru_create.sql" />
 
             <!-- Schema generation -->
 <!--            <property name="javax.persistence.schema-generation.database.action" value="create" />-->
 <!--            <property name="javax.persistence.schema-generation.create-source" value="script" />-->
 <!--            <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/sql/woorinaru_create.sql"/>-->
 
-<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />-->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect" />
+<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect" />-->
             <property name="hibernate.hbm2ddl.auto" value="validate" />
         </properties>
     </persistence-unit>

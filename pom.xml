@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jdk.version>1.11</jdk.version>
-        <org.hibernate.version>5.4.6.Final</org.hibernate.version>
+        <org.hibernate.version>5.4.24.Final</org.hibernate.version>
         <!-- There is a problem with 1.11.x+ and JDK 11 -->
         <org.testcontainers.version>1.10.7</org.testcontainers.version>
         <org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
